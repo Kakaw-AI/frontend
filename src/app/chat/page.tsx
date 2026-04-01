@@ -421,6 +421,124 @@ function SqlArtifactView({
   );
 }
 
+function isNumericColumn(rows: Array<Record<string, unknown>>, column: string): boolean {
+  const nonNull = rows.filter((row) => row[column] != null && row[column] !== "");
+  if (nonNull.length === 0) return false;
+  return nonNull.every((row) => !isNaN(Number(row[column])));
+}
+
+function TableArtifact({
+  columns,
+  allRows,
+  rowCount,
+}: {
+  columns: string[];
+  allRows: Array<Record<string, unknown>>;
+  rowCount?: number;
+}) {
+  const PAGE_SIZE = 100;
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const numericColumns = useMemo(
+    () => new Set(columns.filter((col) => isNumericColumn(allRows, col))),
+    [columns, allRows],
+  );
+
+  const sortedRows = useMemo(() => {
+    if (!sortColumn) return allRows;
+    return [...allRows].sort((a, b) => {
+      const aVal = a[sortColumn];
+      const bVal = b[sortColumn];
+      const aNum = Number(aVal);
+      const bNum = Number(bVal);
+      const isNumeric = !isNaN(aNum) && !isNaN(bNum);
+      let cmp: number;
+      if (isNumeric) {
+        cmp = aNum - bNum;
+      } else {
+        cmp = String(aVal ?? "").localeCompare(String(bVal ?? ""));
+      }
+      return sortDirection === "asc" ? cmp : -cmp;
+    });
+  }, [allRows, sortColumn, sortDirection]);
+
+  const visibleRows = sortedRows.slice(0, visibleCount);
+
+  function handleSort(column: string) {
+    if (sortColumn === column) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  }
+
+  const totalRows = rowCount ?? allRows.length;
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
+      <div className="border-b border-outline-variant/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
+        Query Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
+      </div>
+      <div className="max-h-[32rem] overflow-auto">
+        <table className="min-w-full text-left" style={{ fontSize: "12.5px" }}>
+          <thead className="sticky top-0 bg-surface-container-low">
+            <tr>
+              {columns.map((column) => {
+                const isActive = sortColumn === column;
+                return (
+                  <th
+                    key={column}
+                    onClick={() => handleSort(column)}
+                    className={`cursor-pointer select-none px-4 py-[10px] font-semibold text-on-surface/55 transition-colors hover:text-on-surface/80 ${numericColumns.has(column) ? "text-right" : "text-left"}`}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {column}
+                      <span
+                        className="text-[10px]"
+                        style={{ color: isActive ? "#705731" : undefined }}
+                      >
+                        {isActive ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}
+                      </span>
+                    </span>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-outline-variant/10">
+            {visibleRows.map((row, index) => (
+              <tr key={index}>
+                {columns.map((column) => (
+                  <td
+                    key={column}
+                    className={`px-4 py-[10px] align-top text-on-surface/75 ${numericColumns.has(column) ? "text-right font-medium tabular-nums" : ""}`}
+                  >
+                    {String(row[column] ?? "")}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {visibleCount < sortedRows.length ? (
+        <div className="border-t border-outline-variant/10 px-4 py-3 text-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+            className="rounded-md border border-outline-variant/15 px-4 py-1.5 text-xs font-medium text-primary transition-colors hover:border-primary/30"
+          >
+            Load more
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function ArtifactView({ artifact }: { artifact: ConversationMessage["artifacts"][number] }) {
   if (artifact.type === "SQL") {
     return <SqlArtifactView artifact={artifact} />;
@@ -433,44 +551,9 @@ function ArtifactView({ artifact }: { artifact: ConversationMessage["artifacts"]
       rowCount?: number;
     };
     const columns = payload.columns ?? [];
-    const rows = payload.rows ?? [];
+    const allRows = payload.rows ?? [];
 
-    return (
-      <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
-        <div className="border-b border-outline-variant/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
-          Query Result{typeof payload.rowCount === "number" ? ` · ${payload.rowCount} rows` : ""}
-        </div>
-        <div className="max-h-[32rem] overflow-auto">
-          <table className="min-w-full text-left text-xs">
-            <thead className="sticky top-0 bg-surface-container-low text-on-surface/55">
-              <tr>
-                {columns.map((column) => (
-                  <th key={column} className="px-4 py-3 font-semibold">
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/10">
-              {rows.map((row, index) => (
-                <tr key={`${artifact.id}-${index}`}>
-                  {columns.map((column) => (
-                    <td key={column} className="px-4 py-3 align-top text-on-surface/75">
-                      {String(row[column] ?? "")}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {typeof payload.rowCount === "number" && rows.length < payload.rowCount ? (
-          <div className="border-t border-outline-variant/10 px-4 py-2 text-[10px] text-on-surface/40">
-            Showing {rows.length.toLocaleString()} of {payload.rowCount.toLocaleString()} rows
-          </div>
-        ) : null}
-      </div>
-    );
+    return <TableArtifact columns={columns} allRows={allRows} rowCount={payload.rowCount} />;
   }
 
   if (artifact.type === "ERROR") {
