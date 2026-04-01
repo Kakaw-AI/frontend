@@ -96,8 +96,19 @@ export function PlotlyChartArtifact({
         />
       ) : null}
 
-      <div className="border-b border-outline-variant/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
-        {title?.trim() || chartType || "Chart"}
+      <div className="flex items-center gap-2 border-b border-outline-variant/10 px-4 py-2">
+        {chartType ? (
+          <span className="rounded-full bg-surface-container-low px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-on-surface/45">
+            {chartType}
+          </span>
+        ) : null}
+        {title?.trim() ? (
+          <span className="text-xs font-medium text-on-surface/65">{title.trim()}</span>
+        ) : !chartType ? (
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
+            Chart
+          </span>
+        ) : null}
       </div>
       <div ref={containerRef} className="min-h-80 w-full px-2 py-2" />
     </div>
