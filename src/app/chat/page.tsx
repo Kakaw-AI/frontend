@@ -345,7 +345,7 @@ function StepLog({ message }: { message: ConversationMessage }) {
         </button>
         {expanded ? (
           <div className="mt-2 space-y-1">
-            {[...steps].reverse().map((step) => (
+            {steps.map((step) => (
               <div
                 key={step.seq}
                 className="flex items-center gap-2 text-xs text-on-surface/35"
@@ -371,7 +371,7 @@ function StepLog({ message }: { message: ConversationMessage }) {
 
   return (
     <div className="space-y-1">
-      {[...steps].reverse().map((step) => (
+      {steps.map((step) => (
         <div key={step.seq} className="flex items-center gap-2 text-sm text-on-surface/55">
           {step.done ? (
             <CheckCircle2 size={14} className="shrink-0 text-green-500" />
@@ -524,7 +524,7 @@ function MessageCard({ message }: { message: ConversationMessage }) {
         }
       >
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-60">
-          {isUser ? "You" : "Kakaw Agent"}
+          {isUser ? "You" : "Kakaw"}
         </p>
         {message.steps !== undefined ? (
           <StepLog message={message} />
@@ -784,7 +784,7 @@ export default function ChatPage() {
                 Kakaw AI
               </h1>
               <p className="text-[10px] uppercase tracking-[0.22em] text-on-surface/45">
-                Agent Runtime
+                Your AI data analyst
               </p>
             </div>
           </div>
@@ -864,7 +864,7 @@ export default function ChatPage() {
 
               {!conversationsQuery.data?.length ? (
                 <div className="rounded-2xl border border-dashed border-outline-variant/20 bg-surface-container-lowest px-4 py-5 text-sm text-on-surface/60">
-                  No persisted chats yet. Start one by choosing a database and an LLM.
+                  No conversations yet.
                 </div>
               ) : null}
             </div>
@@ -936,7 +936,7 @@ export default function ChatPage() {
                 {activeConversation?.title ?? "Select or create a conversation"}
               </h2>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-on-surface/35">
-                Persisted thread history with a stateless Python + Vanna runtime
+                Your conversation history
               </p>
             </div>
           </header>
@@ -991,15 +991,14 @@ export default function ChatPage() {
 
                   {!activeConversation.messages.length ? (
                     <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
-                      This conversation is ready. Send a question and the Python agent will call
-                      Vanna against the selected database.
+                      Ask a question to get started.
                     </div>
                   ) : null}
                 </div>
               </div>
             ) : (
               <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
-                No active conversation. Create one to start the real chat flow.
+                Select a conversation or create a new one.
               </div>
             )}
           </section>
@@ -1026,9 +1025,7 @@ export default function ChatPage() {
               />
               <div className="mt-3 flex items-center justify-between border-t border-outline-variant/10 pt-3">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-on-surface/35">
-                  {isComposerLocked
-                    ? "Assistant response is still streaming"
-                    : "SQL and table artifacts stream into the thread"}
+                  {isComposerLocked ? "Responding…" : ""}
                 </p>
                 <button
                   type="button"
