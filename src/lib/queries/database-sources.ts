@@ -1,0 +1,106 @@
+import { queryOptions } from "@tanstack/react-query";
+import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
+
+export type DatabaseSourceStatus = "PENDING" | "SYNCING" | "READY" | "FAILED";
+
+export type DatabaseConnectionResponse = {
+  id: string;
+  provider: DatabaseProvider;
+  status: DatabaseSourceStatus;
+  sqliteOriginalFilename: string | null;
+  lastError: string | null;
+  lastTestedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DatabaseSource = {
+  id: string;
+  provider: DatabaseProvider;
+  label: string;
+  status: DatabaseSourceStatus;
+  canStartChat: boolean;
+  createdAt: string;
+  lastTestedAt: string | null;
+  lastError: string | null;
+};
+
+export const databaseSourcesQueryKey = ["database-sources"] as const;
+
+function toTitleCase(value: string) {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function resolveDatabaseSourceLabel(source: DatabaseConnectionResponse) {
+  if (source.provider === "sqlite") {
+    return source.sqliteOriginalFilename?.trim() || "SQLite upload";
+  }
+
+  if (source.provider === "postgresql") {
+    return "PostgreSQL connection";
+  }
+
+  return `${toTitleCase(source.provider)} connection`;
+}
+
+export function toDatabaseSource(source: DatabaseConnectionResponse): DatabaseSource {
+  return {
+    id: source.id,
+    provider: source.provider,
+    label: resolveDatabaseSourceLabel(source),
+    status: source.status,
+    canStartChat: source.status === "READY",
+    createdAt: source.createdAt,
+    lastTestedAt: source.lastTestedAt,
+    lastError: source.lastError,
+  };
+}
+
+async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
+  const response = await fetch("/api/me/connections", {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as
+      | { message?: string | string[] }
+      | null;
+    const message = Array.isArray(data?.message)
+      ? data.message.join(", ")
+      : data?.message;
+
+    throw new Error(message ?? "Unable to load database sources.");
+  }
+
+  const data = (await response.json()) as DatabaseConnectionResponse[];
+
+  return data.map(toDatabaseSource);
+}
+
+export function databaseSourcesQueryOptions() {
+  return queryOptions({
+    queryKey: databaseSourcesQueryKey,
+    queryFn: fetchDatabaseSources,
+    retry: false,
+  });
+}
+
+export async function resyncDatabaseSource(id: string): Promise<void> {
+  const response = await fetch(`/api/database-sources/${id}/refresh`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as
+      | { message?: string | string[] }
+      | null;
+    const message = Array.isArray(data?.message)
+      ? data.message.join(", ")
+      : data?.message;
+    throw new Error(message ?? "Failed to trigger re-sync.");
+  }
+}

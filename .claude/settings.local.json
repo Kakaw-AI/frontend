@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:stitch.withanthopic.com)"
+    ]
+  },
+  "marketplaces": [
+    "https://github.com/JNLei/claude-tools.git",
+        "https://github.com/JNLei/claude-tools.git"
+
+  ],
+  "plugins": [
+    "next-project-starter@claudesmith-general",
+        "frontend-development@claudesmith-general"
+
+  ]
+}

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kakaw AI - Main Chat Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400;1,6..72,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#5a431f",
+                        "outline-variant": "#d1c4b7",
+                        "surface-bright": "#fbf9f8",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#291800",
+                        "on-tertiary-fixed-variant": "#53452e",
+                        "surface-variant": "#e4e2e2",
+                        "surface-container-high": "#e9e8e7",
+                        "tertiary-fixed": "#f6dfc1",
+                        "outline": "#80756a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#fffaf8",
+                        "inverse-primary": "#e3c193",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#221a13",
+                        "on-background": "#1b1c1c",
+                        "primary-fixed": "#ffddb1",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#303031",
+                        "surface": "#fbf9f8",
+                        "surface-container-highest": "#e4e2e2",
+                        "primary": "#705731",
+                        "surface-tint": "#745a34",
+                        "surface-container-low": "#f5f3f3",
+                        "tertiary-container": "#827158",
+                        "on-tertiary-fixed": "#251a07",
+                        "on-secondary-container": "#6e6258",
+                        "secondary": "#685c53",
+                        "inverse-on-surface": "#f2f0f0",
+                        "primary-container": "#8b6f47",
+                        "on-surface-variant": "#4e453b",
+                        "primary-fixed-dim": "#e3c193",
+                        "background": "#fbf9f8",
+                        "surface-dim": "#dbdad9",
+                        "secondary-fixed": "#f0e0d3",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#d9c3a6",
+                        "tertiary": "#685941",
+                        "surface-container": "#efeded",
+                        "on-tertiary-container": "#fffaf7",
+                        "secondary-fixed-dim": "#d3c4b8",
+                        "secondary-container": "#f0e0d3",
+                        "on-surface": "#1b1c1c",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#4f453c"
+                    },
+                    fontFamily: {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #d1c4b7; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex h-screen overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="flex flex-col h-full w-64 bg-surface-container-low p-4 gap-y-6 shrink-0">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-xl">temp_preferences_custom</span>
+</div>
+<div>
+<h1 class="font-headline text-xl italic font-bold text-primary">Kakaw AI</h1>
+<p class="font-label uppercase tracking-widest text-[10px] text-on-surface/60">Intelligent Atelier</p>
+</div>
+</div>
+<!-- CTA Action -->
+<button class="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-medium shadow-lg shadow-primary/10 active:translate-x-1 transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>New Chat</span>
+</button>
+<!-- Search / Filter -->
+<div class="relative px-2">
+<span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-on-surface/40 text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary/20 placeholder:text-on-surface/30" placeholder="Search conversations..." type="text"/>
+</div>
+<!-- History List -->
+<nav class="flex-1 overflow-y-auto sidebar-scroll flex flex-col gap-1 px-1">
+<p class="font-label uppercase tracking-widest text-[10px] text-on-surface/40 px-3 mb-2">History</p>
+<!-- Active Item -->
+<a class="bg-white dark:bg-[#2a2b2b] text-primary font-bold rounded-xl px-4 py-3 flex items-center gap-3 group transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+<span class="truncate text-sm">Sales Analysis Q4</span>
+</a>
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+<span class="truncate text-sm">Customer Retention Logic</span>
+</a>
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+<span class="truncate text-sm">Revenue Forecast Model</span>
+</a>
+<div class="mt-6">
+<p class="font-label uppercase tracking-widest text-[10px] text-on-surface/40 px-3 mb-2">Workspace</p>
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+<span class="text-sm">Analytics</span>
+</a>
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">database</span>
+<span class="text-sm">Databases</span>
+</a>
+</div>
+</nav>
+<!-- Footer Profile -->
+<div class="border-t border-outline-variant/15 pt-4">
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">account_circle</span>
+<span class="text-sm">Profile</span>
+</a>
+<a class="text-on-surface/70 px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col bg-surface-container-lowest relative">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full px-8 py-4 bg-surface-container-lowest/60 backdrop-blur-md border-b border-outline-variant/15 z-10">
+<div class="flex items-center gap-4">
+<h2 class="font-headline text-2xl italic text-primary">Sales Analysis Q4</h2>
+<div class="flex items-center gap-2 bg-secondary-container px-3 py-1 rounded-full">
+<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="font-label text-[10px] uppercase tracking-wider text-on-secondary-container font-semibold">PostgreSQL Connected</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border-none rounded-xl px-4 py-2 pr-10 text-xs font-medium focus:ring-1 focus:ring-primary/20 text-on-surface cursor-pointer">
+<option>GPT-4o (Reasoning)</option>
+<option>Claude 3.5 Sonnet</option>
+<option>Llama 3 70B</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface/40 text-sm">expand_more</span>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant/30 mx-2"></div>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-primary active:scale-90">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-primary active:scale-90">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</header>
+<!-- Chat Area -->
+<section class="flex-1 overflow-y-auto p-8 space-y-10 max-w-5xl mx-auto w-full">
+<!-- User Message -->
+<div class="flex flex-col items-end w-full">
+<div class="max-w-[80%] bg-primary text-on-primary px-6 py-4 rounded-3xl rounded-tr-none shadow-lg shadow-primary/5">
+<p class="text-[15px] leading-relaxed">Show me the top 5 chocolate products by revenue for Q4, including the growth percentage compared to Q3.</p>
+</div>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface/40 mt-2 mr-2">10:42 AM</span>
+</div>
+<!-- Assistant Message -->
+<div class="flex flex-col items-start w-full">
+<div class="flex gap-4 max-w-[90%]">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">temp_preferences_custom</span>
+</div>
+<div class="space-y-6">
+<div class="bg-secondary-container text-primary px-6 py-5 rounded-3xl rounded-tl-none border-l-4 border-primary">
+<h3 class="font-headline text-lg mb-3">Analysis Summary</h3>
+<p class="text-[15px] leading-relaxed text-on-surface/80">I've analyzed the transactional records for the last two quarters. The following SQL query was executed to aggregate the results from the `order_items` and `products` tables.</p>
+</div>
+<!-- Insight Card: SQL Block -->
+<div class="bg-surface-container-high rounded-xl overflow-hidden">
+<div class="flex items-center justify-between px-4 py-2 bg-on-surface/5">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface/60">SQL Query</span>
+<button class="text-primary hover:underline text-[10px] font-bold">COPY</button>
+</div>
+<pre class="p-6 text-xs font-mono text-on-surface/90 overflow-x-auto leading-relaxed"><code>SELECT 
+    p.name, 
+    SUM(oi.price * oi.quantity) AS q4_revenue,
+    ((SUM(oi.price * oi.quantity) - q3.revenue) / q3.revenue) * 100 AS growth_pct
+FROM products p
+JOIN order_items oi ON p.id = oi.product_id
+JOIN (
+    SELECT product_id, SUM(price * quantity) AS revenue 
+    FROM order_items 
+    WHERE date BETWEEN '2023-07-01' AND '2023-09-30'
+    GROUP BY product_id
+) q3 ON p.id = q3.product_id
+WHERE oi.date BETWEEN '2023-10-01' AND '2023-12-31'
+GROUP BY p.name, q3.revenue
+ORDER BY q4_revenue DESC
+LIMIT 5;</code></pre>
+</div>
+<!-- Insight Card: Data Table -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 rounded-2xl overflow-hidden shadow-sm">
+<table class="w-full text-left text-sm">
+<thead class="bg-surface-container-low font-label text-[10px] uppercase tracking-widest text-on-surface/60">
+<tr>
+<th class="px-6 py-4 font-semibold">Product Name</th>
+<th class="px-6 py-4 font-semibold">Q4 Revenue</th>
+<th class="px-6 py-4 font-semibold">Growth (%)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Dark Cacao 85% Bar</td>
+<td class="px-6 py-4 text-on-surface/70">$142,500.00</td>
+<td class="px-6 py-4 text-green-600 font-bold">+12.4%</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Artisan Sea Salt Truffle</td>
+<td class="px-6 py-4 text-on-surface/70">$98,200.00</td>
+<td class="px-6 py-4 text-green-600 font-bold">+8.1%</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Spiced Chili Cocoa</td>
+<td class="px-6 py-4 text-on-surface/70">$76,400.00</td>
+<td class="px-6 py-4 text-red-600 font-bold">-2.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface/40 mt-4 ml-14">10:43 AM</span>
+</div>
+</section>
+<!-- Bottom Input Area -->
+<footer class="p-8 pt-0 w-full max-w-5xl mx-auto">
+<!-- Suggestion Pills -->
+<div class="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+<button class="bg-secondary-container text-primary px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors">
+                    Visualize growth trends
+                </button>
+<button class="bg-secondary-container text-primary px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors">
+                    Identify lowest performing SKUs
+                </button>
+<button class="bg-secondary-container text-primary px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap hover:bg-primary hover:text-white transition-colors">
+                    Export to CSV
+                </button>
+</div>
+<div class="relative group">
+<div class="absolute inset-0 bg-primary/5 rounded-3xl blur-xl group-focus-within:bg-primary/10 transition-colors"></div>
+<div class="relative bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-4 shadow-sm focus-within:border-primary/40 transition-all">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-[15px] resize-none h-24 placeholder:text-on-surface/30 px-2" placeholder="Ask anything..."></textarea>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-outline-variant/10 px-2">
+<div class="flex items-center gap-1">
+<button class="p-2 text-on-surface/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">attach_file</span>
+</button>
+<button class="p-2 text-on-surface/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">image</span>
+</button>
+<button class="p-2 text-on-surface/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">mic</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary p-2 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+<p class="text-center text-[10px] text-on-surface/30 mt-4 uppercase tracking-[0.2em]">Kakaw AI may provide inaccurate data. Verify critical insights.</p>
+</footer>
+</main>
+</body></html>
