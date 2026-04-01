@@ -114,33 +114,140 @@ function renderInlineMarkdown(text: string, keyPrefix: string) {
   });
 }
 
+type MarkdownBlock =
+  | { type: "heading"; level: 1 | 2 | 3 | 4 | 5 | 6; text: string }
+  | { type: "unordered-list"; items: string[] }
+  | { type: "ordered-list"; items: string[] }
+  | { type: "paragraph"; text: string };
+
+function parseMarkdownBlocks(content: string): MarkdownBlock[] {
+  const lines = content.split("\n");
+  const blocks: MarkdownBlock[] = [];
+  let paragraphLines: string[] = [];
+  let currentList: { type: "unordered-list" | "ordered-list"; items: string[] } | null = null;
+
+  function flushParagraph() {
+    if (paragraphLines.length === 0) {
+      return;
+    }
+
+    blocks.push({
+      type: "paragraph",
+      text: paragraphLines.join("\n").trim(),
+    });
+    paragraphLines = [];
+  }
+
+  function flushList() {
+    if (!currentList || currentList.items.length === 0) {
+      currentList = null;
+      return;
+    }
+
+    blocks.push(currentList);
+    currentList = null;
+  }
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      flushParagraph();
+      flushList();
+      blocks.push({
+        type: "heading",
+        level: headingMatch[1].length as 1 | 2 | 3 | 4 | 5 | 6,
+        text: headingMatch[2].trim(),
+      });
+      continue;
+    }
+
+    const unorderedMatch = line.match(/^[-*]\s+(.+)$/);
+    if (unorderedMatch) {
+      flushParagraph();
+      if (!currentList || currentList.type !== "unordered-list") {
+        flushList();
+        currentList = { type: "unordered-list", items: [] };
+      }
+      currentList.items.push(unorderedMatch[1].trim());
+      continue;
+    }
+
+    const orderedMatch = line.match(/^\d+\.\s+(.+)$/);
+    if (orderedMatch) {
+      flushParagraph();
+      if (!currentList || currentList.type !== "ordered-list") {
+        flushList();
+        currentList = { type: "ordered-list", items: [] };
+      }
+      currentList.items.push(orderedMatch[1].trim());
+      continue;
+    }
+
+    flushList();
+    paragraphLines.push(line);
+  }
+
+  flushParagraph();
+  flushList();
+  return blocks;
+}
+
 function MarkdownMessage({ content }: { content: string }) {
-  const blocks = content.split(/\n\s*\n/).map((block) => block.trim()).filter(Boolean);
+  const blocks = parseMarkdownBlocks(content);
 
   return (
     <div className="space-y-3 text-sm leading-relaxed">
       {blocks.map((block, blockIndex) => {
-        const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
-        const isList = lines.every((line) => /^[-*]\s+/.test(line));
+        if (block.type === "heading") {
+          const className =
+            block.level === 1
+              ? "text-xl font-semibold tracking-[-0.02em]"
+              : block.level === 2
+                ? "text-lg font-semibold tracking-[-0.02em]"
+                : "text-base font-semibold";
 
-        if (isList) {
           return (
-            <ul key={`block-${blockIndex}`} className="list-disc space-y-1 pl-5">
-              {lines.map((line, lineIndex) => (
+            <p key={`block-${blockIndex}`} className={className}>
+              {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
+            </p>
+          );
+        }
+
+        if (block.type === "unordered-list") {
+          return (
+            <ul key={`block-${blockIndex}`} className="list-disc space-y-1.5 pl-5">
+              {block.items.map((item, lineIndex) => (
                 <li key={`block-${blockIndex}-item-${lineIndex}`}>
-                  {renderInlineMarkdown(
-                    line.replace(/^[-*]\s+/, ""),
-                    `block-${blockIndex}-item-${lineIndex}`,
-                  )}
+                  {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
                 </li>
               ))}
             </ul>
           );
         }
 
+        if (block.type === "ordered-list") {
+          return (
+            <ol key={`block-${blockIndex}`} className="list-decimal space-y-1.5 pl-5">
+              {block.items.map((item, lineIndex) => (
+                <li key={`block-${blockIndex}-item-${lineIndex}`}>
+                  {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
+                </li>
+              ))}
+            </ol>
+          );
+        }
+
         return (
           <p key={`block-${blockIndex}`} className="whitespace-pre-wrap">
-            {renderInlineMarkdown(block, `block-${blockIndex}`)}
+            {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
           </p>
         );
       })}
@@ -427,6 +534,70 @@ function isNumericColumn(rows: Array<Record<string, unknown>>, column: string): 
   return nonNull.every((row) => !isNaN(Number(row[column])));
 }
 
+function formatArtifactCellValue(value: unknown): string {
+  if (value == null) {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function escapeCsvField(value: unknown): string {
+  const normalized = formatArtifactCellValue(value).replace(/\r\n/g, "\n");
+  if (/[",\n]/.test(normalized)) {
+    return `"${normalized.replace(/"/g, '""')}"`;
+  }
+  return normalized;
+}
+
+function sanitizeDownloadFilename(value: string, fallback: string, extension: string): string {
+  const stem = value
+    .trim()
+    .replace(/\.[a-z0-9]+$/i, "")
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+
+  return `${stem || fallback}.${extension}`;
+}
+
+function downloadTextArtifact(filename: string, content: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function buildCsvContent(
+  columns: string[],
+  rows: Array<Record<string, unknown>>,
+): string {
+  const lines = [columns.map((column) => escapeCsvField(column)).join(",")];
+
+  for (const row of rows) {
+    lines.push(columns.map((column) => escapeCsvField(row[column])).join(","));
+  }
+
+  return lines.join("\n");
+}
+
 function TableArtifact({
   columns,
   allRows,
@@ -476,15 +647,46 @@ function TableArtifact({
   }
 
   const totalRows = rowCount ?? allRows.length;
+  const showingRowsLabel = `${visibleRows.length} of ${totalRows}`;
+
+  function handleDownloadCsv() {
+    if (columns.length === 0) {
+      return;
+    }
+
+    downloadTextArtifact(
+      sanitizeDownloadFilename("query-results", "query-results", "csv"),
+      buildCsvContent(columns, sortedRows),
+      "text/csv;charset=utf-8",
+    );
+  }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
-      <div className="border-b border-outline-variant/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
-        Query Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
+      <div className="flex items-center justify-between gap-3 border-b border-outline-variant/10 px-4 py-2">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
+            Query Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
+          </p>
+          <p className="mt-1 text-[11px] text-on-surface/45">
+            Showing {showingRowsLabel} rows. Scroll horizontally for wide results.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleDownloadCsv}
+          disabled={columns.length === 0}
+          className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface/60 transition hover:border-primary/35 hover:text-primary disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          Download CSV
+        </button>
       </div>
-      <div className="max-h-[32rem] overflow-auto">
-        <table className="min-w-full text-left" style={{ fontSize: "12.5px" }}>
-          <thead className="sticky top-0 bg-surface-container-low">
+      <div className="max-h-[34rem] overflow-auto">
+        <table
+          className="w-max min-w-full border-separate border-spacing-0 text-left"
+          style={{ fontSize: "12.5px" }}
+        >
+          <thead className="sticky top-0 z-10 bg-surface-container-low shadow-[0_1px_0_rgba(0,0,0,0.06)]">
             <tr>
               {columns.map((column) => {
                 const isActive = sortColumn === column;
@@ -492,7 +694,7 @@ function TableArtifact({
                   <th
                     key={column}
                     onClick={() => handleSort(column)}
-                    className={`cursor-pointer select-none px-4 py-[10px] font-semibold text-on-surface/55 transition-colors hover:text-on-surface/80 ${numericColumns.has(column) ? "text-right" : "text-left"}`}
+                    className={`cursor-pointer select-none whitespace-nowrap border-b border-outline-variant/10 px-4 py-3 font-semibold text-on-surface/55 transition-colors hover:text-on-surface/80 ${numericColumns.has(column) ? "text-right" : "text-left"}`}
                   >
                     <span className="inline-flex items-center gap-1">
                       {column}
@@ -510,13 +712,16 @@ function TableArtifact({
           </thead>
           <tbody className="divide-y divide-outline-variant/10">
             {visibleRows.map((row, index) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                className={index % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface"}
+              >
                 {columns.map((column) => (
                   <td
                     key={column}
-                    className={`px-4 py-[10px] align-top text-on-surface/75 ${numericColumns.has(column) ? "text-right font-medium tabular-nums" : ""}`}
+                    className={`max-w-72 min-w-32 border-b border-outline-variant/10 px-4 py-3 align-top text-on-surface/75 ${numericColumns.has(column) ? "text-right font-medium tabular-nums" : "whitespace-pre-wrap break-words"}`}
                   >
-                    {String(row[column] ?? "")}
+                    {formatArtifactCellValue(row[column])}
                   </td>
                 ))}
               </tr>
