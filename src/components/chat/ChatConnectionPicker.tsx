@@ -9,8 +9,10 @@ import {
   GitPullRequest,
   LoaderCircle,
   Plus,
+  Power,
   RefreshCw,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
@@ -23,6 +25,16 @@ import {
   type LlmProvider,
   type SaveLlmConnectionInput,
 } from "@/lib/queries/llm-connections";
+
+type ConnectionActionKind = "activate" | "deactivate" | "delete";
+
+type ConnectionCardAction = {
+  action: ConnectionActionKind;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  busy?: boolean;
+};
 
 function formatTimestamp(value: string | null, fallback: string) {
   if (!value) {
@@ -42,6 +54,122 @@ function formatTimestamp(value: string | null, fallback: string) {
   }).format(date);
 }
 
+function ConnectionActionButton({
+  action,
+  label,
+  onClick,
+  disabled,
+  busy,
+}: ConnectionCardAction) {
+  const toneClassName =
+    action === "delete"
+      ? "border-rose-200 bg-rose-50 text-rose-800"
+      : action === "activate"
+        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+        : "border-outline-variant/20 bg-white text-on-surface/70";
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+      disabled={disabled}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 ${toneClassName}`}
+    >
+      {busy ? <LoaderCircle size={12} className="animate-spin" /> : null}
+      {action === "activate" ? (
+        <RefreshCw size={12} />
+      ) : action === "delete" ? (
+        <Trash2 size={12} />
+      ) : (
+        <Power size={12} />
+      )}
+      {label}
+    </button>
+  );
+}
+
+function LlmConnectionCard({
+  connection,
+  selected,
+  muted,
+  onSelect,
+  actions,
+}: {
+  connection: LlmConnection;
+  selected: boolean;
+  muted?: boolean;
+  onSelect?: () => void;
+  actions?: ConnectionCardAction[];
+}) {
+  const cardClassName = muted
+    ? selected
+      ? "border-outline-variant/20 bg-white/80 opacity-80"
+      : "border-outline-variant/15 bg-surface-container-low opacity-75"
+    : selected
+      ? "border-primary/45 bg-white shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]"
+      : "border-outline-variant/20 bg-white hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]";
+
+  const content = (
+    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="flex items-start gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container/60 text-primary">
+          <LlmProviderLogo provider={connection.provider} className="h-6 w-6" />
+        </div>
+
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="font-semibold text-on-surface">{connection.label}</p>
+            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
+              {connection.provider}
+            </span>
+          </div>
+          <p className="text-sm text-on-surface/55">
+            {connection.defaultModel}
+            {connection.apiKeyLastFour
+              ? ` · key ••••${connection.apiKeyLastFour}`
+              : connection.usesLinkedAccount
+                ? " · linked account"
+                : ""}
+          </p>
+          <p className="text-sm text-on-surface/55">
+            Tested {formatTimestamp(connection.lastTestedAt, "recently")}
+          </p>
+          {connection.lastError ? (
+            <p className="text-sm leading-relaxed text-rose-700/85">
+              {connection.lastError}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <DatabaseSourceStatusBadge status={connection.status} />
+    </div>
+  );
+
+  return (
+    <div className={`rounded-[24px] border px-5 py-4 transition-all ${cardClassName}`}>
+      {onSelect ? (
+        <button type="button" onClick={onSelect} className="w-full text-left">
+          {content}
+        </button>
+      ) : (
+        content
+      )}
+
+      {actions?.length ? (
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-outline-variant/15 pt-3">
+          {actions.map((item) => (
+            <ConnectionActionButton key={`${connection.id}-${item.action}`} {...item} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function ChatConnectionPicker({
   isOpen,
   startInAddLlmMode,
@@ -53,6 +181,7 @@ export function ChatConnectionPicker({
   error,
   activeSourceId,
   activeLlmConnectionId,
+  isCreatingConversation,
   isCreatingLlmConnection,
   createLlmError,
   isLinkingGithub,
@@ -61,6 +190,9 @@ export function ChatConnectionPicker({
   onRetry,
   onLinkGithub,
   onCreateLlmConnection,
+  onActivateLlmConnection,
+  onDeactivateLlmConnection,
+  onDeleteLlmConnection,
   onConfirmSelection,
 }: {
   isOpen: boolean;
@@ -73,6 +205,7 @@ export function ChatConnectionPicker({
   error: Error | null;
   activeSourceId: string | null;
   activeLlmConnectionId: string | null;
+  isCreatingConversation: boolean;
   isCreatingLlmConnection: boolean;
   createLlmError: Error | null;
   isLinkingGithub: boolean;
@@ -81,6 +214,9 @@ export function ChatConnectionPicker({
   onRetry: () => void;
   onLinkGithub: () => void;
   onCreateLlmConnection: (input: SaveLlmConnectionInput) => Promise<void>;
+  onActivateLlmConnection: (connectionId: string) => Promise<void>;
+  onDeactivateLlmConnection: (connectionId: string) => Promise<void>;
+  onDeleteLlmConnection: (connectionId: string) => Promise<void>;
   onConfirmSelection: (selection: {
     source: DatabaseSource;
     llmConnection: LlmConnection;
@@ -99,6 +235,11 @@ export function ChatConnectionPicker({
   );
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
+  const [connectionActionState, setConnectionActionState] = useState<{
+    id: string;
+    action: ConnectionActionKind;
+  } | null>(null);
+  const [connectionActionError, setConnectionActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -132,10 +273,16 @@ export function ChatConnectionPicker({
   const providerOption =
     LLM_PROVIDER_OPTIONS.find((option) => option.value === provider) ??
     LLM_PROVIDER_OPTIONS[0];
-  const activeLlmConnections =
-    llmConnections?.filter((connection) => connection.canStartChat) ?? [];
+  const readyLlmConnections =
+    llmConnections?.filter(
+      (connection) => connection.isActive && connection.status === "SUCCESS",
+    ) ?? [];
+  const failedLlmConnections =
+    llmConnections?.filter(
+      (connection) => connection.isActive && connection.status !== "SUCCESS",
+    ) ?? [];
   const inactiveLlmConnections =
-    llmConnections?.filter((connection) => !connection.canStartChat) ?? [];
+    llmConnections?.filter((connection) => !connection.isActive) ?? [];
   const selectedSource = databaseSources?.find((source) => source.id === selectedSourceId);
   const selectedLlmConnection = llmConnections?.find(
     (connection) => connection.id === selectedLlmConnectionId,
@@ -143,6 +290,7 @@ export function ChatConnectionPicker({
   const hasValidSelection =
     !!selectedSource?.canStartChat && !!selectedLlmConnection?.canStartChat;
   const copilotNeedsGithub = provider === "github-copilot" && !githubLinked;
+  const isConnectionActionPending = connectionActionState !== null;
 
   if (!isOpen) {
     return null;
@@ -161,6 +309,39 @@ export function ChatConnectionPicker({
     setApiKey("");
     setBaseUrl("");
     setIsAddConnectionFormOpen(false);
+  }
+
+  async function handleConnectionAction(
+    action: ConnectionActionKind,
+    connectionId: string,
+  ) {
+    setConnectionActionError(null);
+    setConnectionActionState({ id: connectionId, action });
+
+    try {
+      if (action === "activate") {
+        await onActivateLlmConnection(connectionId);
+        setSelectedLlmConnectionId(connectionId);
+      } else if (action === "deactivate") {
+        await onDeactivateLlmConnection(connectionId);
+        if (selectedLlmConnectionId === connectionId) {
+          setSelectedLlmConnectionId(null);
+        }
+      } else {
+        await onDeleteLlmConnection(connectionId);
+        if (selectedLlmConnectionId === connectionId) {
+          setSelectedLlmConnectionId(null);
+        }
+      }
+    } catch (error) {
+      setConnectionActionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to update this LLM connection.",
+      );
+    } finally {
+      setConnectionActionState(null);
+    }
   }
 
   return (
@@ -227,8 +408,11 @@ export function ChatConnectionPicker({
                 <span>
                   {databaseSources?.length ?? 0} data source
                   {(databaseSources?.length ?? 0) === 1 ? "" : "s"} ·{" "}
-                  {activeLlmConnections.length} active LLM connection
-                  {activeLlmConnections.length === 1 ? "" : "s"}
+                  {readyLlmConnections.length} ready LLM connection
+                  {readyLlmConnections.length === 1 ? "" : "s"}
+                  {failedLlmConnections.length
+                    ? ` · ${failedLlmConnections.length} failed`
+                    : ""}
                   {inactiveLlmConnections.length
                     ? ` · ${inactiveLlmConnections.length} inactive`
                     : ""}
@@ -389,6 +573,11 @@ export function ChatConnectionPicker({
                           <input
                             value={displayName}
                             onChange={(event) => setDisplayName(event.target.value)}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="none"
+                            spellCheck={false}
+                            maxLength={120}
                             placeholder={`${providerOption.label} · ${defaultModel}`}
                             className="w-full rounded-2xl border border-outline-variant/25 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary/40"
                           />
@@ -399,6 +588,10 @@ export function ChatConnectionPicker({
                           <input
                             value={defaultModel}
                             onChange={(event) => setDefaultModel(event.target.value)}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="none"
+                            spellCheck={false}
                             placeholder={providerOption.defaultModel}
                             className="w-full rounded-2xl border border-outline-variant/25 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary/40"
                           />
@@ -454,6 +647,10 @@ export function ChatConnectionPicker({
                               type="password"
                               value={apiKey}
                               onChange={(event) => setApiKey(event.target.value)}
+                              autoComplete="new-password"
+                              autoCorrect="off"
+                              autoCapitalize="none"
+                              spellCheck={false}
                               placeholder="Paste the provider API key"
                               className="w-full rounded-2xl border border-outline-variant/25 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary/40"
                             />
@@ -465,6 +662,10 @@ export function ChatConnectionPicker({
                               <input
                                 value={baseUrl}
                                 onChange={(event) => setBaseUrl(event.target.value)}
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="none"
+                                spellCheck={false}
                                 placeholder="https://api.openai.com/v1"
                                 className="w-full rounded-2xl border border-outline-variant/25 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary/40"
                               />
@@ -521,57 +722,39 @@ export function ChatConnectionPicker({
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {activeLlmConnections.length ? (
+                      {readyLlmConnections.length ? (
                         <div className="grid gap-3">
-                          {activeLlmConnections.map((connection) => {
+                          {readyLlmConnections.map((connection) => {
                             const selected = selectedLlmConnectionId === connection.id;
+                            const isBusy = connectionActionState?.id === connection.id;
 
                             return (
-                              <button
+                              <LlmConnectionCard
                                 key={connection.id}
-                                type="button"
-                                onClick={() => setSelectedLlmConnectionId(connection.id)}
-                                className={`w-full rounded-[24px] border px-5 py-4 text-left transition-all ${
-                                  selected
-                                    ? "border-primary/45 bg-white shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]"
-                                    : "border-outline-variant/20 bg-white hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]"
-                                }`}
-                              >
-                                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                                  <div className="flex items-start gap-4">
-                                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container/60 text-primary">
-                                      <LlmProviderLogo provider={connection.provider} className="h-6 w-6" />
-                                    </div>
-
-                                    <div className="space-y-1">
-                                      <div className="flex flex-wrap items-center gap-3">
-                                        <p className="font-semibold text-on-surface">{connection.label}</p>
-                                        <span className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
-                                          {connection.provider}
-                                        </span>
-                                      </div>
-                                      <p className="text-sm text-on-surface/55">
-                                        {connection.defaultModel}
-                                        {connection.apiKeyLastFour
-                                          ? ` · key ••••${connection.apiKeyLastFour}`
-                                          : connection.usesLinkedAccount
-                                            ? " · linked account"
-                                            : ""}
-                                      </p>
-                                      <p className="text-sm text-on-surface/55">
-                                        Tested {formatTimestamp(connection.lastTestedAt, "recently")}
-                                      </p>
-                                      {connection.lastError ? (
-                                        <p className="text-sm leading-relaxed text-rose-700/85">
-                                          {connection.lastError}
-                                        </p>
-                                      ) : null}
-                                    </div>
-                                  </div>
-
-                                  <DatabaseSourceStatusBadge status={connection.status} />
-                                </div>
-                              </button>
+                                connection={connection}
+                                selected={selected}
+                                onSelect={() => setSelectedLlmConnectionId(connection.id)}
+                                actions={[
+                                  {
+                                    action: "deactivate",
+                                    label: "Deactivate",
+                                    onClick: () =>
+                                      void handleConnectionAction("deactivate", connection.id),
+                                    disabled: isConnectionActionPending,
+                                    busy:
+                                      isBusy &&
+                                      connectionActionState?.action === "deactivate",
+                                  },
+                                  {
+                                    action: "delete",
+                                    label: "Delete",
+                                    onClick: () =>
+                                      void handleConnectionAction("delete", connection.id),
+                                    disabled: isConnectionActionPending,
+                                    busy: isBusy && connectionActionState?.action === "delete",
+                                  },
+                                ]}
+                              />
                             );
                           })}
                         </div>
@@ -587,6 +770,57 @@ export function ChatConnectionPicker({
                         </div>
                       )}
 
+                      {failedLlmConnections.length ? (
+                        <div className="space-y-3 rounded-[24px] border border-outline-variant/20 bg-surface-container-lowest p-4">
+                          <div>
+                            <p className="font-semibold text-on-surface">
+                              Failed health checks
+                            </p>
+                            <p className="mt-1 text-sm text-on-surface/60">
+                              These connections are active but currently not healthy enough to
+                              start new chats.
+                            </p>
+                          </div>
+
+                          <div className="grid gap-3">
+                            {failedLlmConnections.map((connection) => {
+                              const selected = selectedLlmConnectionId === connection.id;
+                              const isBusy = connectionActionState?.id === connection.id;
+
+                              return (
+                                <LlmConnectionCard
+                                  key={connection.id}
+                                  connection={connection}
+                                  selected={selected}
+                                  muted
+                                  actions={[
+                                    {
+                                      action: "deactivate",
+                                      label: "Deactivate",
+                                      onClick: () =>
+                                        void handleConnectionAction("deactivate", connection.id),
+                                      disabled: isConnectionActionPending,
+                                      busy:
+                                        isBusy &&
+                                        connectionActionState?.action === "deactivate",
+                                    },
+                                    {
+                                      action: "delete",
+                                      label: "Delete",
+                                      onClick: () =>
+                                        void handleConnectionAction("delete", connection.id),
+                                      disabled: isConnectionActionPending,
+                                      busy:
+                                        isBusy && connectionActionState?.action === "delete",
+                                    },
+                                  ]}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : null}
+
                       {inactiveLlmConnections.length ? (
                         <div className="rounded-[24px] border border-outline-variant/20 bg-surface-container-lowest">
                           <button
@@ -598,11 +832,11 @@ export function ChatConnectionPicker({
                           >
                             <div>
                               <p className="font-semibold text-on-surface">
-                                Inactive or invalid connections
+                                Inactive connections
                               </p>
                               <p className="mt-1 text-sm text-on-surface/60">
-                                Saved connections that are still visible for troubleshooting,
-                                but cannot start a chat.
+                                These profiles are saved but deactivated until you reactivate
+                                them.
                               </p>
                             </div>
                             <span className="inline-flex items-center gap-2 text-sm font-medium text-on-surface/65">
@@ -620,58 +854,47 @@ export function ChatConnectionPicker({
                             <div className="grid gap-3 border-t border-outline-variant/15 px-4 pb-4 pt-2">
                               {inactiveLlmConnections.map((connection) => {
                                 const selected = selectedLlmConnectionId === connection.id;
+                                const isBusy = connectionActionState?.id === connection.id;
 
                                 return (
-                                  <button
+                                  <LlmConnectionCard
                                     key={connection.id}
-                                    type="button"
-                                    disabled
-                                    className={`w-full cursor-not-allowed rounded-[24px] border px-5 py-4 text-left transition-all ${
-                                      selected
-                                        ? "border-outline-variant/20 bg-white/80 opacity-75"
-                                        : "border-outline-variant/15 bg-surface-container-low opacity-70"
-                                    }`}
-                                  >
-                                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                                      <div className="flex items-start gap-4">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container/60 text-primary">
-                                          <LlmProviderLogo provider={connection.provider} className="h-6 w-6" />
-                                        </div>
-
-                                        <div className="space-y-1">
-                                          <div className="flex flex-wrap items-center gap-3">
-                                            <p className="font-semibold text-on-surface">{connection.label}</p>
-                                            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
-                                              {connection.provider}
-                                            </span>
-                                          </div>
-                                          <p className="text-sm text-on-surface/55">
-                                            {connection.defaultModel}
-                                            {connection.apiKeyLastFour
-                                              ? ` · key ••••${connection.apiKeyLastFour}`
-                                              : connection.usesLinkedAccount
-                                                ? " · linked account"
-                                                : ""}
-                                          </p>
-                                          <p className="text-sm text-on-surface/55">
-                                            Tested {formatTimestamp(connection.lastTestedAt, "recently")}
-                                          </p>
-                                          {connection.lastError ? (
-                                            <p className="text-sm leading-relaxed text-rose-700/85">
-                                              {connection.lastError}
-                                            </p>
-                                          ) : null}
-                                        </div>
-                                      </div>
-
-                                      <DatabaseSourceStatusBadge status={connection.status} />
-                                    </div>
-                                  </button>
+                                    connection={connection}
+                                    selected={selected}
+                                    muted
+                                    actions={[
+                                      {
+                                        action: "activate",
+                                        label: "Reactivate",
+                                        onClick: () =>
+                                          void handleConnectionAction("activate", connection.id),
+                                        disabled: isConnectionActionPending,
+                                        busy:
+                                          isBusy &&
+                                          connectionActionState?.action === "activate",
+                                      },
+                                      {
+                                        action: "delete",
+                                        label: "Delete",
+                                        onClick: () =>
+                                          void handleConnectionAction("delete", connection.id),
+                                        disabled: isConnectionActionPending,
+                                        busy:
+                                          isBusy && connectionActionState?.action === "delete",
+                                      },
+                                    ]}
+                                  />
                                 );
                               })}
                             </div>
                           ) : null}
                         </div>
+                      ) : null}
+
+                      {connectionActionError ? (
+                        <p className="text-sm leading-relaxed text-rose-700/85">
+                          {connectionActionError}
+                        </p>
                       ) : null}
                     </div>
                   )}
@@ -692,7 +915,7 @@ export function ChatConnectionPicker({
 
                 <button
                   type="button"
-                  disabled={!hasValidSelection}
+                  disabled={!hasValidSelection || isCreatingConversation}
                   onClick={() => {
                     if (!hasValidSelection || !selectedSource || !selectedLlmConnection) {
                       return;
@@ -705,7 +928,10 @@ export function ChatConnectionPicker({
                   }}
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Start chat
+                  {isCreatingConversation ? (
+                    <LoaderCircle size={14} className="animate-spin" />
+                  ) : null}
+                  {isCreatingConversation ? "Starting..." : "Start chat"}
                 </button>
               </div>
             </>

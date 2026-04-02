@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
@@ -16,13 +16,22 @@ import {
 } from "lucide-react";
 import { ChatConnectionPicker } from "@/components/chat/ChatConnectionPicker";
 import { MessageCard } from "@/components/chat/MessageCard";
-import { formatConversationTime } from "@/components/chat/chat-formatting";
+import { createSubmissionLock } from "@/components/chat/submission-lock";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  formatConversationTime,
+  formatConversationTitle,
+} from "@/components/chat/chat-formatting";
 import {
   applyStreamEvent,
   createOptimisticUserMessage,
 } from "@/components/chat/chat-stream-state";
-import { LlmProviderLogo } from "@/components/chat/LlmProviderLogo";
-import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
 import { authClient } from "@/lib/auth-client";
 import {
   chatOptionsQueryKey,
@@ -35,11 +44,16 @@ import {
   conversationsQueryKey,
   conversationsQueryOptions,
   createConversationMutationOptions,
+  describeConversationRuntime,
   streamConversationMessage,
+  updateConversationRuntimeMutationOptions,
   type ConversationDetails,
   type ConversationSummary,
 } from "@/lib/queries/conversations";
 import {
+  activateLlmConnectionMutationOptions,
+  deactivateLlmConnectionMutationOptions,
+  deleteLlmConnectionMutationOptions,
   linkGithubAccount,
   saveLlmConnectionMutationOptions,
   type SaveLlmConnectionInput,
@@ -47,13 +61,14 @@ import {
 
 export function ChatPageClient() {
   const router = useRouter();
+  const { conversationId: activeConversationId = null } = useParams<{ conversationId?: string }>();
   const queryClient = useQueryClient();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const createConversationLockRef = useRef(createSubmissionLock());
   const [input, setInput] = useState("");
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isConnectionPickerOpen, setIsConnectionPickerOpen] = useState(false);
   const [pickerStartsInAddLlmMode, setPickerStartsInAddLlmMode] = useState(false);
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isLinkingGithub, setIsLinkingGithub] = useState(false);
   const [githubLinkError, setGithubLinkError] = useState<Error | null>(null);
   const [composerError, setComposerError] = useState<string | null>(null);
@@ -74,7 +89,7 @@ export function ChatPageClient() {
         conversationsQueryKey,
         (current) => [conversation, ...(current ?? [])],
       );
-      setActiveConversationId(conversation.id);
+      router.push("/chat/" + conversation.id);
       setIsConnectionPickerOpen(false);
     },
   });
@@ -94,12 +109,66 @@ export function ChatPageClient() {
       );
     },
   });
+  const activateLlmConnectionMutation = useMutation({
+    ...activateLlmConnectionMutationOptions(),
+    onSuccess(connection) {
+      queryClient.setQueryData<ChatOptions | undefined>(
+        chatOptionsQueryKey,
+        (current) =>
+          current
+            ? {
+                ...current,
+                llmConnections: current.llmConnections.map((item) =>
+                  item.id === connection.id ? connection : item,
+                ),
+              }
+            : current,
+      );
+    },
+  });
+  const deactivateLlmConnectionMutation = useMutation({
+    ...deactivateLlmConnectionMutationOptions(),
+    onSuccess(connection) {
+      queryClient.setQueryData<ChatOptions | undefined>(
+        chatOptionsQueryKey,
+        (current) =>
+          current
+            ? {
+                ...current,
+                llmConnections: current.llmConnections.map((item) =>
+                  item.id === connection.id ? connection : item,
+                ),
+              }
+            : current,
+      );
+    },
+  });
+  const deleteLlmConnectionMutation = useMutation({
+    ...deleteLlmConnectionMutationOptions(),
+    onSuccess(result) {
+      queryClient.setQueryData<ChatOptions | undefined>(
+        chatOptionsQueryKey,
+        (current) =>
+          current
+            ? {
+                ...current,
+                llmConnections: current.llmConnections.filter(
+                  (item) => item.id !== result.id,
+                ),
+              }
+            : current,
+      );
+    },
+  });
+  const updateConversationRuntimeMutation = useMutation(
+    updateConversationRuntimeMutationOptions(),
+  );
 
   useEffect(() => {
     if (!activeConversationId && conversationsQuery.data?.length) {
-      setActiveConversationId(conversationsQuery.data[0].id);
+      router.replace("/chat/" + conversationsQuery.data[0].id);
     }
-  }, [activeConversationId, conversationsQuery.data]);
+  }, [activeConversationId, conversationsQuery.data, router]);
 
   const activeConversation = activeConversationQuery.data;
   const githubLinked = chatOptionsQuery.data?.githubLinked ?? false;
@@ -108,7 +177,17 @@ export function ChatPageClient() {
       (message) => message.role === "assistant" && message.status === "STREAMING",
     ),
   );
-  const isComposerLocked = isSending || hasStreamingAssistantMessage;
+  const isConversationRuntimeAvailable =
+    activeConversation?.runtime.isAvailableForChat ?? false;
+  const runtimeWarning =
+    activeConversation && !isConversationRuntimeAvailable
+      ? activeConversation.runtime.warning
+      : null;
+  const isComposerLocked =
+    isSending ||
+    hasStreamingAssistantMessage ||
+    Boolean(activeConversation && !isConversationRuntimeAvailable);
+  const visibleComposerError = runtimeWarning ?? composerError;
 
   const selectedSource = useMemo(
     () => activeConversation?.databaseSource ?? null,
@@ -119,6 +198,26 @@ export function ChatPageClient() {
     () => activeConversation?.llmConnection ?? null,
     [activeConversation],
   );
+
+  useEffect(() => {
+    if (activeConversation?.runtime.isAvailableForChat) {
+      setComposerError(null);
+    }
+  }, [activeConversation?.id, activeConversation?.runtime.isAvailableForChat]);
+
+  async function invalidateConversationCaches(conversationId?: string | null) {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: chatOptionsQueryKey }),
+      queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
+      ...(conversationId
+        ? [
+            queryClient.invalidateQueries({
+              queryKey: conversationDetailsQueryKey(conversationId),
+            }),
+          ]
+        : []),
+    ]);
+  }
 
   function handleOpenConnectionPicker() {
     setComposerError(null);
@@ -140,16 +239,81 @@ export function ChatPageClient() {
     source: { id: string };
     llmConnection: { id: string };
   }) {
-    await createConversationMutation.mutateAsync({
-      databaseSourceId: selection.source.id,
-      llmConnectionId: selection.llmConnection.id,
-    });
+    if (!createConversationLockRef.current.tryAcquire()) {
+      return;
+    }
+
+    try {
+      await createConversationMutation.mutateAsync({
+        databaseSourceId: selection.source.id,
+        llmConnectionId: selection.llmConnection.id,
+      });
+    } finally {
+      createConversationLockRef.current.release();
+    }
   }
 
   async function handleCreateLlmConnection(input: SaveLlmConnectionInput) {
     setGithubLinkError(null);
     await createLlmConnectionMutation.mutateAsync(input);
     await chatOptionsQuery.refetch();
+  }
+
+  async function handleActivateLlmConnection(connectionId: string) {
+    await activateLlmConnectionMutation.mutateAsync(connectionId);
+    await invalidateConversationCaches(activeConversationId);
+  }
+
+  async function handleDeactivateLlmConnection(connectionId: string) {
+    await deactivateLlmConnectionMutation.mutateAsync(connectionId);
+    await invalidateConversationCaches(activeConversationId);
+  }
+
+  async function handleDeleteLlmConnection(connectionId: string) {
+    await deleteLlmConnectionMutation.mutateAsync(connectionId);
+    await invalidateConversationCaches(activeConversationId);
+  }
+
+  async function handleSwitchConversationConnection(llmConnectionId: string) {
+    if (!activeConversation) {
+      return;
+    }
+
+    setComposerError(null);
+    const updatedConversation = await updateConversationRuntimeMutation.mutateAsync({
+      conversationId: activeConversation.id,
+      input: {
+        llmConnectionId,
+        llmModelOverride: activeConversation.llmModelOverride,
+      },
+    });
+
+    queryClient.setQueryData<ConversationDetails | undefined>(
+      conversationDetailsQueryKey(activeConversation.id),
+      updatedConversation,
+    );
+    await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+  }
+
+  async function handleChangeConversationModel(value: string | null) {
+    if (!activeConversation?.llmConnectionId) {
+      return;
+    }
+
+    setComposerError(null);
+    const updatedConversation = await updateConversationRuntimeMutation.mutateAsync({
+      conversationId: activeConversation.id,
+      input: {
+        llmConnectionId: activeConversation.llmConnectionId,
+        llmModelOverride: value,
+      },
+    });
+
+    queryClient.setQueryData<ConversationDetails | undefined>(
+      conversationDetailsQueryKey(activeConversation.id),
+      updatedConversation,
+    );
+    await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
   }
 
   async function handleLinkGithub() {
@@ -201,11 +365,25 @@ export function ChatPageClient() {
   async function handleSendMessage() {
     const content = input.trim();
     if (!content || !activeConversationId || isComposerLocked) {
+      if (activeConversation && !isConversationRuntimeAvailable) {
+        setComposerError(
+          activeConversation.runtime.warning ??
+            "This conversation is read-only until its runtime is restored.",
+        );
+      }
       return;
     }
 
     if (!selectedSource?.canStartChat) {
       setComposerError("The selected database is still syncing with the Python agent.");
+      return;
+    }
+
+    if (!isConversationRuntimeAvailable) {
+      setComposerError(
+        runtimeWarning ??
+          "This conversation is read-only until its runtime is restored.",
+      );
       return;
     }
 
@@ -263,6 +441,7 @@ export function ChatPageClient() {
   return (
     <>
       <ChatConnectionPicker
+        key={`${isConnectionPickerOpen ? "open" : "closed"}:${pickerStartsInAddLlmMode ? "add" : "pick"}:${activeConversationId ?? "none"}`}
         isOpen={isConnectionPickerOpen}
         startInAddLlmMode={pickerStartsInAddLlmMode}
         databaseSources={chatOptionsQuery.data?.databaseSources}
@@ -273,6 +452,7 @@ export function ChatPageClient() {
         error={chatOptionsQuery.error instanceof Error ? chatOptionsQuery.error : null}
         activeSourceId={selectedSource?.id ?? null}
         activeLlmConnectionId={selectedLlmConnection?.id ?? null}
+        isCreatingConversation={createConversationMutation.isPending}
         isCreatingLlmConnection={createLlmConnectionMutation.isPending}
         createLlmError={
           createLlmConnectionMutation.error instanceof Error
@@ -292,6 +472,9 @@ export function ChatPageClient() {
           void handleLinkGithub();
         }}
         onCreateLlmConnection={handleCreateLlmConnection}
+        onActivateLlmConnection={handleActivateLlmConnection}
+        onDeactivateLlmConnection={handleDeactivateLlmConnection}
+        onDeleteLlmConnection={handleDeleteLlmConnection}
         onConfirmSelection={(selection) => {
           void handleCreateConversation(selection);
         }}
@@ -367,18 +550,18 @@ export function ChatPageClient() {
                 <button
                   key={conversation.id}
                   type="button"
-                  onClick={() => setActiveConversationId(conversation.id)}
+                  onClick={() => router.push("/chat/" + conversation.id)}
                   className={
                     activeConversationId === conversation.id
                       ? "w-full rounded-2xl border border-primary/20 bg-white px-4 py-3 text-left shadow-sm"
                       : "w-full rounded-2xl border border-transparent bg-surface-container-lowest px-4 py-3 text-left"
                   }
-                >
+                  >
                   <p className="truncate text-sm font-semibold text-on-surface">
                     {conversation.title}
                   </p>
                   <p className="mt-1 text-xs text-on-surface/55">
-                    {conversation.databaseSource.label} · {conversation.llmConnection.defaultModel}
+                    {describeConversationRuntime(conversation)}
                   </p>
                   <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
                     {formatConversationTime(conversation.lastMessageAt)}
@@ -395,50 +578,6 @@ export function ChatPageClient() {
           </div>
 
           <div className="space-y-3 border-t border-outline-variant/15 pt-4">
-            <div className="space-y-2">
-              <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-on-surface/35">
-                Active Runtime
-              </p>
-
-              <div className="flex items-center gap-3 rounded-2xl border border-outline-variant/15 bg-surface-container-lowest px-4 py-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-container/60">
-                  {selectedSource ? (
-                    <DatabaseLogo provider={selectedSource.provider} className="h-5 w-5" />
-                  ) : (
-                    <Database size={16} className="text-on-surface/40" />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
-                    Database
-                  </p>
-                  <p className="truncate text-sm font-medium">
-                    {selectedSource?.label ?? "No conversation selected"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 rounded-2xl border border-outline-variant/15 bg-surface-container-lowest px-4 py-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-container/60">
-                  {selectedLlmConnection ? (
-                    <LlmProviderLogo provider={selectedLlmConnection.provider} className="h-5 w-5" />
-                  ) : (
-                    <Sparkles size={16} className="text-on-surface/40" />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
-                    LLM
-                  </p>
-                  <p className="truncate text-sm font-medium">
-                    {selectedLlmConnection
-                      ? `${selectedLlmConnection.label} · ${selectedLlmConnection.defaultModel}`
-                      : "No conversation selected"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {user ? (
               <button
                 type="button"
@@ -457,7 +596,9 @@ export function ChatPageClient() {
           <header className="flex items-center justify-between border-b border-outline-variant/15 px-8 py-5">
             <div>
               <h2 className="font-headline text-2xl italic text-primary">
-                {activeConversation?.title ?? "Select or create a conversation"}
+                {activeConversation
+                ? formatConversationTitle(activeConversation.title)
+                : "Select or create a conversation"}
               </h2>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-on-surface/35">
                 Your conversation history
@@ -471,66 +612,28 @@ export function ChatPageClient() {
                 Loading conversation...
               </div>
             ) : activeConversation ? (
-              <div className="space-y-6">
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-3xl border border-outline-variant/15 bg-surface-container-low px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-on-surface/35">
-                      Data Source
-                    </p>
-                    <div className="mt-3 flex items-center gap-3">
-                      <DatabaseLogo provider={activeConversation.databaseSource.provider} className="h-6 w-6" />
-                      <div>
-                        <p className="text-sm font-semibold text-on-surface">
-                          {activeConversation.databaseSource.label}
-                        </p>
-                        <p className="text-xs text-on-surface/55">
-                          {activeConversation.databaseSource.provider}
-                        </p>
-                      </div>
-                    </div>
+              <div className="space-y-5">
+                {(() => {
+                  const lastAssistantIndex = [...activeConversation.messages]
+                    .map((m, i) => ({ m, i }))
+                    .filter(({ m }) => m.role === "assistant" && m.status === "COMPLETED")
+                    .at(-1)?.i ?? -1;
+
+                  return activeConversation.messages.map((message, index) => (
+                    <MessageCard
+                      key={message.id}
+                      message={message}
+                      isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
+                      onSuggestionClick={handleSuggestionClick}
+                    />
+                  ));
+                })()}
+
+                {!activeConversation.messages.length ? (
+                  <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
+                    Ask a question to get started.
                   </div>
-
-                  <div className="rounded-3xl border border-outline-variant/15 bg-surface-container-low px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-on-surface/35">
-                      Model Runtime
-                    </p>
-                    <div className="mt-3 flex items-center gap-3">
-                      <LlmProviderLogo provider={activeConversation.llmConnection.provider} className="h-6 w-6" />
-                      <div>
-                        <p className="text-sm font-semibold text-on-surface">
-                          {activeConversation.llmConnection.label}
-                        </p>
-                        <p className="text-xs text-on-surface/55">
-                          {activeConversation.llmConnection.defaultModel}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-5">
-                  {(() => {
-                    const lastAssistantIndex = [...activeConversation.messages]
-                      .map((m, i) => ({ m, i }))
-                      .filter(({ m }) => m.role === "assistant" && m.status === "COMPLETED")
-                      .at(-1)?.i ?? -1;
-
-                    return activeConversation.messages.map((message, index) => (
-                      <MessageCard
-                        key={message.id}
-                        message={message}
-                        isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
-                        onSuggestionClick={handleSuggestionClick}
-                      />
-                    ));
-                  })()}
-
-                  {!activeConversation.messages.length ? (
-                    <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
-                      Ask a question to get started.
-                    </div>
-                  ) : null}
-                </div>
+                ) : null}
               </div>
             ) : (
               <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
@@ -539,11 +642,46 @@ export function ChatPageClient() {
             )}
           </section>
 
-          <footer className="border-t border-outline-variant/15 px-8 py-6">
-            {composerError ? (
-              <div className="mb-4 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-                <AlertTriangle size={16} />
-                {composerError}
+          <footer className="border-t border-outline-variant/15 px-8 py-4">
+            {activeConversation ? (
+              <div className="mb-3 flex items-center gap-3">
+                {(() => {
+                  const readyConnections =
+                    chatOptionsQuery.data?.llmConnections.filter((c) => c.canStartChat) ?? [];
+                  return (
+                    <Select
+                      value={activeConversation.llmConnectionId ?? ""}
+                      onValueChange={(id: string | null) => {
+                        if (id) void handleSwitchConversationConnection(id);
+                      }}
+                      disabled={
+                        updateConversationRuntimeMutation.isPending || !readyConnections.length
+                      }
+                    >
+                      <SelectTrigger className="w-60">
+                        <SelectValue placeholder="No connection">
+                          {(id: string | null) =>
+                            readyConnections.find((c) => c.id === id)?.label ??
+                            "No connection"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {readyConnections.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.label} · {c.defaultModel}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                })()}
+                {visibleComposerError ? (
+                  <span className="flex items-center gap-1.5 text-xs text-rose-700">
+                    <AlertTriangle size={12} />
+                    {visibleComposerError}
+                  </span>
+                ) : null}
               </div>
             ) : null}
 
@@ -575,15 +713,20 @@ export function ChatPageClient() {
                 className="w-full resize-none border-none bg-transparent px-5 pt-4 pb-2 text-[15px] leading-relaxed placeholder:text-on-surface/30 focus:ring-0"
                 style={{ minHeight: "44px", maxHeight: "200px", overflowY: "auto" }}
                 placeholder={
-                  activeConversation
-                    ? `Ask ${activeConversation.llmConnection.label} about ${activeConversation.databaseSource.label}...`
-                    : "Create a conversation first to start querying the selected database."
+                  !activeConversation
+                    ? "Create a conversation first to start querying the selected database."
+                    : isConversationRuntimeAvailable
+                      ? `Ask about ${activeConversation.databaseSource.label} using ${activeConversation.runtime.effectiveModel ?? "the selected runtime"}...`
+                      : activeConversation.runtime.warning ??
+                        "This conversation is read-only until its runtime is restored."
                 }
               />
               <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-1">
                 <p className="text-[10px] text-on-surface/35">
-                  {isComposerLocked ? (
+                  {isSending || hasStreamingAssistantMessage ? (
                     "Responding…"
+                  ) : activeConversation && !isConversationRuntimeAvailable ? (
+                    "Read-only history"
                   ) : (
                     <>
                       <kbd className="rounded border border-outline-variant/20 bg-surface-container px-1 py-0.5 font-mono text-[9px]">Enter</kbd>
@@ -595,7 +738,9 @@ export function ChatPageClient() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => { void handleSendMessage(); }}
+                  onClick={() => {
+                    void handleSendMessage();
+                  }}
                   disabled={!activeConversation || !input.trim() || isComposerLocked}
                   className="flex items-center gap-1.5 rounded-2xl bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary shadow-sm shadow-primary/20 disabled:opacity-40"
                 >

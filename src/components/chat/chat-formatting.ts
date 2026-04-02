@@ -14,6 +14,21 @@ const STREAM_STATUS_PATTERNS = [
   /ALL>$/gi,
 ];
 
+export function formatConversationTitle(title: string): string {
+  if (/^\d{4}-\d{2}-\d{2}T/.test(title)) {
+    const date = new Date(title);
+    if (!isNaN(date.getTime())) {
+      return new Intl.DateTimeFormat("en", {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(date);
+    }
+  }
+  return title;
+}
+
 export function formatConversationTime(value: string | null) {
   if (!value) {
     return "New";
