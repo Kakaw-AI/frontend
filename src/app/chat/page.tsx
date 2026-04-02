@@ -68,6 +68,8 @@ function createOptimisticUserMessage(content: string): ConversationMessage {
     createdAt: now,
     updatedAt: now,
     artifacts: [],
+    tokenUsage: null,
+    suggestions: [],
   };
 }
 
@@ -295,6 +297,8 @@ function applyStreamEvent(
           stepsCollapsed: false,
           stepsStartedAt: null,
           stepsElapsedMs: null,
+          tokenUsage: null,
+          suggestions: [],
         },
       ],
     };

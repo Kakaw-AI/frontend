@@ -37,8 +37,8 @@ export type ConversationMessage = {
   createdAt: string;
   updatedAt: string;
   artifacts: MessageArtifact[];
-  tokenUsage?: TokenUsage | null;
-  suggestions?: string[] | null;
+  tokenUsage: TokenUsage | null;
+  suggestions: string[];
   steps?: Array<{ seq: number; text: string; done: boolean }>;
   stepsCollapsed?: boolean;
   stepsStartedAt?: number | null;
