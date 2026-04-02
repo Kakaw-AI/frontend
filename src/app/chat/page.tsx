@@ -406,6 +406,10 @@ function applyStreamEvent(
         stepsElapsedMs: target.stepsStartedAt
           ? Date.now() - target.stepsStartedAt
           : null,
+        tokenUsage:
+          data.tokenUsage && typeof data.tokenUsage === "object"
+            ? (data.tokenUsage as { inputTokens: number; outputTokens: number; totalTokens: number })
+            : null,
       };
       return { ...conversation, messages: updatedMessages };
     }
@@ -423,6 +427,16 @@ function applyStreamEvent(
         stepsElapsedMs: target.stepsStartedAt
           ? Date.now() - target.stepsStartedAt
           : null,
+      };
+      return { ...conversation, messages: updatedMessages };
+    }
+    case "suggestions_generated": {
+      const suggestionsData = data.suggestions;
+      if (!Array.isArray(suggestionsData)) return conversation;
+      const suggestions = suggestionsData.filter((s): s is string => typeof s === "string");
+      updatedMessages[targetIndex] = {
+        ...target,
+        suggestions,
       };
       return { ...conversation, messages: updatedMessages };
     }
@@ -994,6 +1008,17 @@ export default function ChatPage() {
     setComposerError(null);
     setIsSending(true);
     setInput("");
+
+    queryClient.setQueryData<ConversationDetails | undefined>(
+      conversationDetailsQueryKey(activeConversationId),
+      (current) =>
+        current
+          ? {
+              ...current,
+              messages: current.messages.map((msg) => ({ ...msg, suggestions: [] })),
+            }
+          : current,
+    );
 
     queryClient.setQueryData<ConversationDetails | undefined>(
       conversationDetailsQueryKey(activeConversationId),
