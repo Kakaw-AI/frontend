@@ -53,13 +53,23 @@ export type ConversationResponse = {
   createdAt: string;
   updatedAt: string;
   databaseSourceId: string;
-  llmConnectionId: string;
+  llmConnectionId: string | null;
+  llmModelOverride: string | null;
   databaseSource: DatabaseConnectionResponse;
-  llmConnection: LlmConnectionResponse;
+  llmConnection: LlmConnectionResponse | null;
+  runtime: ConversationRuntime;
 };
 
 export type ConversationDetailsResponse = ConversationResponse & {
   messages: ConversationMessage[];
+};
+
+export type ConversationRuntime = {
+  effectiveModel: string | null;
+  isMissing: boolean;
+  isActive: boolean;
+  isAvailableForChat: boolean;
+  warning: string | null;
 };
 
 export type ConversationSummary = {
@@ -69,9 +79,11 @@ export type ConversationSummary = {
   createdAt: string;
   updatedAt: string;
   databaseSourceId: string;
-  llmConnectionId: string;
+  llmConnectionId: string | null;
+  llmModelOverride: string | null;
   databaseSource: DatabaseSource;
-  llmConnection: LlmConnection;
+  llmConnection: LlmConnection | null;
+  runtime: ConversationRuntime;
 };
 
 export type ConversationDetails = ConversationSummary & {
@@ -82,6 +94,11 @@ export type CreateConversationInput = {
   databaseSourceId: string;
   llmConnectionId: string;
   title?: string;
+};
+
+export type UpdateConversationRuntimeInput = {
+  llmConnectionId: string;
+  llmModelOverride: string | null;
 };
 
 export const conversationsQueryKey = ["chat", "conversations"] as const;
@@ -101,8 +118,12 @@ function toConversationSummary(
     updatedAt: conversation.updatedAt,
     databaseSourceId: conversation.databaseSourceId,
     llmConnectionId: conversation.llmConnectionId,
+    llmModelOverride: conversation.llmModelOverride,
     databaseSource: toDatabaseSource(conversation.databaseSource),
-    llmConnection: toLlmConnection(conversation.llmConnection),
+    llmConnection: conversation.llmConnection
+      ? toLlmConnection(conversation.llmConnection)
+      : null,
+    runtime: conversation.runtime,
   };
 }
 
@@ -163,6 +184,28 @@ async function createConversation(
 
   const data = (await response.json()) as ConversationResponse;
   return toConversationSummary(data);
+}
+
+async function updateConversationRuntime(
+  conversationId: string,
+  input: UpdateConversationRuntimeInput,
+): Promise<ConversationDetails> {
+  const response = await fetch(`/api/chat/conversations/${conversationId}/runtime`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(response, "Unable to update conversation runtime."),
+    );
+  }
+
+  const data = (await response.json()) as ConversationDetailsResponse;
+  return toConversationDetails(data);
 }
 
 export async function streamConversationMessage(
@@ -276,6 +319,18 @@ export function createConversationMutationOptions() {
   });
 }
 
+export function updateConversationRuntimeMutationOptions() {
+  return mutationOptions({
+    mutationFn: ({
+      conversationId,
+      input,
+    }: {
+      conversationId: string;
+      input: UpdateConversationRuntimeInput;
+    }) => updateConversationRuntime(conversationId, input),
+  });
+}
+
 export function describeConversationRuntime(conversation: ConversationSummary) {
   const sourceLabel = resolveDatabaseSourceLabel({
     id: conversation.databaseSource.id,
@@ -291,5 +346,7 @@ export function describeConversationRuntime(conversation: ConversationSummary) {
     updatedAt: conversation.updatedAt,
   });
 
-  return `${sourceLabel} · ${conversation.llmConnection.defaultModel}`;
+  return `${sourceLabel} · ${
+    conversation.runtime.effectiveModel ?? "Unavailable LLM runtime"
+  }`;
 }
