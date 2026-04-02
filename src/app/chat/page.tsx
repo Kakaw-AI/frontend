@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -865,9 +865,9 @@ function MessageCard({
 
       {!isUser && isLastAssistantMessage && message.status === "COMPLETED" && message.suggestions?.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5 px-1">
-          {message.suggestions.map((suggestion, index) => (
+          {message.suggestions.map((suggestion) => (
             <button
-              key={index}
+              key={suggestion}
               type="button"
               onClick={() => onSuggestionClick(suggestion)}
               className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs text-primary/80 transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
@@ -1024,6 +1024,18 @@ export default function ChatPage() {
       setIsSigningOut(false);
     }
   }
+
+  const handleSuggestionClick = useCallback(
+    (text: string) => {
+      setInput(text);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+        textareaRef.current.focus();
+      }
+    },
+    [textareaRef],
+  );
 
   async function handleSendMessage() {
     const content = input.trim();
@@ -1347,14 +1359,7 @@ export default function ChatPage() {
                         key={message.id}
                         message={message}
                         isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
-                        onSuggestionClick={(text) => {
-                          setInput(text);
-                          if (textareaRef.current) {
-                            textareaRef.current.style.height = "auto";
-                            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
-                            textareaRef.current.focus();
-                          }
-                        }}
+                        onSuggestionClick={handleSuggestionClick}
                       />
                     ));
                   })()}
