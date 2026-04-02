@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { normalizeApiErrorPayload, readApiErrorResponse } from "@/lib/api-error";
 import {
   resolveDatabaseSourceLabel,
   type DatabaseConnectionResponse,
@@ -115,13 +116,8 @@ function toConversationDetails(
 }
 
 async function readErrorMessage(response: Response, fallback: string) {
-  const data = (await response.json().catch(() => null)) as
-    | { message?: string | string[] }
-    | null;
-  const message = Array.isArray(data?.message)
-    ? data.message.join(", ")
-    : data?.message;
-  return message ?? fallback;
+  const error = await readApiErrorResponse(response, fallback);
+  return error.message;
 }
 
 async function fetchConversations(): Promise<ConversationSummary[]> {
@@ -193,6 +189,7 @@ export async function streamConversationMessage(
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let sawTerminalEvent = false;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -214,14 +211,45 @@ export async function streamConversationMessage(
         continue;
       }
 
-      const parsed = JSON.parse(line) as Record<string, unknown>;
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(line) as Record<string, unknown>;
+      } catch {
+        throw new Error("Chat stream returned invalid event data.");
+      }
+      if (
+        parsed.type === "message_completed" ||
+        parsed.type === "message_failed"
+      ) {
+        sawTerminalEvent = true;
+      }
       onEvent(parsed);
     }
   }
 
   const lastLine = buffer.trim();
   if (lastLine) {
-    onEvent(JSON.parse(lastLine) as Record<string, unknown>);
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(lastLine) as Record<string, unknown>;
+    } catch {
+      throw new Error("Chat stream returned invalid event data.");
+    }
+    if (
+      parsed.type === "message_completed" ||
+      parsed.type === "message_failed"
+    ) {
+      sawTerminalEvent = true;
+    }
+    onEvent(parsed);
+  }
+
+  if (!sawTerminalEvent) {
+    const error = normalizeApiErrorPayload(
+      null,
+      "Chat stream disconnected before the assistant finished responding.",
+    );
+    throw new Error(error.message);
   }
 }
 

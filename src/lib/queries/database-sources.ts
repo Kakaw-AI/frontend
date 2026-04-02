@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { readApiErrorResponse } from "@/lib/api-error";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 
 export type DatabaseSourceStatus = "PENDING" | "SYNCING" | "READY" | "FAILED";
@@ -66,14 +67,11 @@ async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
   });
 
   if (!response.ok) {
-    const data = (await response.json().catch(() => null)) as
-      | { message?: string | string[] }
-      | null;
-    const message = Array.isArray(data?.message)
-      ? data.message.join(", ")
-      : data?.message;
-
-    throw new Error(message ?? "Unable to load database sources.");
+    const error = await readApiErrorResponse(
+      response,
+      "Unable to load database sources.",
+    );
+    throw new Error(error.message);
   }
 
   const data = (await response.json()) as DatabaseConnectionResponse[];
@@ -95,12 +93,7 @@ export async function resyncDatabaseSource(id: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const data = (await response.json().catch(() => null)) as
-      | { message?: string | string[] }
-      | null;
-    const message = Array.isArray(data?.message)
-      ? data.message.join(", ")
-      : data?.message;
-    throw new Error(message ?? "Failed to trigger re-sync.");
+    const error = await readApiErrorResponse(response, "Failed to trigger re-sync.");
+    throw new Error(error.message);
   }
 }

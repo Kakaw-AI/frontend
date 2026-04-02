@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { readApiErrorResponse } from "@/lib/api-error";
 
 export type OnboardingState = {
   isFirstConnection?: boolean;
@@ -58,14 +59,11 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
   });
 
   if (!response.ok) {
-    const data = (await response.json().catch(() => null)) as
-      | { message?: string | string[] }
-      | null;
-    const message = Array.isArray(data?.message)
-      ? data.message.join(", ")
-      : data?.message;
-
-    throw new Error(message ?? "Unable to save your database source.");
+    const error = await readApiErrorResponse(
+      response,
+      "Unable to save your database source.",
+    );
+    throw new Error(error.message);
   }
 
   return response;

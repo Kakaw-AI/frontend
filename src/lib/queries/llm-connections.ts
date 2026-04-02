@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { readApiErrorResponse } from "@/lib/api-error";
 
 export type LlmProvider =
   | "openai"
@@ -107,14 +108,8 @@ export function toLlmConnection(
 }
 
 async function readErrorMessage(response: Response, fallback: string) {
-  const data = (await response.json().catch(() => null)) as
-    | { message?: string | string[] }
-    | null;
-  const message = Array.isArray(data?.message)
-    ? data.message.join(", ")
-    : data?.message;
-
-  return message ?? fallback;
+  const error = await readApiErrorResponse(response, fallback);
+  return error.message;
 }
 
 async function fetchLlmConnections(): Promise<LlmConnection[]> {

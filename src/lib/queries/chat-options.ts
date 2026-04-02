@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { readApiErrorResponse } from "@/lib/api-error";
 import {
   type DatabaseConnectionResponse,
   type DatabaseSource,
@@ -30,14 +31,8 @@ async function fetchChatOptions(): Promise<ChatOptions> {
   });
 
   if (!response.ok) {
-    const data = (await response.json().catch(() => null)) as
-      | { message?: string | string[] }
-      | null;
-    const message = Array.isArray(data?.message)
-      ? data.message.join(", ")
-      : data?.message;
-
-    throw new Error(message ?? "Unable to load chat options.");
+    const error = await readApiErrorResponse(response, "Unable to load chat options.");
+    throw new Error(error.message);
   }
 
   const data = (await response.json()) as ChatOptionsResponse;
