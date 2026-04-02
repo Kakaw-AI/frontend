@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -858,6 +858,7 @@ function MessageCard({ message }: { message: ConversationMessage }) {
 export default function ChatPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState("");
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isConnectionPickerOpen, setIsConnectionPickerOpen] = useState(false);
@@ -1009,6 +1010,9 @@ export default function ChatPage() {
     setComposerError(null);
     setIsSending(true);
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
 
     queryClient.setQueryData<ConversationDetails | undefined>(
       conversationDetailsQueryKey(activeConversationId),
@@ -1329,31 +1333,60 @@ export default function ChatPage() {
               </div>
             ) : null}
 
-            <div className="rounded-3xl border border-outline-variant/15 bg-surface-container-low p-4">
+            <div
+              className={[
+                "flex flex-col rounded-3xl border bg-surface-container-low transition-shadow",
+                !activeConversation || isComposerLocked
+                  ? "border-outline-variant/15"
+                  : "border-primary/40 shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]",
+              ].join(" ")}
+            >
               <textarea
+                ref={textareaRef}
+                rows={1}
                 value={input}
-                onChange={(event) => setInput(event.target.value)}
+                onChange={(event) => {
+                  setInput(event.target.value);
+                  const el = event.target;
+                  el.style.height = "auto";
+                  el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    void handleSendMessage();
+                  }
+                }}
                 disabled={!activeConversation || isComposerLocked}
-                className="h-28 w-full resize-none border-none bg-transparent text-[15px] placeholder:text-on-surface/30 focus:ring-0"
+                className="w-full resize-none border-none bg-transparent px-5 pt-4 pb-2 text-[15px] leading-relaxed placeholder:text-on-surface/30 focus:ring-0"
+                style={{ minHeight: "44px", maxHeight: "200px", overflowY: "auto" }}
                 placeholder={
                   activeConversation
                     ? `Ask ${activeConversation.llmConnection.label} about ${activeConversation.databaseSource.label}...`
                     : "Create a conversation first to start querying the selected database."
                 }
               />
-              <div className="mt-3 flex items-center justify-between border-t border-outline-variant/10 pt-3">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-on-surface/35">
-                  {isComposerLocked ? "Responding…" : ""}
+              <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-1">
+                <p className="text-[10px] text-on-surface/35">
+                  {isComposerLocked ? (
+                    "Responding…"
+                  ) : (
+                    <>
+                      <kbd className="rounded border border-outline-variant/20 bg-surface-container px-1 py-0.5 font-mono text-[9px]">Enter</kbd>
+                      {" send · "}
+                      <kbd className="rounded border border-outline-variant/20 bg-surface-container px-1 py-0.5 font-mono text-[9px]">⇧ Enter</kbd>
+                      {" newline"}
+                    </>
+                  )}
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    void handleSendMessage();
-                  }}
+                  onClick={() => { void handleSendMessage(); }}
                   disabled={!activeConversation || !input.trim() || isComposerLocked}
-                  className="flex items-center justify-center rounded-2xl bg-primary p-3 text-on-primary shadow-sm shadow-primary/20 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-2xl bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary shadow-sm shadow-primary/20 disabled:opacity-40"
                 >
-                  <SendHorizontal size={18} />
+                  <SendHorizontal size={13} />
+                  Send
                 </button>
               </div>
             </div>
