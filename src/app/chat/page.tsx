@@ -36,6 +36,7 @@ import {
   type ConversationDetails,
   type ConversationMessage,
   type ConversationSummary,
+  type TokenUsage,
 } from "@/lib/queries/conversations";
 import {
   linkGithubAccount,
@@ -408,7 +409,7 @@ function applyStreamEvent(
           : null,
         tokenUsage:
           data.tokenUsage && typeof data.tokenUsage === "object"
-            ? (data.tokenUsage as { inputTokens: number; outputTokens: number; totalTokens: number })
+            ? (data.tokenUsage as TokenUsage)
             : null,
       };
       return { ...conversation, messages: updatedMessages };
