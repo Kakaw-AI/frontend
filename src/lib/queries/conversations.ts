@@ -22,6 +22,12 @@ export type MessageArtifact = {
   createdAt: string;
 };
 
+export type TokenUsage = {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+};
+
 export type ConversationMessage = {
   id: string;
   role: MessageRole;
@@ -31,6 +37,8 @@ export type ConversationMessage = {
   createdAt: string;
   updatedAt: string;
   artifacts: MessageArtifact[];
+  tokenUsage?: TokenUsage | null;
+  suggestions?: string[] | null;
   steps?: Array<{ seq: number; text: string; done: boolean }>;
   stepsCollapsed?: boolean;
   stepsStartedAt?: number | null;
