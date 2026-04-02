@@ -814,7 +814,15 @@ function ArtifactView({ artifact }: { artifact: ConversationMessage["artifacts"]
   return null;
 }
 
-function MessageCard({ message }: { message: ConversationMessage }) {
+function MessageCard({
+  message,
+  isLastAssistantMessage,
+  onSuggestionClick,
+}: {
+  message: ConversationMessage;
+  isLastAssistantMessage: boolean;
+  onSuggestionClick: (text: string) => void;
+}) {
   const isUser = message.role === "user";
   const displayContent =
     message.role === "assistant"
@@ -848,6 +856,27 @@ function MessageCard({ message }: { message: ConversationMessage }) {
           <ArtifactView key={artifact.id} artifact={artifact} />
         ))}
       </div>
+      {!isUser && message.status === "COMPLETED" && message.tokenUsage ? (
+        <p className="mt-1.5 flex items-center gap-1 px-1 text-[11px] text-on-surface/35">
+          <span className="font-mono">↳</span>
+          {message.tokenUsage.totalTokens.toLocaleString()} tokens
+        </p>
+      ) : null}
+
+      {!isUser && isLastAssistantMessage && message.status === "COMPLETED" && message.suggestions?.length ? (
+        <div className="mt-2 flex flex-wrap gap-1.5 px-1">
+          {message.suggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => onSuggestionClick(suggestion)}
+              className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs text-primary/80 transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <p className="mt-2 px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
         {formatConversationTime(message.createdAt)}
       </p>
@@ -1307,9 +1336,28 @@ export default function ChatPage() {
                 </div>
 
                 <div className="space-y-5">
-                  {activeConversation.messages.map((message) => (
-                    <MessageCard key={message.id} message={message} />
-                  ))}
+                  {(() => {
+                    const lastAssistantIndex = [...activeConversation.messages]
+                      .map((m, i) => ({ m, i }))
+                      .filter(({ m }) => m.role === "assistant" && m.status === "COMPLETED")
+                      .at(-1)?.i ?? -1;
+
+                    return activeConversation.messages.map((message, index) => (
+                      <MessageCard
+                        key={message.id}
+                        message={message}
+                        isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
+                        onSuggestionClick={(text) => {
+                          setInput(text);
+                          if (textareaRef.current) {
+                            textareaRef.current.style.height = "auto";
+                            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+                            textareaRef.current.focus();
+                          }
+                        }}
+                      />
+                    ));
+                  })()}
 
                   {!activeConversation.messages.length ? (
                     <div className="rounded-3xl border border-dashed border-outline-variant/20 bg-surface-container-low px-6 py-12 text-center text-sm text-on-surface/60">
