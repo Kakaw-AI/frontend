@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { ChatConnectionPicker } from "@/components/chat/ChatConnectionPicker";
 import { MessageCard } from "@/components/chat/MessageCard";
-import { createSubmissionLock } from "@/components/chat/submission-lock";
 import {
   Select,
   SelectContent,
@@ -58,6 +57,24 @@ import {
   saveLlmConnectionMutationOptions,
   type SaveLlmConnectionInput,
 } from "@/lib/queries/llm-connections";
+
+function createSubmissionLock() {
+  let locked = false;
+
+  return {
+    tryAcquire() {
+      if (locked) {
+        return false;
+      }
+
+      locked = true;
+      return true;
+    },
+    release() {
+      locked = false;
+    },
+  };
+}
 
 export function ChatPageClient() {
   const router = useRouter();
@@ -375,7 +392,7 @@ export function ChatPageClient() {
     }
 
     if (!selectedSource?.canStartChat) {
-      setComposerError("The selected database is still syncing with the Python agent.");
+      setComposerError("The selected database is still indexing with the agent runtime.");
       return;
     }
 

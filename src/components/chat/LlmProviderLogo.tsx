@@ -35,6 +35,7 @@ export function LlmProviderLogo({
 }: LlmProviderLogoProps) {
   switch (provider) {
     case "openai":
+    case "custom-openai":
       return (
         <BaseLogo className={className} background="#101828">
           <Bot size={16} />

@@ -3,6 +3,7 @@ import { readApiErrorResponse } from "@/lib/api-error";
 
 export type LlmProvider =
   | "openai"
+  | "custom-openai"
   | "anthropic"
   | "openrouter"
   | "google"
@@ -62,6 +63,12 @@ export const LLM_PROVIDER_OPTIONS: Array<{
     label: "OpenAI",
     helper: "Bring your OpenAI API key and default model.",
     defaultModel: "gpt-4o",
+  },
+  {
+    value: "custom-openai",
+    label: "Custom OpenAI-Compatible",
+    helper: "Use any OpenAI-compatible endpoint with your own base URL and model.",
+    defaultModel: "gpt-4.1-mini",
   },
   {
     value: "anthropic",

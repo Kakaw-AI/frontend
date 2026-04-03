@@ -1,4 +1,4 @@
-import { PlotlyChartArtifact } from "@/components/chat/PlotlyChartArtifact";
+import { D3ChartArtifact } from "@/components/chat/D3ChartArtifact";
 import { SqlArtifactView } from "@/components/chat/SqlArtifactView";
 import { TableArtifact } from "@/components/chat/TableArtifact";
 import { normalizeApiErrorPayload } from "@/lib/api-error";
@@ -47,7 +47,6 @@ export function ArtifactView({
       chartType?: string;
       title?: string;
       spec?: Record<string, unknown>;
-      config?: Record<string, unknown>;
     };
 
     if (!payload.spec || typeof payload.spec !== "object") {
@@ -55,11 +54,10 @@ export function ArtifactView({
     }
 
     return (
-      <PlotlyChartArtifact
+      <D3ChartArtifact
         chartType={payload.chartType}
         title={payload.title}
         spec={payload.spec}
-        config={payload.config}
       />
     );
   }

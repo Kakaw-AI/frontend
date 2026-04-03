@@ -75,7 +75,7 @@ export function DatabaseSourcePicker({
               </h3>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-on-surface/65">
                 Start this conversation against one of your saved connections. Only
-                Vanna-ready sources can power a new chat.
+                indexed sources can power a new chat.
               </p>
             </div>
           </div>
@@ -197,8 +197,7 @@ export function DatabaseSourcePicker({
                             </p>
                             {!source.canStartChat && !source.lastError ? (
                               <p className="text-sm leading-relaxed text-on-surface/60">
-                                This source is still syncing its schema into the Python
-                                agent.
+                                This source is still indexing its schema and sample context.
                               </p>
                             ) : null}
                             {source.lastError ? (
@@ -219,7 +218,7 @@ export function DatabaseSourcePicker({
                               resyncMutation.mutate(source.id);
                             }}
                             className="inline-flex items-center gap-1.5 rounded-full border border-outline-variant/25 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-on-surface/60 transition-colors hover:border-primary/35 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                            title="Re-sync schema with the Python agent"
+                            title="Re-sync schema with the agent runtime"
                           >
                             <RefreshCw
                               size={11}

@@ -302,7 +302,10 @@ export function ChatConnectionPicker({
       displayName: displayName.trim() || undefined,
       defaultModel: defaultModel.trim(),
       apiKey: provider === "github-copilot" ? undefined : apiKey.trim(),
-      baseUrl: provider === "openai" && baseUrl.trim() ? baseUrl.trim() : undefined,
+      baseUrl:
+        (provider === "openai" || provider === "custom-openai") && baseUrl.trim()
+          ? baseUrl.trim()
+          : undefined,
     });
 
     setDisplayName("");
@@ -357,7 +360,7 @@ export function ChatConnectionPicker({
                 Choose your runtime stack
               </h3>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface/65">
-                Start each conversation with both a Vanna-ready data source and a
+                Start each conversation with both an indexed data source and a
                 validated LLM connection.
               </p>
             </div>
@@ -656,7 +659,7 @@ export function ChatConnectionPicker({
                             />
                           </label>
 
-                          {provider === "openai" ? (
+                          {provider === "openai" || provider === "custom-openai" ? (
                             <label className="space-y-2 text-sm">
                               <span className="font-medium text-on-surface">Base URL</span>
                               <input
@@ -666,11 +669,15 @@ export function ChatConnectionPicker({
                                 autoCorrect="off"
                                 autoCapitalize="none"
                                 spellCheck={false}
-                                placeholder="https://api.openai.com/v1"
+                                placeholder={
+                                  provider === "custom-openai"
+                                    ? "https://your-endpoint.example/v1"
+                                    : "https://api.openai.com/v1"
+                                }
                                 className="w-full rounded-2xl border border-outline-variant/25 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary/40"
                               />
                               <p className="text-xs text-on-surface/50">
-                                Change for Azure OpenAI, self-hosted, or other compatible services.
+                                Use this for self-hosted or other OpenAI-compatible services.
                               </p>
                             </label>
                           ) : null}
