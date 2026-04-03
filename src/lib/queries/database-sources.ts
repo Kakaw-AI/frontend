@@ -11,6 +11,8 @@ export type DatabaseConnectionResponse = {
   sqliteOriginalFilename: string | null;
   lastError: string | null;
   lastTestedAt: string | null;
+  lastSyncedAt: string | null;
+  syncRequestedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -23,6 +25,8 @@ export type DatabaseSource = {
   canStartChat: boolean;
   createdAt: string;
   lastTestedAt: string | null;
+  lastSyncedAt: string | null;
+  syncRequestedAt: string | null;
   lastError: string | null;
 };
 
@@ -57,6 +61,8 @@ export function toDatabaseSource(source: DatabaseConnectionResponse): DatabaseSo
     canStartChat: source.status === "READY",
     createdAt: source.createdAt,
     lastTestedAt: source.lastTestedAt,
+    lastSyncedAt: source.lastSyncedAt,
+    syncRequestedAt: source.syncRequestedAt,
     lastError: source.lastError,
   };
 }

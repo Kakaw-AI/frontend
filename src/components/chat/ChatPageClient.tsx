@@ -202,6 +202,7 @@ export function ChatPageClient() {
       : null;
   const isComposerLocked =
     isSending ||
+    updateConversationRuntimeMutation.isPending ||
     hasStreamingAssistantMessage ||
     Boolean(activeConversation && !isConversationRuntimeAvailable);
   const visibleComposerError = runtimeWarning ?? composerError;
@@ -742,6 +743,8 @@ export function ChatPageClient() {
                 <p className="text-[10px] text-on-surface/35">
                   {isSending || hasStreamingAssistantMessage ? (
                     "Responding…"
+                  ) : updateConversationRuntimeMutation.isPending ? (
+                    "Updating runtime…"
                   ) : activeConversation && !isConversationRuntimeAvailable ? (
                     "Read-only history"
                   ) : (

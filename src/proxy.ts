@@ -36,6 +36,9 @@ async function getOnboardingState(request: NextRequest) {
           hasDatabaseSource?: boolean;
           connectionCount?: number;
           isFirstConnection?: boolean;
+          blockingSync?: {
+            status?: "PENDING" | "SYNCING" | "READY" | "FAILED";
+          } | null;
         }
       | null
     >;
@@ -48,13 +51,17 @@ export async function proxy(request: NextRequest) {
   const session = await getSession(request);
   const isLoggedIn = Boolean(session?.session);
   const isLoginPage = pathname === "/login";
-  const isAppPage = pathname === "/dashboard" || pathname === "/chat";
+  const isAppPage = pathname.startsWith("/dashboard") || pathname.startsWith("/chat");
+  const isSyncPage = pathname === "/onboarding/sync";
 
   if (isLoginPage && isLoggedIn) {
     const onboardingState = await getOnboardingState(request);
     const destination = onboardingState?.hasDatabaseSource
       ? "/dashboard"
-      : "/onboarding/database";
+      : onboardingState?.blockingSync?.status === "SYNCING" ||
+          onboardingState?.blockingSync?.status === "FAILED"
+        ? "/onboarding/sync"
+        : "/onboarding/database";
     return NextResponse.redirect(new URL(destination, request.url));
   }
 
@@ -65,9 +72,24 @@ export async function proxy(request: NextRequest) {
   if (isLoggedIn) {
     const onboardingState = await getOnboardingState(request);
     const hasDatabaseSource = Boolean(onboardingState?.hasDatabaseSource);
+    const blockingSyncStatus = onboardingState?.blockingSync?.status;
+
+    if (
+      !hasDatabaseSource &&
+      blockingSyncStatus === "SYNCING" &&
+      pathname !== "/onboarding/sync"
+    ) {
+      return NextResponse.redirect(new URL("/onboarding/sync", request.url));
+    }
 
     if (!hasDatabaseSource && isAppPage) {
-      return NextResponse.redirect(new URL("/onboarding/database", request.url));
+      const destination =
+        blockingSyncStatus === "FAILED" ? "/onboarding/sync" : "/onboarding/database";
+      return NextResponse.redirect(new URL(destination, request.url));
+    }
+
+    if (hasDatabaseSource && isSyncPage) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
@@ -75,5 +97,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/chat", "/dashboard", "/onboarding/:path*"],
+  matcher: ["/login", "/chat/:path*", "/dashboard/:path*", "/onboarding/:path*"],
 };

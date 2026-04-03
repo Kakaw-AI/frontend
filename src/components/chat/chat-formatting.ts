@@ -4,6 +4,40 @@ export type MarkdownBlock =
   | { type: "ordered-list"; items: string[] }
   | { type: "paragraph"; text: string };
 
+const AGGREGATE_LABEL_PATTERNS: Array<{
+  pattern: RegExp;
+  format: (field: string) => string;
+}> = [
+  {
+    pattern: /^count\s*\(\s*distinct\s+([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `${humanizeAggregateField(field)} Count`,
+  },
+  {
+    pattern: /^count\s*\(\s*\*\s*\)$/i,
+    format: () => "Count",
+  },
+  {
+    pattern: /^count\s*\(\s*([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `${humanizeAggregateField(field)} Count`,
+  },
+  {
+    pattern: /^sum\s*\(\s*([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `Total ${humanizeIdentifier(field)}`,
+  },
+  {
+    pattern: /^avg\s*\(\s*([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `Average ${humanizeIdentifier(field)}`,
+  },
+  {
+    pattern: /^min\s*\(\s*([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `Minimum ${humanizeIdentifier(field)}`,
+  },
+  {
+    pattern: /^max\s*\(\s*([a-z0-9_]+)\s*\)$/i,
+    format: (field) => `Maximum ${humanizeIdentifier(field)}`,
+  },
+];
+
 const STREAM_STATUS_PATTERNS = [
   /Processing your request(?:\.{3}|…)/gi,
   /Response complete/gi,
@@ -41,6 +75,31 @@ export function formatConversationTime(value: string | null) {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+}
+
+function humanizeIdentifier(value: string) {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function humanizeAggregateField(value: string) {
+  return humanizeIdentifier(value).replace(/\s+Id$/i, "");
+}
+
+export function humanizeDataLabel(value: string) {
+  const normalized = value.trim();
+  for (const matcher of AGGREGATE_LABEL_PATTERNS) {
+    const matched = normalized.match(matcher.pattern);
+    if (matched) {
+      return matcher.format(matched[1] ?? "");
+    }
+  }
+
+  return humanizeIdentifier(normalized);
 }
 
 export function sanitizeAssistantMessageContent(content: string) {

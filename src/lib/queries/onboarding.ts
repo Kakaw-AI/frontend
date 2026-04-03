@@ -7,6 +7,18 @@ export type OnboardingState = {
   connectionCount?: number;
   hasLlmConnection?: boolean;
   llmConnectionCount?: number;
+  blockingSync?: {
+    id: string;
+    label: string;
+    provider: "postgresql" | "sqlite";
+    status: "PENDING" | "SYNCING" | "READY" | "FAILED";
+    lastError: string | null;
+    lastTestedAt: string | null;
+    lastSyncedAt: string | null;
+    syncRequestedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type SaveDatabaseSourceInput =
@@ -66,7 +78,18 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
     throw new Error(error.message);
   }
 
-  return response;
+  return (await response.json()) as {
+    id: string;
+    provider: "postgresql" | "sqlite";
+    status: "PENDING" | "SYNCING" | "READY" | "FAILED";
+    sqliteOriginalFilename: string | null;
+    lastError: string | null;
+    lastTestedAt: string | null;
+    lastSyncedAt: string | null;
+    syncRequestedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export function onboardingStateQueryOptions() {

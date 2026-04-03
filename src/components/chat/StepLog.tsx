@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
 import type { ConversationMessage } from "@/lib/queries/conversations";
+import { buildIdleStepMessage } from "@/components/chat/step-log-state";
 
 export function StepLog({ message }: { message: ConversationMessage }) {
   const steps = message.steps ?? [];
@@ -47,9 +48,9 @@ export function StepLog({ message }: { message: ConversationMessage }) {
 
   if (steps.length === 0) {
     return (
-      <div className="flex items-center gap-2 text-sm text-on-surface/55">
+        <div className="flex items-center gap-2 text-sm text-on-surface/55">
         <LoaderCircle size={16} className="animate-spin" />
-        <span>Processing...</span>
+        <span>{buildIdleStepMessage()}</span>
       </div>
     );
   }

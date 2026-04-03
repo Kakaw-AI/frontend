@@ -5,6 +5,7 @@ import {
   buildCsvContent,
   downloadTextArtifact,
   formatArtifactCellValue,
+  humanizeDataLabel,
   isNumericColumn,
   sanitizeDownloadFilename,
 } from "@/components/chat/chat-formatting";
@@ -100,7 +101,7 @@ export function TableArtifact({
           className="w-max min-w-full border-separate border-spacing-0 text-left"
           style={{ fontSize: "12.5px" }}
         >
-          <thead className="sticky top-0 z-10 bg-surface-container-low shadow-[0_1px_0_rgba(0,0,0,0.06)]">
+          <thead className="sticky top-0 z-10 bg-surface shadow-[0_1px_0_rgba(0,0,0,0.08)]">
             <tr>
               {columns.map((column) => {
                 const isActive = sortColumn === column;
@@ -112,7 +113,7 @@ export function TableArtifact({
                     className={`cursor-pointer select-none whitespace-nowrap border-b border-outline-variant/10 px-4 py-3 font-semibold text-on-surface/55 transition-colors hover:text-on-surface/80 ${numericColumns.has(column) ? "text-right" : "text-left"}`}
                   >
                     <span className="inline-flex items-center gap-1">
-                      {column}
+                      {humanizeDataLabel(column)}
                       <span
                         className="text-[10px]"
                         style={{ color: isActive ? "#705731" : undefined }}

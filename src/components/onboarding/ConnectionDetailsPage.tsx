@@ -56,11 +56,34 @@ export function ConnectionDetailsPage({
   const isSqlite = provider === "sqlite";
   const connectDatabase = useMutation({
     ...saveDatabaseSourceMutationOptions(),
-    onSuccess: () => {
+    onSuccess: (source) => {
       queryClient.setQueryData(onboardingStateQueryKey, {
         isFirstConnection: false,
+        hasDatabaseSource: source.status === "READY",
+        blockingSync:
+          source.status === "READY"
+            ? null
+            : {
+                id: source.id,
+                label:
+                  source.provider === "sqlite"
+                    ? source.sqliteOriginalFilename?.trim() || "SQLite upload"
+                    : "PostgreSQL connection",
+                provider: source.provider,
+                status: source.status,
+                lastError: source.lastError,
+                lastTestedAt: source.lastTestedAt,
+                lastSyncedAt: source.lastSyncedAt,
+                syncRequestedAt: source.syncRequestedAt,
+                createdAt: source.createdAt,
+                updatedAt: source.updatedAt,
+              },
       });
-      router.replace("/dashboard");
+      if (source.status === "READY") {
+        router.replace("/dashboard");
+      } else {
+        router.replace(`/onboarding/sync?sourceId=${encodeURIComponent(source.id)}`);
+      }
       router.refresh();
     },
   });

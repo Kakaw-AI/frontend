@@ -342,6 +342,8 @@ export function describeConversationRuntime(conversation: ConversationSummary) {
         : null,
     lastError: conversation.databaseSource.lastError,
     lastTestedAt: conversation.databaseSource.lastTestedAt,
+    lastSyncedAt: conversation.databaseSource.lastSyncedAt,
+    syncRequestedAt: conversation.databaseSource.syncRequestedAt,
     createdAt: conversation.databaseSource.createdAt,
     updatedAt: conversation.updatedAt,
   });

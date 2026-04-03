@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import * as d3 from "d3";
+import { humanizeDataLabel } from "@/components/chat/chat-formatting";
 
 type D3ChartArtifactProps = {
   chartType?: string;
@@ -63,7 +64,16 @@ export function D3ChartArtifact({
   const kind = asText(spec.kind) || chartType || "bar";
   const xField = asText(spec.xField);
   const yField = asText(spec.yField);
-  const displayTitle = title || asText(spec.title) || `${kind} view`;
+  const xLabel = asText(spec.xLabel) || humanizeDataLabel(xField);
+  const yLabel = asText(spec.yLabel) || humanizeDataLabel(yField);
+  const displayTitle =
+    title ||
+    asText(spec.title) ||
+    (kind === "histogram"
+      ? `Distribution of ${xLabel}`
+      : xField && yField
+        ? `${yLabel} by ${xLabel}`
+        : "Visualization");
 
   useEffect(() => {
     const container = containerRef.current;
@@ -89,6 +99,31 @@ export function D3ChartArtifact({
         const g = svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const appendAxisLabels = () => {
+          if (kind !== "pie" && xField) {
+            svg
+              .append("text")
+              .attr("x", margin.left + innerWidth / 2)
+              .attr("y", height - 10)
+              .attr("text-anchor", "middle")
+              .attr("font-size", 12)
+              .attr("font-weight", 600)
+              .attr("fill", "currentColor")
+              .text(xLabel);
+          }
+
+          if (kind !== "pie" && yField) {
+            svg
+              .append("text")
+              .attr("transform", `translate(18, ${margin.top + innerHeight / 2}) rotate(-90)`)
+              .attr("text-anchor", "middle")
+              .attr("font-size", 12)
+              .attr("font-weight", 600)
+              .attr("fill", "currentColor")
+              .text(kind === "histogram" ? "Count" : yLabel);
+          }
+        };
 
         if (kind === "pie") {
           const pieData = rows
@@ -164,6 +199,7 @@ export function D3ChartArtifact({
             .attr("height", (b) => innerHeight - yScale(b.length))
             .attr("fill", COLOR_PALETTE[0])
             .attr("fill-opacity", 0.85);
+          appendAxisLabels();
           return;
         }
 
@@ -197,6 +233,7 @@ export function D3ChartArtifact({
             .attr("r", 4)
             .attr("fill", COLOR_PALETTE[0])
             .attr("fill-opacity", 0.8);
+          appendAxisLabels();
           return;
         }
 
@@ -243,6 +280,7 @@ export function D3ChartArtifact({
             .attr("cy", (row) => yScale(asNumber(row[yField]) ?? 0))
             .attr("r", 4)
             .attr("fill", COLOR_PALETTE[1]);
+          appendAxisLabels();
           return;
         }
 
@@ -255,6 +293,7 @@ export function D3ChartArtifact({
           .attr("height", (row) => innerHeight - yScale(asNumber(row[yField]) ?? 0))
           .attr("rx", 10)
           .attr("fill", (_row, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
+        appendAxisLabels();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Chart rendering failed.";
         setDrawError(message);

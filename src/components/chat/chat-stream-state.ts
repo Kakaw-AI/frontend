@@ -4,6 +4,7 @@ import type {
   TokenUsage,
 } from "@/lib/queries/conversations";
 import { sanitizeAssistantMessageContent } from "@/components/chat/chat-formatting";
+import { shouldCollapseCompletedSteps } from "@/components/chat/step-log-state";
 import { normalizeApiErrorPayload } from "@/lib/api-error";
 
 export function createOptimisticUserMessage(content: string): ConversationMessage {
@@ -168,7 +169,7 @@ export function applyStreamEvent(
         content,
         updatedAt: new Date().toISOString(),
         steps: prevSteps.map((s) => ({ ...s, done: true })),
-        stepsCollapsed: true,
+        stepsCollapsed: shouldCollapseCompletedSteps("COMPLETED"),
         stepsElapsedMs: target.stepsStartedAt
           ? Date.now() - target.stepsStartedAt
           : null,
@@ -191,7 +192,7 @@ export function applyStreamEvent(
         error,
         updatedAt: new Date().toISOString(),
         steps: prevSteps.map((s) => ({ ...s, done: true })),
-        stepsCollapsed: true,
+        stepsCollapsed: shouldCollapseCompletedSteps("FAILED"),
         stepsElapsedMs: target.stepsStartedAt
           ? Date.now() - target.stepsStartedAt
           : null,
