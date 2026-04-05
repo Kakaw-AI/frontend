@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2, LoaderCircle } from "lucide-react";
-import type { ConversationMessage } from "@/lib/queries/conversations";
 import { buildIdleStepMessage } from "@/components/chat/step-log-state";
+import type { ConversationMessage } from "@/lib/queries/conversations";
+import { CheckCircle2, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 
 export function StepLog({ message }: { message: ConversationMessage }) {
   const steps = message.steps ?? [];
@@ -20,7 +20,7 @@ export function StepLog({ message }: { message: ConversationMessage }) {
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-on-surface/40 transition hover:text-on-surface/65"
+          className="flex items-center gap-1.5 text-xs text-on-surface/40 transition hover:text-on-surface/65 "
         >
           <CheckCircle2 size={12} className="text-green-500" />
           <span>
@@ -34,7 +34,7 @@ export function StepLog({ message }: { message: ConversationMessage }) {
             {steps.map((step) => (
               <div
                 key={step.seq}
-                className="flex items-center gap-2 text-xs text-on-surface/35"
+                className="flex items-center gap-2 text-xs text-on-surface/35 "
               >
                 <CheckCircle2 size={11} className="shrink-0 text-green-500" />
                 <span>{step.text}</span>
@@ -58,13 +58,13 @@ export function StepLog({ message }: { message: ConversationMessage }) {
   return (
     <div className="space-y-1">
       {steps.map((step) => (
-        <div key={step.seq} className="flex items-center gap-2 text-sm text-on-surface/55">
+        <div key={step.seq} className="flex items-center gap-2 text-sm text-on-surface/55 wrap-break-word">
           {step.done ? (
             <CheckCircle2 size={14} className="shrink-0 text-green-500" />
           ) : (
             <LoaderCircle size={14} className="shrink-0 animate-spin" />
           )}
-          <span className={step.done ? "text-on-surface/35" : ""}>{step.text}</span>
+          <span className={step.done ? "text-on-surface/35 " : ""}>{step.text}</span>
         </div>
       ))}
     </div>

@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
+import { LlmProviderLogo } from "@/components/chat/LlmProviderLogo";
+import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
+import type { DatabaseSource } from "@/lib/queries/database-sources";
+import {
+  LLM_PROVIDER_OPTIONS,
+  type LlmConnection,
+  type LlmProvider,
+  type SaveLlmConnectionInput,
+} from "@/lib/queries/llm-connections";
 import {
   AlertCircle,
   ChevronDown,
@@ -15,16 +23,8 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
-import { LlmProviderLogo } from "@/components/chat/LlmProviderLogo";
-import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
-import type { DatabaseSource } from "@/lib/queries/database-sources";
-import {
-  LLM_PROVIDER_OPTIONS,
-  type LlmConnection,
-  type LlmProvider,
-  type SaveLlmConnectionInput,
-} from "@/lib/queries/llm-connections";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type ConnectionActionKind = "activate" | "deactivate" | "delete";
 

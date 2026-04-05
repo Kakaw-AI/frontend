@@ -35,6 +35,14 @@ export type ConversationMessage = {
   status: MessageStatus;
   content: string;
   error: string | null;
+  analyticsOutcome?:
+    | "failed"
+    | "no_rows"
+    | "narrowed"
+    | "chart_rendered"
+    | "completed_text"
+    | null;
+  visualizationOutcome?: Record<string, unknown> | null;
   createdAt: string;
   updatedAt: string;
   artifacts: MessageArtifact[];

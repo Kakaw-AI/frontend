@@ -7,6 +7,18 @@ import { sanitizeAssistantMessageContent } from "@/components/chat/chat-formatti
 import { shouldCollapseCompletedSteps } from "@/components/chat/step-log-state";
 import { normalizeApiErrorPayload } from "@/lib/api-error";
 
+function readAnalyticsOutcome(
+  value: unknown,
+): ConversationMessage["analyticsOutcome"] {
+  return value === "failed" ||
+    value === "no_rows" ||
+    value === "narrowed" ||
+    value === "chart_rendered" ||
+    value === "completed_text"
+    ? value
+    : null;
+}
+
 export function createOptimisticUserMessage(content: string): ConversationMessage {
   const now = new Date().toISOString();
 
@@ -167,12 +179,17 @@ export function applyStreamEvent(
         ...target,
         status: "COMPLETED",
         content,
+        analyticsOutcome: readAnalyticsOutcome(data.analyticsOutcome),
         updatedAt: new Date().toISOString(),
         steps: prevSteps.map((s) => ({ ...s, done: true })),
         stepsCollapsed: shouldCollapseCompletedSteps("COMPLETED"),
         stepsElapsedMs: target.stepsStartedAt
           ? Date.now() - target.stepsStartedAt
           : null,
+        visualizationOutcome:
+          data.visualizationOutcome && typeof data.visualizationOutcome === "object"
+            ? (data.visualizationOutcome as Record<string, unknown>)
+            : null,
         tokenUsage:
           data.tokenUsage && typeof data.tokenUsage === "object"
             ? (data.tokenUsage as TokenUsage)
@@ -190,6 +207,7 @@ export function applyStreamEvent(
         ...target,
         status: "FAILED",
         error,
+        analyticsOutcome: "failed",
         updatedAt: new Date().toISOString(),
         steps: prevSteps.map((s) => ({ ...s, done: true })),
         stepsCollapsed: shouldCollapseCompletedSteps("FAILED"),

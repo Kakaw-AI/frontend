@@ -3,7 +3,8 @@ import { MarkdownMessage } from "@/components/chat/MarkdownMessage";
 import { StepLog } from "@/components/chat/StepLog";
 import {
   formatConversationTime,
-  sanitizeAssistantMessageContent,
+  getVisibleArtifacts,
+  getVisibleAssistantContent,
 } from "@/components/chat/chat-formatting";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 
@@ -19,8 +20,9 @@ export function MessageCard({
   const isUser = message.role === "user";
   const displayContent =
     message.role === "assistant"
-      ? sanitizeAssistantMessageContent(message.content)
+      ? getVisibleAssistantContent(message)
       : message.content;
+  const visibleArtifacts = getVisibleArtifacts(message);
 
   return (
     <div className={isUser ? "ml-auto max-w-3xl" : "mr-auto max-w-4xl"}>
@@ -34,14 +36,14 @@ export function MessageCard({
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-60">
           {isUser ? "You" : "Kakaw"}
         </p>
-        {message.steps !== undefined ? <StepLog message={message} /> : null}
+        {message.steps !== undefined &&  !message.error ? <StepLog message={message} /> : null}
         {displayContent ? <MarkdownMessage content={displayContent} /> : null}
         {message.error ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900 wrap-break-word">
             {message.error}
           </div>
         ) : null}
-        {message.artifacts.map((artifact) => (
+        {visibleArtifacts.map((artifact) => (
           <ArtifactView key={artifact.id} artifact={artifact} />
         ))}
       </div>

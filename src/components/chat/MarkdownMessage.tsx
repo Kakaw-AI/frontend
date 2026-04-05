@@ -68,6 +68,62 @@ export function MarkdownMessage({ content }: { content: string }) {
           );
         }
 
+        if (block.type === "code") {
+          return (
+            <div
+              key={`block-${blockIndex}`}
+              className="overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3"
+            >
+              {block.language ? (
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface/45">
+                  {block.language}
+                </p>
+              ) : null}
+              <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-6 text-on-surface/80">
+                {block.code}
+              </pre>
+            </div>
+          );
+        }
+
+        if (block.type === "table") {
+          return (
+            <div
+              key={`block-${blockIndex}`}
+              className="overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest"
+            >
+              <table className="min-w-full border-collapse text-left text-sm">
+                <thead className="bg-surface-container-high text-on-surface/80">
+                  <tr>
+                    {block.headers.map((header, headerIndex) => (
+                      <th
+                        key={`block-${blockIndex}-header-${headerIndex}`}
+                        className="border-b border-outline-variant/15 px-4 py-2.5 font-semibold"
+                      >
+                        {renderInlineMarkdown(header, `block-${blockIndex}-header-${headerIndex}`)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows.map((row, rowIndex) => (
+                    <tr key={`block-${blockIndex}-row-${rowIndex}`} className="border-b border-outline-variant/10 last:border-b-0">
+                      {row.map((cell, cellIndex) => (
+                        <td
+                          key={`block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`}
+                          className="px-4 py-2.5 align-top"
+                        >
+                          {renderInlineMarkdown(cell, `block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+
         return (
           <p key={`block-${blockIndex}`} className="whitespace-pre-wrap">
             {renderInlineMarkdown(block.text, `block-${blockIndex}`)}

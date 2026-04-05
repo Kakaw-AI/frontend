@@ -1,19 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  AlertTriangle,
-  Bird,
-  Database,
-  LogOut,
-  Plus,
-  Search,
-  SendHorizontal,
-  Sparkles,
-} from "lucide-react";
+  formatConversationTime,
+  formatConversationTitle,
+} from "@/components/chat/chat-formatting";
+import {
+  applyStreamEvent,
+  createOptimisticUserMessage,
+} from "@/components/chat/chat-stream-state";
 import { ChatConnectionPicker } from "@/components/chat/ChatConnectionPicker";
 import { MessageCard } from "@/components/chat/MessageCard";
 import {
@@ -23,14 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  formatConversationTime,
-  formatConversationTitle,
-} from "@/components/chat/chat-formatting";
-import {
-  applyStreamEvent,
-  createOptimisticUserMessage,
-} from "@/components/chat/chat-stream-state";
 import { authClient } from "@/lib/auth-client";
 import {
   chatOptionsQueryKey,
@@ -57,31 +43,27 @@ import {
   saveLlmConnectionMutationOptions,
   type SaveLlmConnectionInput,
 } from "@/lib/queries/llm-connections";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  AlertTriangle,
+  Bird,
+  Database,
+  LogOut,
+  Plus,
+  Search,
+  SendHorizontal,
+  Sparkles,
+} from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-function createSubmissionLock() {
-  let locked = false;
-
-  return {
-    tryAcquire() {
-      if (locked) {
-        return false;
-      }
-
-      locked = true;
-      return true;
-    },
-    release() {
-      locked = false;
-    },
-  };
-}
 
 export function ChatPageClient() {
   const router = useRouter();
   const { conversationId: activeConversationId = null } = useParams<{ conversationId?: string }>();
   const queryClient = useQueryClient();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const createConversationLockRef = useRef(createSubmissionLock());
   const [input, setInput] = useState("");
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isConnectionPickerOpen, setIsConnectionPickerOpen] = useState(false);
@@ -253,23 +235,6 @@ export function ChatPageClient() {
     void chatOptionsQuery.refetch();
   }
 
-  async function handleCreateConversation(selection: {
-    source: { id: string };
-    llmConnection: { id: string };
-  }) {
-    if (!createConversationLockRef.current.tryAcquire()) {
-      return;
-    }
-
-    try {
-      await createConversationMutation.mutateAsync({
-        databaseSourceId: selection.source.id,
-        llmConnectionId: selection.llmConnection.id,
-      });
-    } finally {
-      createConversationLockRef.current.release();
-    }
-  }
 
   async function handleCreateLlmConnection(input: SaveLlmConnectionInput) {
     setGithubLinkError(null);
@@ -313,26 +278,6 @@ export function ChatPageClient() {
     await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
   }
 
-  async function handleChangeConversationModel(value: string | null) {
-    if (!activeConversation?.llmConnectionId) {
-      return;
-    }
-
-    setComposerError(null);
-    const updatedConversation = await updateConversationRuntimeMutation.mutateAsync({
-      conversationId: activeConversation.id,
-      input: {
-        llmConnectionId: activeConversation.llmConnectionId,
-        llmModelOverride: value,
-      },
-    });
-
-    queryClient.setQueryData<ConversationDetails | undefined>(
-      conversationDetailsQueryKey(activeConversation.id),
-      updatedConversation,
-    );
-    await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
-  }
 
   async function handleLinkGithub() {
     setGithubLinkError(null);
@@ -494,7 +439,7 @@ export function ChatPageClient() {
         onDeactivateLlmConnection={handleDeactivateLlmConnection}
         onDeleteLlmConnection={handleDeleteLlmConnection}
         onConfirmSelection={(selection) => {
-          void handleCreateConversation(selection);
+         console.log("Selected source and connection:", selection);
         }}
       />
 

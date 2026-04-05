@@ -2,7 +2,10 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import * as d3 from "d3";
-import { humanizeDataLabel } from "@/components/chat/chat-formatting";
+import {
+  buildBarChartRenderPlan,
+  humanizeDataLabel,
+} from "@/components/chat/chat-formatting";
 
 type D3ChartArtifactProps = {
   chartType?: string;
@@ -64,8 +67,21 @@ export function D3ChartArtifact({
   const kind = asText(spec.kind) || chartType || "bar";
   const xField = asText(spec.xField);
   const yField = asText(spec.yField);
+  const seriesField = asText(spec.seriesField) || null;
+  const stacked = Boolean(spec.stacked);
+  const legendLabel = asText(spec.legendLabel) || (seriesField ? humanizeDataLabel(seriesField) : "");
   const xLabel = asText(spec.xLabel) || humanizeDataLabel(xField);
   const yLabel = asText(spec.yLabel) || humanizeDataLabel(yField);
+  const barPlan =
+    kind === "bar" && xField && yField
+      ? buildBarChartRenderPlan({
+          rows,
+          xField,
+          yField,
+          seriesField,
+          stacked,
+        })
+      : null;
   const displayTitle =
     title ||
     asText(spec.title) ||
@@ -237,16 +253,33 @@ export function D3ChartArtifact({
           return;
         }
 
-        const categories = rows.map((row) => formatCell(row[xField]));
-        const values = rows.map((row) => asNumber(row[yField]) ?? 0);
+        const barRows = barPlan?.rows ?? rows;
+        const categories = barPlan?.categories ?? barRows.map((row) => formatCell(row[xField]));
+        const hasSeries = Boolean(barPlan?.seriesField);
         const xScale = d3
           .scaleBand()
           .domain(categories)
           .range([0, innerWidth])
           .padding(0.2);
+
+        const colorScale = d3
+          .scaleOrdinal<string, string>()
+          .domain(barPlan?.series ?? [])
+          .range(COLOR_PALETTE);
+
+        const yMax = hasSeries
+          ? (barPlan?.kind === "stacked"
+              ? d3.max(barRows, (row) =>
+                  d3.sum(barPlan?.series ?? [], (seriesName) => asNumber(row[seriesName]) ?? 0),
+                ) ?? 0
+              : d3.max(barRows, (row) =>
+                  d3.max(barPlan?.series ?? [], (seriesName) => asNumber(row[seriesName]) ?? 0) ?? 0,
+                ) ?? 0)
+          : d3.max(barRows, (row) => asNumber(row[yField]) ?? 0) ?? 0;
+
         const yScale = d3
           .scaleLinear()
-          .domain([0, d3.max(values) ?? 0])
+          .domain([0, yMax])
           .nice()
           .range([innerHeight, 0]);
 
@@ -284,15 +317,64 @@ export function D3ChartArtifact({
           return;
         }
 
-        g.selectAll("rect")
-          .data(rows)
-          .join("rect")
-          .attr("x", (row) => xScale(formatCell(row[xField])) ?? 0)
-          .attr("y", (row) => yScale(asNumber(row[yField]) ?? 0))
-          .attr("width", xScale.bandwidth())
-          .attr("height", (row) => innerHeight - yScale(asNumber(row[yField]) ?? 0))
-          .attr("rx", 10)
-          .attr("fill", (_row, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
+        if (hasSeries && barPlan?.seriesField) {
+          const seriesScale = d3
+            .scaleBand<string>()
+            .domain(barPlan.series)
+            .range([0, xScale.bandwidth()])
+            .padding(barPlan.kind === "stacked" ? 0 : 0.12);
+
+          if (barPlan.kind === "stacked") {
+            const stack = d3
+              .stack<Record<string, unknown>>()
+              .keys(barPlan.series)
+              .value((row, key) => asNumber(row[key]) ?? 0);
+            const stackedSeries = stack(barRows);
+
+            g.selectAll("g.stack-layer")
+              .data(stackedSeries)
+              .join("g")
+              .attr("class", "stack-layer")
+              .attr("fill", (d) => colorScale(d.key))
+              .selectAll("rect")
+              .data((layer) => layer)
+              .join("rect")
+              .attr("x", (d) => xScale(formatCell(d.data[xField])) ?? 0)
+              .attr("y", (d) => yScale(d[1]))
+              .attr("width", xScale.bandwidth())
+              .attr("height", (d) => Math.max(0, yScale(d[0]) - yScale(d[1])))
+              .attr("rx", 8);
+          } else {
+            const groupedSeries = barRows.flatMap((row) =>
+              barPlan.series.map((seriesName) => ({
+                category: formatCell(row[xField]),
+                series: seriesName,
+                value: asNumber(row[seriesName]) ?? 0,
+              })),
+            );
+
+            g.selectAll("rect.grouped-bar")
+              .data(groupedSeries)
+              .join("rect")
+              .attr("class", "grouped-bar")
+              .attr("x", (d) => (xScale(d.category) ?? 0) + (seriesScale(d.series) ?? 0))
+              .attr("y", (d) => yScale(d.value))
+              .attr("width", seriesScale.bandwidth())
+              .attr("height", (d) => Math.max(0, innerHeight - yScale(d.value)))
+              .attr("rx", 8)
+              .attr("fill", (d) => colorScale(d.series));
+          }
+        } else {
+          g.selectAll("rect")
+            .data(barRows)
+            .join("rect")
+            .attr("x", (row) => xScale(formatCell(row[xField])) ?? 0)
+            .attr("y", (row) => yScale(asNumber(row[yField]) ?? 0))
+            .attr("width", xScale.bandwidth())
+            .attr("height", (row) => innerHeight - yScale(asNumber(row[yField]) ?? 0))
+            .attr("rx", 10)
+            .attr("fill", (_row, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
+        }
         appendAxisLabels();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Chart rendering failed.";
@@ -304,7 +386,7 @@ export function D3ChartArtifact({
     const observer = new ResizeObserver(draw);
     observer.observe(container);
     return () => observer.disconnect();
-  }, [chartType, kind, xField, yField, rows, spec]);
+  }, [chartType, kind, xField, yField, rows, seriesField, stacked, spec]);
 
   function downloadSVG() {
     const svgElement = svgRef.current;
@@ -371,21 +453,49 @@ export function D3ChartArtifact({
       </div>
 
       {rows.length > 0 && (
-        <div className="flex items-center gap-2 border-t border-outline-variant/10 px-4 py-2">
-          <button
-            type="button"
-            onClick={downloadSVG}
-            className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
-          >
-            Download SVG
-          </button>
-          <button
-            type="button"
-            onClick={downloadCSV}
-            className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
-          >
-            Download CSV
-          </button>
+        <div className="border-t border-outline-variant/10 px-4 py-2">
+          {barPlan?.notice ? (
+            <p className="mb-2 text-[11px] text-on-surface/55">{barPlan.notice}</p>
+          ) : null}
+          {barPlan?.seriesField ? (
+            <div className="mb-2">
+              {legendLabel ? (
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-on-surface/55">
+                  {legendLabel}
+                </p>
+              ) : null}
+              <div className="flex flex-wrap items-center gap-2">
+                {barPlan.series.map((seriesName, index) => (
+                  <div
+                    key={seriesName}
+                    className="flex items-center gap-1.5 text-[11px] text-on-surface/70"
+                  >
+                    <span
+                      className="inline-block h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: COLOR_PALETTE[index % COLOR_PALETTE.length] }}
+                    />
+                    <span>{seriesName}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={downloadSVG}
+              className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
+            >
+              Download SVG
+            </button>
+            <button
+              type="button"
+              onClick={downloadCSV}
+              className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
+            >
+              Download CSV
+            </button>
+          </div>
         </div>
       )}
     </div>
