@@ -32,17 +32,6 @@ export function HowItWorks() {
             <br />
             Insight in 4 Steps
           </h2>
-          <div className="space-y-4 max-w-sm">
-            <div className="p-6 insight-accent bg-surface-container-lowest">
-              <p className="font-headline italic text-xl">
-                &ldquo;It&rsquo;s like having a senior data analyst sitting right next to
-                you at the desk.&rdquo;
-              </p>
-              <span className="block mt-4 font-label text-[10px] uppercase tracking-widest font-bold opacity-60">
-                — Alex Rivers, Product Head
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Steps */}
