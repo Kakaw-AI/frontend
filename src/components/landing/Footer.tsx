@@ -1,10 +1,16 @@
 import Link from "next/link";
 
-const footerLinks = {
-  Product: ["Features", "Integrations", "Enterprise", "Changelog"],
-  Company: ["About", "Blog", "Careers", "Press"],
-  Legal: ["Privacy", "Terms", "Security"],
-};
+const footerLinks: Record<string, { label: string; href: string }[]> = {
+  Product: [
+    { label: "Features", href: "#features" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Docs", href: "/docs" }
+  ],
+  Legal: [
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" }
+  ]
+}
 
 export function Footer() {
   return (
@@ -72,12 +78,12 @@ export function Footer() {
               </h5>
               <ul className="space-y-2 text-sm text-on-surface-variant">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <Link
-                      href="#"
+                      href={link.href}
                       className="hover:text-primary transition-colors"
                     >
-                      {link}
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -89,7 +95,7 @@ export function Footer() {
 
       <div className="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-outline-variant/15 text-center md:text-left">
         <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
-          © 2024 Kakaw AI. Handcrafted in the Intelligent Atelier.
+          © 2026 Kakaw AI. Handcrafted in the Intelligent Atelier.
         </p>
       </div>
     </footer>
