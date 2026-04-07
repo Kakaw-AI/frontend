@@ -49,7 +49,7 @@ export function Hero() {
             >
               <path d="M8 5v14l11-7z" />
             </svg>
-            Watch 2-min Demo
+            Watch 30s Demo
           </button>
         </div>
       </div>
@@ -69,7 +69,7 @@ export function Hero() {
         </div>
 
         {/* Floating glass card */}
-        <div className="absolute -bottom-6 -left-12 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl hidden md:block max-w-xs">
+        <div className="absolute -bottom-6 -left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs">
           <div className="flex items-center gap-3 mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
