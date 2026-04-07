@@ -1,7 +1,7 @@
 import type { MDXComponents } from 'mdx/types'
 import Link from 'next/link'
 
-export function useMDXComponents(components: MDXComponents): MDXComponents {
+export function useMDXComponents(): MDXComponents {
   return {
     h1: ({ children }) => (
       <h1 className="font-headline text-4xl italic text-on-surface mb-6 mt-10 leading-tight">
@@ -56,6 +56,5 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </blockquote>
     ),
     hr: () => <hr className="border-outline-variant/20 my-8" />,
-    ...components,
   }
 }
