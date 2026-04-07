@@ -69,7 +69,7 @@ export function Hero() {
         </div>
 
         {/* Floating glass card */}
-        <div className="absolute -bottom-6 -left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs">
+        <div className="absolute -bottom-6 -left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs hidden sm:block">
           <div className="flex items-center gap-3 mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
