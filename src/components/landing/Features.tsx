@@ -52,12 +52,12 @@ const features = [
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
         />
       </svg>
     ),
-    title: "Privacy First",
-    body: "Your data never leaves your infrastructure. Kakaw AI only reads the schema to generate the logic, never the rows.",
+    title: "Bring Your Own LLM",
+    body: "Connect your own API key from Anthropic, OpenAI, Gemini, Ollama, or LM Studio. You choose the model — we never store your keys or your data.",
   },
 ];
 
