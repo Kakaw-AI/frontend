@@ -1,0 +1,45 @@
+# Set Up Your LLM
+
+Kakaw supports five LLM providers. You supply the API key — it goes directly from your browser to the provider. Kakaw never sees or stores it.
+
+## Anthropic (Claude)
+
+1. Get an API key at [console.anthropic.com](https://console.anthropic.com)
+2. In Kakaw, go to **Settings → LLM Connections**
+3. Select **Anthropic**, paste your key, and click **Save**
+
+Recommended model: `claude-sonnet-4-6` — fast, accurate for SQL generation.
+
+## OpenAI (ChatGPT)
+
+1. Get an API key at [platform.openai.com](https://platform.openai.com)
+2. In Kakaw, select **OpenAI**, paste your key, and click **Save**
+
+Recommended model: `gpt-4o`
+
+## Gemini (Google)
+
+1. Get an API key at [aistudio.google.com](https://aistudio.google.com)
+2. In Kakaw, select **Gemini**, paste your key, and click **Save**
+
+Recommended model: `gemini-1.5-pro`
+
+## Ollama (local)
+
+1. Install Ollama from [ollama.com](https://ollama.com) and pull a model: `ollama pull llama3`
+2. Ensure Ollama is running: `ollama serve`
+3. In Kakaw, select **Ollama** and enter your local endpoint (default: `http://localhost:11434`)
+
+No API key required for Ollama.
+
+## LM Studio (local)
+
+1. Download LM Studio from [lmstudio.ai](https://lmstudio.ai) and load a model
+2. Start the local server in LM Studio (default port: `1234`)
+3. In Kakaw, select **LM Studio** and enter your endpoint (default: `http://localhost:1234/v1`)
+
+No API key required for LM Studio.
+
+## Switching Providers
+
+You can change your LLM provider at any time in **Settings → LLM Connections**. Your conversation history is preserved regardless of which provider you switch to.

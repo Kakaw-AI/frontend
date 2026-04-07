@@ -1,0 +1,46 @@
+# Connect a Database
+
+Kakaw supports Postgres, MySQL, Snowflake, and SQLite. Your credentials are encrypted in transit and used only to run queries — Kakaw never stores row data.
+
+## Postgres
+
+1. In the onboarding flow, select **PostgreSQL**
+2. Enter your connection details:
+   - Host (e.g. `db.example.com` or `localhost`)
+   - Port (default: `5432`)
+   - Database name
+   - Username and password
+3. Click **Test Connection** — Kakaw will verify it can reach your database
+4. Click **Connect**
+
+## MySQL
+
+1. Select **MySQL** in the onboarding flow
+2. Enter host, port (default: `3306`), database name, username, and password
+3. Click **Test Connection**, then **Connect**
+
+## Snowflake
+
+1. Select **Snowflake**
+2. Enter your Snowflake account identifier (e.g. `xy12345.us-east-1`), warehouse, database, schema, username, and password
+3. Click **Test Connection**, then **Connect**
+
+## SQLite
+
+1. Select **SQLite**
+2. Upload your `.sqlite` or `.db` file
+3. Click **Connect**
+
+## Schema Mapping
+
+After connecting, Kakaw reads your schema — table names, column names, data types, and foreign key relationships. This takes a few seconds. Once complete, you can start asking questions immediately.
+
+Kakaw never reads row data during schema mapping.
+
+## Troubleshooting
+
+**Connection refused** — Check that your database accepts connections from the IP running Kakaw. You may need to add a firewall rule or allowlist.
+
+**Authentication failed** — Double-check your username and password. For Postgres, also verify the `pg_hba.conf` allows password authentication.
+
+**SSL required** — Most cloud-hosted databases require SSL. Kakaw enables SSL by default.
