@@ -56,5 +56,33 @@ export function useMDXComponents(): MDXComponents {
       </blockquote>
     ),
     hr: () => <hr className="border-outline-variant/20 my-8" />,
+    table: ({ children }) => (
+      <div className="overflow-x-auto my-6">
+        <table className="w-full border-collapse text-sm">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="bg-surface-container-low border-b border-outline-variant/30">
+        {children}
+      </thead>
+    ),
+    tbody: ({ children }) => <tbody>{children}</tbody>,
+    tr: ({ children }) => (
+      <tr className="border-b border-outline-variant/20 last:border-0">
+        {children}
+      </tr>
+    ),
+    th: ({ children }) => (
+      <th className="px-4 py-2 text-left font-label text-[11px] uppercase tracking-widest font-bold text-on-surface opacity-60">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-4 py-2 text-on-surface-variant leading-relaxed">
+        {children}
+      </td>
+    ),
   }
 }
