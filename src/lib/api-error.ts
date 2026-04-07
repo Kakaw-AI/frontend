@@ -63,7 +63,7 @@ function unwrapErrorPayload(value: unknown): unknown {
   }
 
   const record = value as Record<string, unknown>;
-  if ("error" in record && record.error) {
+  if ("error" in record && record.error && typeof record.error === "object") {
     return unwrapErrorPayload(record.error);
   }
 

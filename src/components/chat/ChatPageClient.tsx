@@ -17,7 +17,6 @@ import {
   activateLlmConnectionMutationOptions,
   deactivateLlmConnectionMutationOptions,
   deleteLlmConnectionMutationOptions,
-  linkGithubAccount,
   saveLlmConnectionMutationOptions,
   type SaveLlmConnectionInput,
 } from "@/lib/queries/llm-connections";
@@ -53,9 +52,6 @@ export function ChatPageClient() {
     setIsSending,
     beginSignOut,
     endSignOut,
-    beginLinkGithub,
-    endLinkGithub,
-    setGithubLinkError,
     closePicker
   } = useChatStore();
 
@@ -120,7 +116,6 @@ export function ChatPageClient() {
   }, [activeConversationId, conversationsQuery.data, router]);
 
   const activeConversation = activeConversationQuery.data;
-  const githubLinked = chatOptionsQuery.data?.githubLinked ?? false;
   const hasStreamingAssistantMessage = Boolean(
     activeConversation?.messages.some((message) => message.role === "assistant" && message.status === "STREAMING"),
   );
@@ -148,19 +143,6 @@ export function ChatPageClient() {
       queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
       ...(conversationId ? [queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(conversationId) })] : []),
     ]);
-  }
-
-  async function handleLinkGithub() {
-    setGithubLinkError(null);
-    beginLinkGithub();
-    try {
-      const callbackURL = typeof window === "undefined" ? "/chat" : `${window.location.origin}/chat`;
-      await linkGithubAccount(callbackURL);
-    } catch (error) {
-      setGithubLinkError(error instanceof Error ? error : new Error("Unable to link your GitHub account."));
-    } finally {
-      endLinkGithub();
-    }
   }
 
   async function handleLogout() {
@@ -257,7 +239,6 @@ export function ChatPageClient() {
         key={`${useChatStore((s) => s.isConnectionPickerOpen ? "open" : "closed")}:${useChatStore((s) => s.pickerStartsInAddLlmMode ? "add" : "pick")}:${activeConversationId ?? "none"}`}
         databaseSources={chatOptionsQuery.data?.databaseSources}
         llmConnections={chatOptionsQuery.data?.llmConnections}
-        githubLinked={githubLinked}
         isLoading={chatOptionsQuery.isLoading}
         isRefreshing={chatOptionsQuery.isFetching && Boolean(chatOptionsQuery.data)}
         error={chatOptionsQuery.error instanceof Error ? chatOptionsQuery.error : null}
@@ -267,9 +248,7 @@ export function ChatPageClient() {
         isCreatingLlmConnection={createLlmConnectionMutation.isPending}
         createLlmError={createLlmConnectionMutation.error instanceof Error ? createLlmConnectionMutation.error : null}
         onRetry={() => void chatOptionsQuery.refetch()}
-        onLinkGithub={() => void handleLinkGithub()}
         onCreateLlmConnection={async (input) => {
-          setGithubLinkError(null);
           await createLlmConnectionMutation.mutateAsync(input);
           await chatOptionsQuery.refetch();
         }}

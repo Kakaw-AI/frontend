@@ -12,7 +12,6 @@ import { useChatStore } from "../store/useChatStore";
 export function ChatConnectionPicker({
   databaseSources,
   llmConnections,
-  githubLinked,
   isLoading,
   isRefreshing,
   error,
@@ -22,7 +21,6 @@ export function ChatConnectionPicker({
   isCreatingLlmConnection,
   createLlmError,
   onRetry,
-  onLinkGithub,
   onCreateLlmConnection,
   onActivateLlmConnection,
   onDeactivateLlmConnection,
@@ -31,7 +29,6 @@ export function ChatConnectionPicker({
 }: {
   databaseSources: DatabaseSource[] | undefined;
   llmConnections: LlmConnection[] | undefined;
-  githubLinked: boolean;
   isLoading: boolean;
   isRefreshing: boolean;
   error: Error | null;
@@ -41,7 +38,6 @@ export function ChatConnectionPicker({
   isCreatingLlmConnection: boolean;
   createLlmError: Error | null;
   onRetry: () => void;
-  onLinkGithub: () => void;
   onCreateLlmConnection: (input: SaveLlmConnectionInput) => Promise<void>;
   onActivateLlmConnection: (connectionId: string) => Promise<void>;
   onDeactivateLlmConnection: (connectionId: string) => Promise<void>;
@@ -51,9 +47,6 @@ export function ChatConnectionPicker({
   const isOpen = useChatStore((s) => s.isConnectionPickerOpen);
   const startInAddLlmMode = useChatStore((s) => s.pickerStartsInAddLlmMode);
   const closePicker = useChatStore((s) => s.closePicker);
-  
-  const isLinkingGithub = useChatStore((s) => s.isLinkingGithub);
-  const linkGithubError = useChatStore((s) => s.githubLinkError);
 
   const [selectedSourceId, setSelectedSourceId] = useState<string | null>(activeSourceId);
   const [selectedLlmConnectionId, setSelectedLlmConnectionId] = useState<string | null>(activeLlmConnectionId);
@@ -190,16 +183,12 @@ export function ChatConnectionPicker({
                   llmConnections={llmConnections}
                   selectedLlmConnectionId={selectedLlmConnectionId}
                   isAddConnectionFormOpen={isAddConnectionFormOpen}
-                  githubLinked={githubLinked}
-                  isLinkingGithub={isLinkingGithub}
-                  linkGithubError={linkGithubError}
                   isCreatingLlmConnection={isCreatingLlmConnection}
                   createLlmError={createLlmError}
                   connectionActionState={connectionActionState}
                   connectionActionError={connectionActionError}
                   onSelect={setSelectedLlmConnectionId}
                   onToggleAddForm={setIsAddConnectionFormOpen}
-                  onLinkGithub={onLinkGithub}
                   onCreateLlmConnection={async (input) => {
                     await onCreateLlmConnection(input);
                     setIsAddConnectionFormOpen(false);

@@ -4,11 +4,9 @@ export interface ChatStoreState {
   // Connection picker
   isConnectionPickerOpen: boolean;
   pickerStartsInAddLlmMode: boolean;
-  
-  // Auth & Linking
+
+  // Auth
   isSigningOut: boolean;
-  isLinkingGithub: boolean;
-  githubLinkError: Error | null;
 
   // Composer
   composerInput: string;
@@ -24,10 +22,6 @@ export interface ChatStoreActions {
   beginSignOut: () => void;
   endSignOut: () => void;
 
-  beginLinkGithub: () => void;
-  endLinkGithub: () => void;
-  setGithubLinkError: (error: Error | null) => void;
-
   setComposerInput: (input: string) => void;
   setComposerError: (error: string | null) => void;
   setIsSending: (sending: boolean) => void;
@@ -40,8 +34,6 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
 
   // Auth defaults
   isSigningOut: false,
-  isLinkingGithub: false,
-  githubLinkError: null,
 
   // Composer defaults
   composerInput: "",
@@ -54,14 +46,12 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
       isConnectionPickerOpen: true,
       pickerStartsInAddLlmMode: false,
       composerError: null,
-      githubLinkError: null,
     }),
   openAddLlmPicker: () =>
     set({
       isConnectionPickerOpen: true,
       pickerStartsInAddLlmMode: true,
       composerError: null,
-      githubLinkError: null,
     }),
   closePicker: () =>
     set({
@@ -71,10 +61,6 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
 
   beginSignOut: () => set({ isSigningOut: true }),
   endSignOut: () => set({ isSigningOut: false }),
-
-  beginLinkGithub: () => set({ isLinkingGithub: true, githubLinkError: null }),
-  endLinkGithub: () => set({ isLinkingGithub: false }),
-  setGithubLinkError: (error) => set({ githubLinkError: error }),
 
   setComposerInput: (input) => set({ composerInput: input }),
   setComposerError: (error) => set({ composerError: error }),

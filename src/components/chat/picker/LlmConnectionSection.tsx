@@ -10,32 +10,24 @@ export function LlmConnectionSection({
   llmConnections,
   selectedLlmConnectionId,
   isAddConnectionFormOpen,
-  githubLinked,
-  isLinkingGithub,
-  linkGithubError,
   isCreatingLlmConnection,
   createLlmError,
   connectionActionState,
   connectionActionError,
   onSelect,
   onToggleAddForm,
-  onLinkGithub,
   onCreateLlmConnection,
   onConnectionAction,
 }: {
   llmConnections: LlmConnection[] | undefined;
   selectedLlmConnectionId: string | null;
   isAddConnectionFormOpen: boolean;
-  githubLinked: boolean;
-  isLinkingGithub: boolean;
-  linkGithubError: Error | null;
   isCreatingLlmConnection: boolean;
   createLlmError: Error | null;
   connectionActionState: { id: string; action: ConnectionActionKind } | null;
   connectionActionError: string | null;
   onSelect: (id: string | null) => void;
   onToggleAddForm: (open: boolean) => void;
-  onLinkGithub: () => void;
   onCreateLlmConnection: (input: SaveLlmConnectionInput) => Promise<void>;
   onConnectionAction: (action: ConnectionActionKind, connectionId: string) => Promise<void>;
 }) {
@@ -76,12 +68,8 @@ export function LlmConnectionSection({
 
       {isAddConnectionFormOpen ? (
         <AddLlmConnectionForm
-          githubLinked={githubLinked}
-          isLinkingGithub={isLinkingGithub}
-          linkGithubError={linkGithubError}
           isCreatingLlmConnection={isCreatingLlmConnection}
           createLlmError={createLlmError}
-          onLinkGithub={onLinkGithub}
           onCreateLlmConnection={onCreateLlmConnection}
         />
       ) : null}

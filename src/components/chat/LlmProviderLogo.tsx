@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, BrainCircuit, GitPullRequest, Globe2, Route } from "lucide-react";
+import { Bot, BrainCircuit, Globe2, Route, Box, Server } from "lucide-react";
 import type { LlmProvider } from "@/lib/queries/llm-connections";
 
 type LlmProviderLogoProps = {
@@ -35,7 +35,6 @@ export function LlmProviderLogo({
 }: LlmProviderLogoProps) {
   switch (provider) {
     case "openai":
-    case "custom-openai":
       return (
         <BaseLogo className={className} background="#101828">
           <Bot size={16} />
@@ -59,10 +58,16 @@ export function LlmProviderLogo({
           <Globe2 size={16} />
         </BaseLogo>
       );
-    case "github-copilot":
+    case "ollama":
       return (
-        <BaseLogo className={className} background="#24292F">
-          <GitPullRequest size={16} />
+        <BaseLogo className={className} background="#f97316">
+          <Server size={16} />
+        </BaseLogo>
+      );
+    case "lm-studio":
+      return (
+        <BaseLogo className={className} background="#3b82f6">
+          <Box size={16} />
         </BaseLogo>
       );
   }

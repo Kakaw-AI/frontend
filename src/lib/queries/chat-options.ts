@@ -14,13 +14,11 @@ import {
 type ChatOptionsResponse = {
   databaseSources: DatabaseConnectionResponse[];
   llmConnections: LlmConnectionResponse[];
-  githubLinked: boolean;
 };
 
 export type ChatOptions = {
   databaseSources: DatabaseSource[];
   llmConnections: LlmConnection[];
-  githubLinked: boolean;
 };
 
 export const chatOptionsQueryKey = ["me", "chat-options"] as const;
@@ -40,7 +38,6 @@ async function fetchChatOptions(): Promise<ChatOptions> {
   return {
     databaseSources: data.databaseSources.map(toDatabaseSource),
     llmConnections: data.llmConnections.map(toLlmConnection),
-    githubLinked: data.githubLinked,
   };
 }
 

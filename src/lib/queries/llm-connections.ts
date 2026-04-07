@@ -3,11 +3,11 @@ import { readApiErrorResponse } from "@/lib/api-error";
 
 export type LlmProvider =
   | "openai"
-  | "custom-openai"
   | "anthropic"
   | "openrouter"
   | "google"
-  | "github-copilot";
+  | "ollama"
+  | "lm-studio";
 
 export type LlmConnectionStatus = "PENDING" | "SUCCESS" | "FAILED";
 
@@ -61,14 +61,8 @@ export const LLM_PROVIDER_OPTIONS: Array<{
   {
     value: "openai",
     label: "OpenAI",
-    helper: "Bring your OpenAI API key and default model.",
+    helper: "Bring your OpenAI API key and default model. Supports any OpenAI-compatible endpoint via custom base URL.",
     defaultModel: "gpt-4o",
-  },
-  {
-    value: "custom-openai",
-    label: "Custom OpenAI-Compatible",
-    helper: "Use any OpenAI-compatible endpoint with your own base URL and model.",
-    defaultModel: "gpt-4.1-mini",
   },
   {
     value: "anthropic",
@@ -89,10 +83,16 @@ export const LLM_PROVIDER_OPTIONS: Array<{
     defaultModel: "gemini-2.5-pro",
   },
   {
-    value: "github-copilot",
-    label: "GitHub Copilot",
-    helper: "Uses your linked GitHub account. Requires an active Copilot subscription.",
-    defaultModel: "claude-sonnet-4-6",
+    value: "ollama",
+    label: "Ollama",
+    helper: "Connect to a local or remote Ollama instance.",
+    defaultModel: "llama3.1",
+  },
+  {
+    value: "lm-studio",
+    label: "LM Studio",
+    helper: "Connect to a local or remote LM Studio instance.",
+    defaultModel: "local-model",
   },
 ];
 
@@ -202,34 +202,6 @@ async function deleteLlmConnection(
   }
 
   return (await response.json()) as DeleteLlmConnectionResult;
-}
-
-export async function linkGithubAccount(callbackURL: string) {
-  const response = await fetch("/api/auth/link-social", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      provider: "github",
-      callbackURL,
-      errorCallbackURL: callbackURL,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, "Unable to link your GitHub account."));
-  }
-
-  const data = (await response.json().catch(() => null)) as
-    | { url?: string; redirect?: boolean }
-    | null;
-
-  if (!data?.url) {
-    throw new Error("GitHub linking did not return an authorization URL.");
-  }
-
-  window.location.assign(data.url);
 }
 
 export function llmConnectionsQueryOptions() {
