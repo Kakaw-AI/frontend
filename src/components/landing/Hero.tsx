@@ -55,7 +55,7 @@ export function Hero() {
       </div>
 
       {/* Right column */}
-      <div className="lg:col-span-5 relative">
+      <div className="lg:col-span-5 relative overflow-visible">
         <div className="absolute -inset-4 bg-primary-fixed/20 blur-3xl rounded-full" />
         <div className="relative z-10 aspect-square overflow-hidden rounded-3xl bg-surface-container-low p-8 border border-outline-variant/15 flex items-center justify-center">
           <Image

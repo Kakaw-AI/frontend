@@ -19,15 +19,11 @@ export function Navbar() {
             Kakaw AI
           </Link>
           <div className="hidden lg:flex gap-6 items-center">
-            {navLinks.map((link, i) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={
-                  i === 0
-                    ? "text-primary font-semibold border-b-2 border-primary font-body text-sm tracking-tight transition-colors duration-300"
-                    : "text-on-surface/60 hover:text-primary font-body text-sm tracking-tight transition-colors duration-300"
-                }
+                className="text-on-surface/60 hover:text-primary font-body text-sm tracking-tight transition-colors duration-300"
               >
                 {link.label}
               </Link>

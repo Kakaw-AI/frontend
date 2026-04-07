@@ -1,0 +1,67 @@
+<h2>Pricing Section Layout</h2>
+<p class="subtitle">Both show "Always Free — Bring Your Own Key". Which layout feels better?</p>
+
+<div class="cards" style="margin-top: 24px;">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fffdf9; border-bottom: 1px solid #f0e8e0;">
+      <!-- Option A mockup -->
+      <div style="text-align: center; padding: 8px 0;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #705731; text-transform: uppercase; margin-bottom: 6px;">Pricing</div>
+        <div style="font-size: 18px; font-weight: 700; color: #1b1c1c; margin-bottom: 4px;">Always Free</div>
+        <div style="font-size: 11px; color: #666; margin-bottom: 12px;">Bring your own API key — no subscription</div>
+        <div style="background: #f5f0ea; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+          <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px;">Works with</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+            <span style="background: white; border: 1px solid #e0d8d0; border-radius: 6px; padding: 3px 8px; font-size: 10px;">Anthropic</span>
+            <span style="background: white; border: 1px solid #e0d8d0; border-radius: 6px; padding: 3px 8px; font-size: 10px;">OpenAI</span>
+            <span style="background: white; border: 1px solid #e0d8d0; border-radius: 6px; padding: 3px 8px; font-size: 10px;">Gemini</span>
+            <span style="background: white; border: 1px solid #e0d8d0; border-radius: 6px; padding: 3px 8px; font-size: 10px;">Ollama</span>
+            <span style="background: white; border: 1px solid #e0d8d0; border-radius: 6px; padding: 3px 8px; font-size: 10px;">LM Studio</span>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: #555;">✓ Unlimited queries &nbsp; ✓ All features &nbsp; ✓ No credit card</div>
+        <div style="margin-top: 10px; background: #705731; color: white; border-radius: 8px; padding: 7px 0; font-size: 11px; font-weight: 600;">Get Started Free</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Single Card</h3>
+      <p>One centered card, clean and focused. No tiers to compare.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fffdf9; border-bottom: 1px solid #f0e8e0;">
+      <!-- Option B mockup -->
+      <div style="text-align: center; padding: 4px 0;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #705731; text-transform: uppercase; margin-bottom: 6px;">Pricing</div>
+        <div style="font-size: 18px; font-weight: 700; color: #1b1c1c; margin-bottom: 12px;">One plan. Always Free.</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; margin-bottom: 12px;">
+          <div style="background: #f5f0ea; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #705731; margin-bottom: 4px;">✓ BYOK</div>
+            <div style="font-size: 10px; color: #555;">Use your own API key from any provider</div>
+          </div>
+          <div style="background: #f5f0ea; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #705731; margin-bottom: 4px;">✓ All Features</div>
+            <div style="font-size: 10px; color: #555;">No feature gates or paywalls</div>
+          </div>
+          <div style="background: #f5f0ea; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #705731; margin-bottom: 4px;">✓ Any Model</div>
+            <div style="font-size: 10px; color: #555;">Claude, GPT-4, Gemini, Llama…</div>
+          </div>
+          <div style="background: #f5f0ea; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 10px; font-weight: 700; color: #705731; margin-bottom: 4px;">✓ Privacy First</div>
+            <div style="font-size: 10px; color: #555;">Your data never touches our servers</div>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: #666; margin-bottom: 8px;">Works with: Anthropic · OpenAI · Gemini · Ollama · LM Studio</div>
+        <div style="background: #705731; color: white; border-radius: 8px; padding: 7px 0; font-size: 11px; font-weight: 600;">Get Started Free</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Benefits Grid</h3>
+      <p>Shows 4 key benefits as tiles, then lists providers. More content, more persuasive.</p>
+    </div>
+  </div>
+
+</div>

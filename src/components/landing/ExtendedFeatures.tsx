@@ -57,7 +57,7 @@ const extendedFeatures = [
 
 export function ExtendedFeatures() {
   return (
-    <section className="py-24 max-w-7xl mx-auto px-8">
+    <section id="extended-features" className="py-24 max-w-7xl mx-auto px-8">
       <div className="mb-16">
         <h2 className="font-headline text-4xl italic mb-4">
           Everything you need to go from question to insight

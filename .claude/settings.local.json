@@ -1,17 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:stitch.withanthopic.com)"
+      "WebFetch(domain:stitch.withanthopic.com)",
+      "Bash(ls -la /home/nasr/kakaw/front/*.mjs /home/nasr/kakaw/front/*.js /home/nasr/kakaw/front/*.config.*)",
+      "Bash(/home/nasr/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)",
+      "Bash(node:*)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps={**p.get\\('dependencies',{}\\), **p.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k in ['@next/mdx','@mdx-js/loader','@mdx-js/react','@types/mdx'] if k in deps or print\\(f'MISSING: {k}'\\)]\")",
+      "Bash(wc:*)",
+      "Bash(git:*)"
     ]
   },
   "marketplaces": [
     "https://github.com/JNLei/claude-tools.git",
-        "https://github.com/JNLei/claude-tools.git"
-
+    "https://github.com/JNLei/claude-tools.git"
   ],
   "plugins": [
     "next-project-starter@claudesmith-general",
-        "frontend-development@claudesmith-general"
-
+    "frontend-development@claudesmith-general"
   ]
 }
