@@ -5,10 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthPage() {
-  const dashboardURL =
-    typeof window === "undefined"
-      ? "/dashboard"
-      : `${window.location.origin}/dashboard`;
+  const dashboardURL = "/dashboard";
 
   async function signInWithGoogle() {
     await authClient.signIn.social({
@@ -85,11 +82,11 @@ export default function AuthPage() {
 
           <p className="mt-10 text-center text-xs text-on-surface-variant/60 font-body">
             By continuing, you agree to our{" "}
-            <Link href="#" className="underline underline-offset-2 hover:text-on-surface-variant">
+            <Link href="/terms" className="underline underline-offset-2 hover:text-on-surface-variant">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="#" className="underline underline-offset-2 hover:text-on-surface-variant">
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-on-surface-variant">
               Privacy Policy
             </Link>
             .
