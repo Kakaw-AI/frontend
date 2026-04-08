@@ -147,10 +147,43 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* Floating Insight Card */}
+        {/* Hi, I'm Kakaw — top-right */}
+        <div className="absolute top-10 right-10 hidden lg:block z-10">
+          <div className="glass-panel px-4 py-3 rounded-2xl rounded-bl-md border border-white/10 shadow-xl">
+            <p className="font-headline text-base italic text-on-primary-container leading-none">
+              Hi, I&apos;m Kakaw 👋
+            </p>
+          </div>
+        </div>
+
+        {/* Live Query — bottom-left */}
+        <div className="absolute bottom-12 left-10 hidden lg:block z-10">
+          <div className="glass-panel p-4 rounded-xl border border-white/10 shadow-xl text-left max-w-xs">
+            <div className="flex items-center gap-2 mb-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 text-primary-fixed"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden
+              >
+                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+              </svg>
+              <span className="text-[10px] font-sans uppercase tracking-widest text-primary font-bold">
+                Live Query
+              </span>
+            </div>
+            <p className="font-headline italic text-on-surface text-sm mb-2">
+              &ldquo;Show me top customers by revenue this quarter&hellip;&rdquo;
+            </p>
+            <div className="h-1 w-12 bg-primary rounded-full" />
+          </div>
+        </div>
+
+        {/* AI Insight — bottom-right */}
         <div className="absolute bottom-12 right-12 hidden lg:block z-10">
-          <div className="glass-panel p-6 rounded-xl border border-white/10 editorial-shadow text-left max-w-xs">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="glass-panel p-4 rounded-xl border border-white/10 shadow-xl text-left max-w-xs">
+            <div className="flex items-center gap-2 mb-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-4 h-4 text-primary-fixed"
@@ -165,8 +198,7 @@ export default function AuthPage() {
               </span>
             </div>
             <p className="font-headline italic text-on-surface text-sm mb-2">
-              &ldquo;Q4 sales growth is trending 12% higher in artisanal
-              categories&hellip;&rdquo;
+              &ldquo;Q4 sales growth is trending 12% higher in artisanal categories&hellip;&rdquo;
             </p>
             <div className="h-1 w-12 bg-primary rounded-full" />
           </div>
