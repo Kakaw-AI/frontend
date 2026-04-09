@@ -1,5 +1,10 @@
 import { create } from "zustand";
 
+export type PendingConversation = {
+  databaseSourceId: string;
+  llmConnectionId: string;
+};
+
 export interface ChatStoreState {
   // Connection picker
   isConnectionPickerOpen: boolean;
@@ -12,6 +17,9 @@ export interface ChatStoreState {
   composerInput: string;
   composerError: string | null;
   isSending: boolean;
+
+  // Ephemeral / on-the-fly chat
+  pendingConversation: PendingConversation | null;
 }
 
 export interface ChatStoreActions {
@@ -25,6 +33,9 @@ export interface ChatStoreActions {
   setComposerInput: (input: string) => void;
   setComposerError: (error: string | null) => void;
   setIsSending: (sending: boolean) => void;
+
+  setPendingConversation: (p: PendingConversation | null) => void;
+  clearPendingConversation: () => void;
 }
 
 export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => ({
@@ -39,6 +50,9 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   composerInput: "",
   composerError: null,
   isSending: false,
+
+  // Ephemeral defaults
+  pendingConversation: null,
 
   // Actions
   openPicker: () =>
@@ -65,4 +79,7 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   setComposerInput: (input) => set({ composerInput: input }),
   setComposerError: (error) => set({ composerError: error }),
   setIsSending: (sending) => set({ isSending: sending }),
+
+  setPendingConversation: (p) => set({ pendingConversation: p }),
+  clearPendingConversation: () => set({ pendingConversation: null }),
 }));
