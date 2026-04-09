@@ -26,6 +26,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { useChatStore } from "./store/useChatStore";
+import { useDraftCache, readNewChatDraft } from "./hooks/useDraftCache";
 import { ChatSidebar } from "./layout/ChatSidebar";
 import { ChatHeader } from "./layout/ChatHeader";
 import { MessageList } from "./messages/MessageList";
@@ -52,8 +53,37 @@ export function ChatPageClient() {
     setIsSending,
     beginSignOut,
     endSignOut,
-    closePicker
+    closePicker,
+    pendingConversation,
+    setPendingConversation,
+    clearPendingConversation,
   } = useChatStore();
+
+  // The localStorage key for the current chat: conversationId or "new" for on-the-fly
+  const chatKey = activeConversationId ?? "new";
+
+  const { readDraftText, setDraft, clearDraft } = useDraftCache(chatKey, pendingConversation);
+
+  // On startup: restore on-the-fly state from localStorage if present
+  useEffect(() => {
+    if (!pendingConversation) {
+      const saved = readNewChatDraft();
+      if (saved) {
+        setPendingConversation({
+          databaseSourceId: saved.databaseSourceId,
+          llmConnectionId: saved.llmConnectionId,
+        });
+      }
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // On chatKey change: restore draft text into composer
+  useEffect(() => {
+    setComposerInput(readDraftText());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatKey]);
 
   const createConversationMutation = useMutation({
     ...createConversationMutationOptions(),
@@ -62,8 +92,6 @@ export function ChatPageClient() {
         conversationsQueryKey,
         (current) => [conversation, ...(current ?? [])],
       );
-      router.push("/chat/" + conversation.id);
-      closePicker();
     },
   });
 
@@ -109,11 +137,12 @@ export function ChatPageClient() {
 
   const updateConversationRuntimeMutation = useMutation(updateConversationRuntimeMutationOptions());
 
+  // Redirect /chat → first existing conversation, but only when there is no pending on-the-fly state
   useEffect(() => {
-    if (!activeConversationId && conversationsQuery.data?.length) {
+    if (!activeConversationId && !pendingConversation && conversationsQuery.data?.length) {
       router.replace("/chat/" + conversationsQuery.data[0].id);
     }
-  }, [activeConversationId, conversationsQuery.data, router]);
+  }, [activeConversationId, pendingConversation, conversationsQuery.data, router]);
 
   const activeConversation = activeConversationQuery.data;
   const hasStreamingAssistantMessage = Boolean(
@@ -130,6 +159,19 @@ export function ChatPageClient() {
 
   const selectedSource = useMemo(() => activeConversation?.databaseSource ?? null, [activeConversation]);
   const selectedLlmConnection = useMemo(() => activeConversation?.llmConnection ?? null, [activeConversation]);
+
+  // Resolve a human-readable label for the pending on-the-fly state
+  const pendingLabel = useMemo(() => {
+    if (!pendingConversation || !chatOptionsQuery.data) return null;
+    const src = chatOptionsQuery.data.databaseSources.find(
+      (s) => s.id === pendingConversation.databaseSourceId,
+    );
+    const llm = chatOptionsQuery.data.llmConnections.find(
+      (c) => c.id === pendingConversation.llmConnectionId,
+    );
+    if (!src || !llm) return null;
+    return `${src.label} · ${llm.defaultModel ?? "selected model"}`;
+  }, [pendingConversation, chatOptionsQuery.data]);
 
   useEffect(() => {
     if (activeConversation?.runtime.isAvailableForChat) {
@@ -182,7 +224,66 @@ export function ChatPageClient() {
 
   async function handleSendMessage() {
     const content = composerInput.trim();
-    if (!content || !activeConversationId || isComposerLocked) {
+    if (!content || isComposerLocked) return;
+
+    // ── On-the-fly path: create conversation first, then send ──────────────
+    if (!activeConversationId && pendingConversation) {
+      if (!pendingConversation.databaseSourceId) {
+        setComposerError("No database source selected.");
+        return;
+      }
+
+      setComposerError(null);
+      setIsSending(true);
+      setComposerInput("");
+
+      let newConversationId: string;
+      try {
+        const conversation = await createConversationMutation.mutateAsync({
+          databaseSourceId: pendingConversation.databaseSourceId,
+          llmConnectionId: pendingConversation.llmConnectionId,
+          title: "New chat",
+        });
+        newConversationId = conversation.id;
+        clearPendingConversation();
+        clearDraft(); // remove kakaw:draft:new
+        // Navigate to the real conversation URL
+        router.push("/chat/" + newConversationId);
+      } catch (error) {
+        setComposerError(error instanceof Error ? error.message : "Unable to create conversation.");
+        setIsSending(false);
+        // Restore the input so the user doesn't lose their message
+        setComposerInput(content);
+        return;
+      }
+
+      // Stream the first message on the newly created conversation
+      queryClient.setQueryData<ConversationDetails | undefined>(
+        conversationDetailsQueryKey(newConversationId),
+        (current) => current ? { ...current, messages: [...current.messages, createOptimisticUserMessage(content)] } : current,
+      );
+
+      try {
+        await streamConversationMessage(newConversationId, content, (event) => {
+          queryClient.setQueryData<ConversationDetails | undefined>(
+            conversationDetailsQueryKey(newConversationId),
+            (current) => applyStreamEvent(current, event),
+          );
+        });
+      } catch (error) {
+        setComposerError(error instanceof Error ? error.message : "Unable to stream chat response.");
+      } finally {
+        setIsSending(false);
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(newConversationId) }),
+          queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
+        ]);
+      }
+      return;
+    }
+
+    // ── Existing conversation path ─────────────────────────────────────────
+    if (!activeConversationId || isComposerLocked) {
       if (activeConversation && !isConversationRuntimeAvailable) {
         setComposerError(activeConversation.runtime.warning ?? "This conversation is read-only until its runtime is restored.");
       }
@@ -220,6 +321,7 @@ export function ChatPageClient() {
           (current) => applyStreamEvent(current, event),
         );
       });
+      clearDraft(); // clear saved draft for this conversation after successful send
     } catch (error) {
       setComposerError(error instanceof Error ? error.message : "Unable to stream chat response.");
     } finally {
@@ -244,11 +346,11 @@ export function ChatPageClient() {
         error={chatOptionsQuery.error instanceof Error ? chatOptionsQuery.error : null}
         activeSourceId={selectedSource?.id ?? null}
         activeLlmConnectionId={selectedLlmConnection?.id ?? null}
-        isCreatingConversation={createConversationMutation.isPending}
+        isCreatingConversation={false}
         isCreatingLlmConnection={createLlmConnectionMutation.isPending}
         createLlmError={createLlmConnectionMutation.error instanceof Error ? createLlmConnectionMutation.error : null}
         onRetry={() => void chatOptionsQuery.refetch()}
-        onCreateLlmConnection={async (input) => {
+        onCreateLlmConnection={async (input: SaveLlmConnectionInput) => {
           await createLlmConnectionMutation.mutateAsync(input);
           await chatOptionsQuery.refetch();
         }}
@@ -265,11 +367,14 @@ export function ChatPageClient() {
           await invalidateConversationCaches(activeConversationId);
         }}
         onConfirmSelection={(selection) => {
-          createConversationMutation.mutate({
+          // Deferred creation: store the selection, do NOT call the API yet
+          setPendingConversation({
             databaseSourceId: selection.source.id,
             llmConnectionId: selection.llmConnection.id,
-            title: "New chat",
           });
+          closePicker();
+          // Navigate to /chat (no ID) so the on-the-fly state is active
+          router.push("/chat");
         }}
       />
 
@@ -305,10 +410,13 @@ export function ChatPageClient() {
 
             <ChatComposer
               activeConversation={activeConversation}
+              chatKey={chatKey}
+              pendingLabel={pendingLabel}
               isComposerLocked={isComposerLocked}
               isConversationRuntimeAvailable={isConversationRuntimeAvailable}
               hasStreamingAssistantMessage={hasStreamingAssistantMessage}
               isPendingRuntimeUpdate={isPendingRuntimeUpdate}
+              onDraftChange={setDraft}
               onSendMessage={handleSendMessage}
             />
           </footer>
