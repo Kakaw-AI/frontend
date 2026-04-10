@@ -1,7 +1,7 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { readApiErrorResponse } from "@/lib/api-error";
 
-export type OnboardingState = {
+type OnboardingState = {
   isFirstConnection?: boolean;
   hasDatabaseSource?: boolean;
   connectionCount?: number;
@@ -21,7 +21,7 @@ export type OnboardingState = {
   } | null;
 };
 
-export type SaveDatabaseSourceInput =
+type SaveDatabaseSourceInput =
   | {
       provider: "sqlite";
       file?: File;

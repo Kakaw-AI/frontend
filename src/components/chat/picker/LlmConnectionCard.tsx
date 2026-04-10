@@ -6,7 +6,7 @@ import { formatTimestamp } from "./picker-utils";
 
 export type ConnectionActionKind = "activate" | "deactivate" | "delete";
 
-export type ConnectionCardAction = {
+type ConnectionCardAction = {
   action: ConnectionActionKind;
   label: string;
   onClick: () => void;

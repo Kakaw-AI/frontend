@@ -6,7 +6,7 @@ type Listener = () => void;
 
 type StateUpdater<TState> = TState | ((state: TState) => TState);
 
-export type StoreApi<TState> = {
+type StoreApi<TState> = {
   getState: () => TState;
   setState: (nextState: StateUpdater<TState>) => void;
   subscribe: (listener: Listener) => () => void;

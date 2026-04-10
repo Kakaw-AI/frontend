@@ -1,4 +1,4 @@
-export type ApiErrorInfo = {
+type ApiErrorInfo = {
   message: string;
   code?: string;
   statusCode?: number;

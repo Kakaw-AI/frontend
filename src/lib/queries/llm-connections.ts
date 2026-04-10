@@ -1,4 +1,4 @@
-import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { mutationOptions } from "@tanstack/react-query";
 import { readApiErrorResponse } from "@/lib/api-error";
 
 export type LlmProvider =
@@ -96,8 +96,6 @@ export const LLM_PROVIDER_OPTIONS: Array<{
   },
 ];
 
-export const llmConnectionsQueryKey = ["llm-connections"] as const;
-
 export function toLlmConnection(
   connection: LlmConnectionResponse,
 ): LlmConnection {
@@ -184,7 +182,7 @@ async function deactivateLlmConnection(connectionId: string) {
   return toLlmConnection(data);
 }
 
-export type DeleteLlmConnectionResult = {
+type DeleteLlmConnectionResult = {
   id: string;
 };
 
@@ -202,14 +200,6 @@ async function deleteLlmConnection(
   }
 
   return (await response.json()) as DeleteLlmConnectionResult;
-}
-
-export function llmConnectionsQueryOptions() {
-  return queryOptions({
-    queryKey: llmConnectionsQueryKey,
-    queryFn: fetchLlmConnections,
-    retry: false,
-  });
 }
 
 export function saveLlmConnectionMutationOptions() {

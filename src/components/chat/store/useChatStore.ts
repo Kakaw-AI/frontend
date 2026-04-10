@@ -5,7 +5,7 @@ export type PendingConversation = {
   llmConnectionId: string;
 };
 
-export interface ChatStoreState {
+interface ChatStoreState {
   // Connection picker
   isConnectionPickerOpen: boolean;
   pickerStartsInAddLlmMode: boolean;
@@ -22,7 +22,7 @@ export interface ChatStoreState {
   pendingConversation: PendingConversation | null;
 }
 
-export interface ChatStoreActions {
+interface ChatStoreActions {
   openPicker: () => void;
   openAddLlmPicker: () => void;
   closePicker: () => void;

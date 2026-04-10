@@ -54,7 +54,7 @@ export type ConversationMessage = {
   stepsElapsedMs?: number | null;
 };
 
-export type ConversationResponse = {
+type ConversationResponse = {
   id: string;
   title: string;
   lastMessageAt: string | null;
@@ -68,7 +68,7 @@ export type ConversationResponse = {
   runtime: ConversationRuntime;
 };
 
-export type ConversationDetailsResponse = ConversationResponse & {
+type ConversationDetailsResponse = ConversationResponse & {
   messages: ConversationMessage[];
 };
 
@@ -98,13 +98,13 @@ export type ConversationDetails = ConversationSummary & {
   messages: ConversationMessage[];
 };
 
-export type CreateConversationInput = {
+type CreateConversationInput = {
   databaseSourceId: string;
   llmConnectionId: string;
   title?: string;
 };
 
-export type UpdateConversationRuntimeInput = {
+type UpdateConversationRuntimeInput = {
   llmConnectionId: string;
   llmModelOverride: string | null;
 };

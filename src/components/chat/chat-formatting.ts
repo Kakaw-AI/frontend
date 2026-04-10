@@ -1,4 +1,4 @@
-export type MarkdownBlock =
+type MarkdownBlock =
   | { type: "heading"; level: 1 | 2 | 3 | 4 | 5 | 6; text: string }
   | { type: "unordered-list"; items: string[] }
   | { type: "ordered-list"; items: string[] }
@@ -220,7 +220,7 @@ function extractLeadingJsonLikeBlock(content: string) {
 
 type BarChartRow = Record<string, unknown>;
 
-export type BarChartRenderPlan = {
+type BarChartRenderPlan = {
   kind: "simple" | "grouped" | "stacked";
   xField: string;
   yField: string;

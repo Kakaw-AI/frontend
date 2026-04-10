@@ -1,4 +1,3 @@
-import { queryOptions } from "@tanstack/react-query";
 import { readApiErrorResponse } from "@/lib/api-error";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 
@@ -30,7 +29,6 @@ export type DatabaseSource = {
   lastError: string | null;
 };
 
-export const databaseSourcesQueryKey = ["database-sources"] as const;
 
 function toTitleCase(value: string) {
   return value
@@ -83,14 +81,6 @@ async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
   const data = (await response.json()) as DatabaseConnectionResponse[];
 
   return data.map(toDatabaseSource);
-}
-
-export function databaseSourcesQueryOptions() {
-  return queryOptions({
-    queryKey: databaseSourcesQueryKey,
-    queryFn: fetchDatabaseSources,
-    retry: false,
-  });
 }
 
 export async function resyncDatabaseSource(id: string): Promise<void> {
