@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthPage() {
-  const dashboardURL = "/dashboard";
+  const dashboardURL = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/dashboard`;
 
   async function signInWithGoogle() {
     await authClient.signIn.social({
@@ -38,7 +38,7 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           <header className="mb-12">
             <h1 className="font-headline text-4xl italic text-on-surface mb-3">
-              Welcome to the Atelier
+              Hey there, I&apos;m Kakaw 👋
             </h1>
             <p className="text-on-surface-variant font-body text-sm tracking-tight">
               Sign in to start talking to your data in plain English.

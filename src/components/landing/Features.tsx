@@ -57,21 +57,21 @@ const features = [
       </svg>
     ),
     title: "Bring Your Own LLM",
-    body: "Connect your own API key from Anthropic, OpenAI, Gemini, Ollama, or LM Studio. You choose the model — we never store your keys or your data.",
+    body: "Connect your own API key from Anthropic, OpenAI, Gemini, Ollama, or LM Studio. You choose the model ",
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="bg-surface-container-low py-24">
+    <section id="features" className="scroll-mt-32 bg-surface-container-low py-24">
       <div className="max-w-7xl mx-auto px-8">
         <div className="mb-16">
           <h2 className="font-headline text-4xl italic mb-4">
             Master your data without code
           </h2>
           <p className="text-on-surface-variant max-w-md">
-            Our atelier provides the precision of a craftsman with the speed of
-            an AI.
+            Kakaw brings the nose of a trained retriever and the speed of AI
+            to your data.
           </p>
         </div>
 

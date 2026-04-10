@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Features", href: "/#features" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Pricing", href: "/#pricing" },
   { label: "Docs", href: "/docs" }
 ]
 
@@ -32,12 +32,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="text-primary font-body text-sm tracking-tight hover:opacity-80 px-3 py-1.5"
-          >
-            Sign In
-          </Link>
           <Link
             href="/login"
             className="bg-primary text-on-primary px-6 py-2 rounded-lg font-body text-sm tracking-tight font-medium hover:opacity-90"

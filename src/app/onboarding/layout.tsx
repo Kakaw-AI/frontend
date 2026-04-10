@@ -12,7 +12,7 @@ export default function OnboardingLayout({
       <header className="bg-[#fbf9f8] fixed top-0 left-0 right-0 z-50">
         <div className="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
           <div className="text-2xl font-headline italic text-primary tracking-tight">
-            Atelier DB
+            Kakaw DB
           </div>
           <OnboardingTopBarActions />
         </div>

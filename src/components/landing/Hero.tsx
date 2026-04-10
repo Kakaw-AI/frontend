@@ -7,8 +7,8 @@ export function Hero() {
       {/* Left column */}
       <div className="lg:col-span-7 space-y-8">
         <div className="space-y-4">
-          <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
-            The Intelligent Atelier
+          <span className="font-label text-sm tracking-[0.08em] text-primary font-bold uppercase">
+            your clever data dog
           </span>
           <h1 className="font-headline text-6xl md:text-7xl lg:text-8xl italic text-on-surface leading-[1.1]">
             Talk to Your Database Like You Talk to a Friend
@@ -58,6 +58,11 @@ export function Hero() {
       <div className="lg:col-span-5 relative overflow-visible">
         <div className="absolute -inset-4 bg-primary-fixed/20 blur-3xl rounded-full" />
         <div className="relative z-10 aspect-square overflow-hidden rounded-3xl bg-surface-container-low p-8 border border-outline-variant/15 flex items-center justify-center">
+          <div className="absolute right-6 top-6 z-20 glass-panel px-4 py-3 rounded-2xl rounded-bl-md border border-outline-variant/15 shadow-xl">
+            <p className="font-headline text-lg italic text-primary leading-none">
+              Hi, I&apos;m Kakaw
+            </p>
+          </div>
           <Image
             src="/mascot.png"
             alt="Friendly Chihuahua Mascot — Kakaw"

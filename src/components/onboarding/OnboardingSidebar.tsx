@@ -22,7 +22,7 @@ export function OnboardingSidebar() {
       <div className="mb-8 px-4">
         <h2 className="font-headline text-2xl italic text-primary">Onboarding</h2>
         <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant opacity-60">
-          Setting up your atelier
+          Getting Kakaw ready
         </p>
       </div>
       <nav className="flex flex-col gap-2">

@@ -23,7 +23,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 max-w-7xl mx-auto px-8">
+    <section id="how-it-works" className="scroll-mt-32 py-24 max-w-7xl mx-auto px-8">
       <div className="grid lg:grid-cols-2 gap-16 items-start">
         {/* Sticky left panel */}
         <div className="sticky top-32">

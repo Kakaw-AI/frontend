@@ -81,7 +81,7 @@ export default function OnboardingSuccessPage() {
         <div className="flex items-center gap-2 grayscale">
           <CircleDot size={20} className="text-primary" />
           <span className="font-headline italic text-lg text-primary font-bold">
-            Atelier DB
+            Kakaw DB
           </span>
         </div>
       </footer>

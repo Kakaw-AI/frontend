@@ -11,9 +11,15 @@ export function OnboardingTopBarActions() {
 
   return (
     <div className="flex items-center gap-4 text-primary-container">
-      <button className="cursor-pointer hover:opacity-70 p-2 rounded transition-colors hover:bg-surface-container-low">
+      <Link
+        href="/docs"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="cursor-pointer hover:opacity-70 p-2 rounded transition-colors hover:bg-surface-container-low"
+        aria-label="Documentation"
+      >
         <HelpCircle size={20} />
-      </button>
+      </Link>
       {showClose ? (
         <Link
           href="/dashboard"

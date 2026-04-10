@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -133,12 +132,12 @@ export function ConnectionDetailsPage({
                 htmlFor={isSqlite ? "sqlite-file" : "connection-string"}
                 className="block text-sm font-label font-semibold text-on-surface uppercase tracking-wider"
               >
-                {isSqlite ? "SQLite Database File" : "Connection String"}
+                {isSqlite ? "Drop your SQLite file" : "Paste your connection URL"}
               </label>
               <p className="mt-2 text-sm text-on-surface-variant">
                 {isSqlite
-                  ? "Upload a .db, .sqlite, or .sqlite3 file. We’ll store it on the server and verify it before saving the connection."
-                  : "Paste the full PostgreSQL connection string exactly as your database provider gives it to you."}
+                  ? "Grab a .db, .sqlite, or .sqlite3 file and drop it in — Kakaw will sniff it and verify before saving."
+                  : "Copy it straight from your provider dashboard and drop it here. Kakaw will test it before saving anything."}
               </p>
             </div>
 
@@ -298,7 +297,7 @@ export function ConnectionDetailsPage({
                     ) : (
                       <>
                         Most {providerLabel} strings follow:{" "}
-                        <code className="bg-surface-container px-1 py-0.5 rounded font-mono">
+                        <code className="bg-surface-container px-1 py-0.5 rounded font-mono break-all">
                           protocol://user:password@host:port/db
                         </code>
                       </>
@@ -321,63 +320,27 @@ export function ConnectionDetailsPage({
               </div>
             </div>
             <div className="pt-4 border-t border-outline-variant/10">
-              <a
-                href="#"
+              <Link
+                href={`/docs#${provider}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-xs font-label text-primary font-bold flex items-center gap-1 hover:gap-2 transition-all"
               >
                 VIEW DOCUMENTATION
                 <ArrowRight size={14} />
-              </a>
+              </Link>
             </div>
           </div>
 
-          <div className="relative rounded-xl overflow-hidden aspect-4/3 shadow-xl">
-            <Image
-              src="/server-room.jpg"
-              alt="Secure data center"
-              fill
-              className="object-cover grayscale brightness-75"
-            />
-            <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
-            <div className="absolute bottom-4 left-4 right-4">
-              <p className="text-white text-[10px] font-label tracking-widest uppercase opacity-80">
-                Encryption Standard
-              </p>
-              <p className="text-white font-headline italic text-lg leading-tight">
-                AES-256 Bit Encryption at Rest
-              </p>
-            </div>
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/15 shadow-sm">
+            <Shield size={14} className="text-primary shrink-0" />
+            <span className="text-[11px] font-label font-semibold text-on-surface-variant uppercase tracking-widest">
+              AES-256 Encryption at Rest
+            </span>
           </div>
         </div>
       </section>
 
-      <div className="fixed bottom-12 right-12 w-80 translate-y-4 hover:translate-y-0 transition-transform duration-500 ease-out z-40 hidden xl:block">
-        <div className="bg-surface-container-lowest p-6 rounded-xl shadow-2xl border-l-4 border-primary">
-          <h4 className="font-headline text-lg italic text-on-surface mb-2">
-            Pro Tip
-          </h4>
-          <p className="text-xs text-on-surface-variant font-body leading-relaxed mb-4">
-            {isSqlite ? (
-              <>
-                If you’re sharing a development snapshot, make a copy before
-                uploading it so your local working database stays untouched.
-              </>
-            ) : (
-              <>
-                Using SSL certificates? You can append{" "}
-                <code className="text-primary font-mono">?ssl=true</code> to your
-                connection string for an immediate secure handshake when your
-                provider supports it.
-              </>
-            )}
-          </p>
-          <div className="flex justify-end">
-            <span className="text-[10px] font-label font-bold text-primary tracking-widest uppercase">
-              Kakaw AI Insights
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

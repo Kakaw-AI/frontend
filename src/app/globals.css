@@ -51,7 +51,7 @@
   --font-label: var(--font-inter), sans-serif;
 }
 
-/* Stitch "Intelligent Atelier" — extended design tokens */
+/* Kakaw — extended design tokens */
 @theme {
   --color-surface: #fbf9f8;
   --color-surface-dim: #dbdad9;

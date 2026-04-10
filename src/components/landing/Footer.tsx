@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const footerLinks: Record<string, { label: string; href: string }[]> = {
   Product: [
-    { label: "Features", href: "#features" },
-    { label: "How It Works", href: "#how-it-works" },
+    { label: "Features", href: "/#features" },
+    { label: "How It Works", href: "/#how-it-works" },
     { label: "Docs", href: "/docs" }
   ],
   Legal: [
@@ -22,8 +22,8 @@ export function Footer() {
             Kakaw AI
           </span>
           <p className="text-on-surface-variant max-w-xs text-sm">
-            The Intelligent Atelier for data-driven teams who value craft over
-            code.
+            Your clever little data companion for teams who love insights,
+            not SQL.
           </p>
           <div className="flex gap-4">
             <Link
@@ -95,7 +95,7 @@ export function Footer() {
 
       <div className="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-outline-variant/15 text-center md:text-left">
         <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
-          © 2026 Kakaw AI. Handcrafted in the Intelligent Atelier.
+          © 2026 Kakaw AI. Fetched fresh by a very good boy.
         </p>
       </div>
     </footer>

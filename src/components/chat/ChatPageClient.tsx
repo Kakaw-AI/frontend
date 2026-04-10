@@ -138,8 +138,10 @@ export function ChatPageClient() {
   const updateConversationRuntimeMutation = useMutation(updateConversationRuntimeMutationOptions());
 
   // Redirect /chat → first existing conversation, but only when there is no pending on-the-fly state
+  // and no localStorage draft that hasn't been restored yet (guards against SPA navigation racing
+  // the startup restore effect on the same render cycle).
   useEffect(() => {
-    if (!activeConversationId && !pendingConversation && conversationsQuery.data?.length) {
+    if (!activeConversationId && !pendingConversation && !readNewChatDraft() && conversationsQuery.data?.length) {
       router.replace("/chat/" + conversationsQuery.data[0].id);
     }
   }, [activeConversationId, pendingConversation, conversationsQuery.data, router]);
@@ -245,6 +247,12 @@ export function ChatPageClient() {
           title: "New chat",
         });
         newConversationId = conversation.id;
+        // Seed the details cache BEFORE navigating so the new page finds the
+        // conversation (with an empty messages list) immediately on mount.
+        queryClient.setQueryData<ConversationDetails>(
+          conversationDetailsQueryKey(newConversationId),
+          { ...conversation, messages: [] },
+        );
         clearPendingConversation();
         clearDraft(); // remove kakaw:draft:new
         // Navigate to the real conversation URL
@@ -257,7 +265,7 @@ export function ChatPageClient() {
         return;
       }
 
-      // Stream the first message on the newly created conversation
+      // Append the optimistic user message — cache is guaranteed non-empty now
       queryClient.setQueryData<ConversationDetails | undefined>(
         conversationDetailsQueryKey(newConversationId),
         (current) => current ? { ...current, messages: [...current.messages, createOptimisticUserMessage(content)] } : current,

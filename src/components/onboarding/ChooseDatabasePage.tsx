@@ -157,16 +157,7 @@ export function ChooseDatabasePage({
           ))}
         </div>
 
-        <div className="mt-16 bg-surface-container-lowest p-8 border-l-4 border-primary shadow-sm max-w-2xl">
-          <h4 className="font-headline text-xl italic text-on-surface mb-2">
-            Pro Tip: Local Development
-          </h4>
-          <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-            If you&apos;re testing in a local environment, ensure your database port
-            is accessible to our cloud IPs or use the Atelier Tunneling Client
-            for a secure, local-only bridge.
-          </p>
-        </div>
+
       </div>
 
       <footer className="sticky bottom-0 bg-surface/80 backdrop-blur-md px-12 py-6 flex justify-between items-center w-full max-w-5xl mx-auto border-t border-outline-variant/15">
