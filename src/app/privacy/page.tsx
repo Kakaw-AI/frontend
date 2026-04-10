@@ -1,4 +1,11 @@
+import type { Metadata } from "next"
 import { Navbar } from "@/components/landing/Navbar"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Kakaw AI is built on a simple principle: your data is yours. Read exactly what we collect, why, and how we protect it.",
+}
 import { Footer } from "@/components/landing/Footer"
 
 const sections = [

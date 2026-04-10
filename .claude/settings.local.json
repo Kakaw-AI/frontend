@@ -7,7 +7,9 @@
       "Bash(node:*)",
       "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps={**p.get\\('dependencies',{}\\), **p.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k in ['@next/mdx','@mdx-js/loader','@mdx-js/react','@types/mdx'] if k in deps or print\\(f'MISSING: {k}'\\)]\")",
       "Bash(wc:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(curl:*)",
+      "Bash(xargs ls:*)"
     ]
   },
   "marketplaces": [

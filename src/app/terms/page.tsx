@@ -1,4 +1,11 @@
+import type { Metadata } from "next"
 import { Navbar } from "@/components/landing/Navbar"
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Read Kakaw AI's Terms of Service. Plain language where possible, real legal language where required.",
+}
 import { Footer } from "@/components/landing/Footer"
 
 const sections = [
