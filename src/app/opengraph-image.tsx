@@ -16,7 +16,9 @@ export default async function Image() {
   const [fontData, mascotData] = await Promise.all([
     readFile(join(process.cwd(), "public/fonts/Newsreader-Italic.ttf")),
     readFile(join(process.cwd(), "public/mascot.png"), "base64"),
-  ]);
+  ]).catch((err: Error) => {
+    throw new Error(`OG image asset missing: ${err.message}`);
+  });
 
   const mascotSrc = `data:image/png;base64,${mascotData}`;
 
@@ -30,7 +32,6 @@ export default async function Image() {
           background: "linear-gradient(135deg, #705731 0%, #291800 100%)",
           alignItems: "center",
           padding: "0 80px",
-          gap: 0,
         }}
       >
         {/* ── Left panel ── */}
@@ -99,6 +100,7 @@ export default async function Image() {
           >
             <div
               style={{
+                display: "flex",
                 width: 40,
                 height: 2,
                 background: "#e3c193",
