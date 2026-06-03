@@ -8,6 +8,7 @@ import {
   conversationsQueryKey,
   conversationsQueryOptions,
   createConversationMutationOptions,
+  retryConversationMessage,
   streamConversationMessage,
   updateConversationRuntimeMutationOptions,
   type ConversationDetails,
@@ -20,7 +21,7 @@ import {
   saveLlmConnectionMutationOptions,
   type SaveLlmConnectionInput,
 } from "@/lib/queries/llm-connections";
-import { applyStreamEvent, createOptimisticUserMessage } from "@/components/chat/chat-stream-state";
+import { applyRetryReset, applyStreamEvent, createOptimisticUserMessage } from "@/components/chat/chat-stream-state";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
@@ -224,6 +225,61 @@ export function ChatPageClient() {
     setComposerInput(text);
   }
 
+  async function handleRetryMessage(messageId: string) {
+    if (!activeConversationId || isComposerLocked) return;
+
+    setComposerError(null);
+    setIsSending(true);
+
+    // Reset the failed bubble in place so the retry reuses it.
+    queryClient.setQueryData<ConversationDetails | undefined>(
+      conversationDetailsQueryKey(activeConversationId),
+      (current) => applyRetryReset(current, messageId),
+    );
+
+    try {
+      await retryConversationMessage(activeConversationId, messageId, (event) => {
+        queryClient.setQueryData<ConversationDetails | undefined>(
+          conversationDetailsQueryKey(activeConversationId),
+          (current) => applyStreamEvent(current, event),
+        );
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to retry the message.";
+      setComposerError(message);
+      markStreamingMessageFailed(activeConversationId, message, messageId);
+    } finally {
+      setIsSending(false);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(activeConversationId) }),
+        queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
+      ]);
+    }
+  }
+
+  // When a stream errors or the connection drops mid-response, flip the stuck
+  // STREAMING bubble to FAILED so the user gets a Retry affordance instead of an
+  // endless spinner. A server-side safety net persists the same terminal state,
+  // and the trailing invalidate reconciles with it.
+  function markStreamingMessageFailed(
+    conversationId: string,
+    errorMessage: string,
+    messageId?: string,
+  ) {
+    queryClient.setQueryData<ConversationDetails | undefined>(
+      conversationDetailsQueryKey(conversationId),
+      (current) =>
+        applyStreamEvent(current, {
+          type: "message_failed",
+          data: {
+            error: errorMessage,
+            ...(messageId ? { messageId } : {}),
+          },
+        }),
+    );
+  }
+
   async function handleSendMessage() {
     const content = composerInput.trim();
     if (!content || isComposerLocked) return;
@@ -279,7 +335,9 @@ export function ChatPageClient() {
           );
         });
       } catch (error) {
-        setComposerError(error instanceof Error ? error.message : "Unable to stream chat response.");
+        const message = error instanceof Error ? error.message : "Unable to stream chat response.";
+        setComposerError(message);
+        markStreamingMessageFailed(newConversationId, message);
       } finally {
         setIsSending(false);
         await Promise.all([
@@ -331,7 +389,9 @@ export function ChatPageClient() {
       });
       clearDraft(); // clear saved draft for this conversation after successful send
     } catch (error) {
-      setComposerError(error instanceof Error ? error.message : "Unable to stream chat response.");
+      const message = error instanceof Error ? error.message : "Unable to stream chat response.";
+      setComposerError(message);
+      markStreamingMessageFailed(activeConversationId, message);
     } finally {
       setIsSending(false);
       await Promise.all([
@@ -402,7 +462,9 @@ export function ChatPageClient() {
             activeConversation={activeConversation}
             isLoading={activeConversationQuery.isLoading}
             isComposerLocked={isComposerLocked}
+            isBusy={isComposerLocked}
             onSuggestionClick={handleSuggestionClick}
+            onRetryMessage={handleRetryMessage}
           />
 
           <footer className="border-t border-outline-variant/15 px-8 py-4">

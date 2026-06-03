@@ -35,6 +35,10 @@ export type ConversationMessage = {
   status: MessageStatus;
   content: string;
   error: string | null;
+  // Whether the failure is transient (rate limit / timeout / upstream 5xx).
+  // Only populated from a live stream's message_failed event; absent after a
+  // page reload, in which case the UI falls back to a neutral retry affordance.
+  errorRetryable?: boolean | null;
   analyticsOutcome?:
     | "failed"
     | "no_rows"
@@ -229,6 +233,31 @@ export async function streamConversationMessage(
     body: JSON.stringify({ content }),
   });
 
+  await consumeChatStream(response, onEvent);
+}
+
+export async function retryConversationMessage(
+  conversationId: string,
+  messageId: string,
+  onEvent: (event: Record<string, unknown>) => void,
+) {
+  const response = await fetch(
+    `/api/chat/conversations/${conversationId}/messages/${messageId}/retry`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+    },
+  );
+
+  await consumeChatStream(response, onEvent);
+}
+
+async function consumeChatStream(
+  response: Response,
+  onEvent: (event: Record<string, unknown>) => void,
+) {
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, "Unable to stream chat response."));
   }
@@ -318,6 +347,11 @@ export function conversationDetailsQueryOptions(conversationId: string) {
     queryFn: () => fetchConversation(conversationId),
     enabled: Boolean(conversationId),
     retry: false,
+    // A refetch while a response is streaming would replace the live optimistic
+    // messages (held only in the client cache until persisted) with a stale
+    // server snapshot — wiping streamed content when the tab regains focus.
+    // Updates are driven explicitly via invalidate after each send/retry.
+    refetchOnWindowFocus: false,
   });
 }
 

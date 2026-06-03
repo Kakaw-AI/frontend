@@ -36,6 +36,40 @@ export function createOptimisticUserMessage(content: string): ConversationMessag
   };
 }
 
+/**
+ * Resolves which message a stream event applies to. Events that carry a
+ * `messageId` (message_started/completed/failed, suggestions) target that exact
+ * message — this is what makes retrying an *older* failed message land on the
+ * right bubble. Content events without an id (delta, agent_step, sql/chart)
+ * target the single message that is currently STREAMING, falling back to the
+ * last assistant message.
+ */
+function resolveTargetIndex(
+  messages: ConversationMessage[],
+  data: Record<string, unknown>,
+): number {
+  if (typeof data.messageId === "string") {
+    const byId = messages.findIndex((message) => message.id === data.messageId);
+    if (byId !== -1) {
+      return byId;
+    }
+  }
+
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === "assistant" && messages[i].status === "STREAMING") {
+      return i;
+    }
+  }
+
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === "assistant") {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
 export function applyStreamEvent(
   conversation: ConversationDetails | undefined,
   event: Record<string, unknown>,
@@ -83,13 +117,7 @@ export function applyStreamEvent(
     };
   }
 
-  const lastAssistantIndex = [...conversation.messages]
-    .reverse()
-    .findIndex((message) => message.role === "assistant");
-  const targetIndex =
-    lastAssistantIndex === -1
-      ? -1
-      : conversation.messages.length - 1 - lastAssistantIndex;
+  const targetIndex = resolveTargetIndex(conversation.messages, data);
 
   if (targetIndex === -1) {
     return conversation;
@@ -198,15 +226,17 @@ export function applyStreamEvent(
       return { ...conversation, messages: updatedMessages };
     }
     case "message_failed": {
-      const error = normalizeApiErrorPayload(
+      const normalized = normalizeApiErrorPayload(
         data.errorInfo ?? data.error,
         "Agent execution failed.",
-      ).message;
+      );
+      const error = normalized.message;
       const prevSteps = target.steps ?? [];
       updatedMessages[targetIndex] = {
         ...target,
         status: "FAILED",
         error,
+        errorRetryable: normalized.retryable ?? null,
         analyticsOutcome: "failed",
         updatedAt: new Date().toISOString(),
         steps: prevSteps.map((s) => ({ ...s, done: true })),
@@ -230,4 +260,44 @@ export function applyStreamEvent(
     default:
       return conversation;
   }
+}
+
+/**
+ * Optimistically resets a failed assistant message back to a fresh streaming
+ * state before a retry stream begins, so the same bubble is reused (clearing the
+ * error, content, artifacts and step log) rather than appending a new message.
+ */
+export function applyRetryReset(
+  conversation: ConversationDetails | undefined,
+  messageId: string,
+): ConversationDetails | undefined {
+  if (!conversation) {
+    return conversation;
+  }
+
+  const index = conversation.messages.findIndex((message) => message.id === messageId);
+  if (index === -1) {
+    return conversation;
+  }
+
+  const messages = [...conversation.messages];
+  messages[index] = {
+    ...messages[index],
+    status: "STREAMING",
+    content: "",
+    error: null,
+    errorRetryable: null,
+    analyticsOutcome: null,
+    visualizationOutcome: null,
+    artifacts: [],
+    suggestions: [],
+    tokenUsage: null,
+    steps: [],
+    stepsCollapsed: false,
+    stepsStartedAt: null,
+    stepsElapsedMs: null,
+    updatedAt: new Date().toISOString(),
+  };
+
+  return { ...conversation, messages };
 }

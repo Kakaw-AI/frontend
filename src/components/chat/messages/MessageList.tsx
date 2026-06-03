@@ -8,12 +8,16 @@ export function MessageList({
   activeConversation,
   isLoading,
   isComposerLocked,
+  isBusy,
   onSuggestionClick,
+  onRetryMessage,
 }: {
   activeConversation: ConversationDetails | undefined;
   isLoading: boolean;
   isComposerLocked: boolean;
+  isBusy: boolean;
   onSuggestionClick: (text: string) => void;
+  onRetryMessage: (messageId: string) => void;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +60,9 @@ export function MessageList({
             key={message.id}
             message={message}
             isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
+            isBusy={isBusy}
             onSuggestionClick={onSuggestionClick}
+            onRetry={onRetryMessage}
           />
         ))}
 
