@@ -25,10 +25,12 @@ type SaveDatabaseSourceInput =
   | {
       provider: "sqlite";
       file?: File;
+      name?: string;
     }
   | {
       provider: "postgresql";
       connectionString: string;
+      name?: string;
     };
 
 export const onboardingStateQueryKey = ["me", "onboarding-state"] as const;
@@ -48,6 +50,7 @@ async function fetchOnboardingState(): Promise<OnboardingState> {
 type DatabaseSourceRecord = {
   id: string;
   provider: "postgresql" | "sqlite";
+  name: string | null;
   status: "PENDING" | "SYNCING" | "READY" | "FAILED";
   sqliteOriginalFilename: string | null;
   lastError: string | null;
@@ -116,6 +119,8 @@ async function uploadSqliteToStorage(file: File): Promise<string> {
 }
 
 async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
+  const name = input.name?.trim() || undefined;
+
   if (input.provider === "sqlite") {
     if (!input.file) {
       throw new Error("Upload a SQLite database file before continuing.");
@@ -127,6 +132,7 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
       provider: "sqlite",
       objectKey,
       originalFilename: input.file.name,
+      name,
     });
   }
 
@@ -138,6 +144,7 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
   return registerDatabaseSource({
     provider: "postgresql",
     connectionString,
+    name,
   });
 }
 

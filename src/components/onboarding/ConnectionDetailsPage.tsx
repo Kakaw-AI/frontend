@@ -45,8 +45,10 @@ export function ConnectionDetailsPage({
     provider,
     connString,
     sqliteFile,
+    name,
     setConnString,
     setSqliteFile,
+    setName,
   } = useConnectionDetailsState(initialProvider);
   const providerLabel = PROVIDER_LABELS[provider] ?? "Database";
   const connectionPlaceholder =
@@ -65,9 +67,10 @@ export function ConnectionDetailsPage({
             : {
                 id: source.id,
                 label:
-                  source.provider === "sqlite"
+                  source.name?.trim() ||
+                  (source.provider === "sqlite"
                     ? source.sqliteOriginalFilename?.trim() || "SQLite upload"
-                    : "PostgreSQL connection",
+                    : "PostgreSQL connection"),
                 provider: source.provider,
                 status: source.status,
                 lastError: source.lastError,
@@ -92,10 +95,12 @@ export function ConnectionDetailsPage({
 
   async function handleConnect() {
     try {
+      const trimmedName = name.trim() || undefined;
       if (isSqlite) {
         await connectDatabase.mutateAsync({
           provider: "sqlite",
           file: sqliteFile ?? undefined,
+          name: trimmedName,
         });
         return;
       }
@@ -103,6 +108,7 @@ export function ConnectionDetailsPage({
       await connectDatabase.mutateAsync({
         provider,
         connectionString: connString,
+        name: trimmedName,
       });
     } catch {}
   }
@@ -126,6 +132,32 @@ export function ConnectionDetailsPage({
         <div className="col-span-12 lg:col-span-8 space-y-12">
           <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_40px_60px_-15px_rgba(27,28,28,0.04)] relative overflow-hidden">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+
+            <div className="mb-6">
+              <label
+                htmlFor="connection-name"
+                className="block text-sm font-label font-semibold text-on-surface uppercase tracking-wider"
+              >
+                Connection name <span className="text-on-surface-variant normal-case">(optional)</span>
+              </label>
+              <p className="mt-2 text-sm text-on-surface-variant">
+                A friendly name to tell this connection apart from your others
+                {isSqlite ? "" : ` (e.g. "Prod replica", "Analytics DB")`}.
+              </p>
+              <input
+                id="connection-name"
+                type="text"
+                value={name}
+                onChange={(event) => {
+                  if (!connectDatabase.isPending) {
+                    connectDatabase.reset();
+                  }
+                  setName(event.target.value);
+                }}
+                placeholder={isSqlite ? "My SQLite database" : "My PostgreSQL database"}
+                className="mt-3 block w-full rounded-lg border-0 py-3 px-5 text-on-surface bg-surface-container-lowest text-sm shadow-sm ring-1 ring-inset ring-outline-variant/15 placeholder:text-outline/40 focus:ring-2 focus:ring-inset focus:ring-primary/40 transition-all duration-300"
+              />
+            </div>
 
             <div className="mb-6">
               <label

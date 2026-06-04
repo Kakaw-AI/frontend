@@ -9,11 +9,13 @@ export type SupportedDatabase = (typeof SUPPORTED_DATABASES)[number];
 type OnboardingState = {
   connString: string;
   sqliteFile: File | null;
+  name: string;
 };
 
 const onboardingStore = createStore<OnboardingState>({
   connString: "",
   sqliteFile: null,
+  name: "",
 });
 
 export function resolveSupportedDatabase(value: string): SupportedDatabase {
@@ -39,6 +41,12 @@ export const onboardingStoreActions = {
     onboardingStore.setState((state) => ({
       ...state,
       sqliteFile,
+    }));
+  },
+  setName(name: string) {
+    onboardingStore.setState((state) => ({
+      ...state,
+      name,
     }));
   },
 };

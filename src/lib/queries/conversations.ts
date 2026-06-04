@@ -1,7 +1,6 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { normalizeApiErrorPayload, readApiErrorResponse } from "@/lib/api-error";
 import {
-  resolveDatabaseSourceLabel,
   type DatabaseConnectionResponse,
   type DatabaseSource,
   toDatabaseSource,
@@ -390,21 +389,8 @@ export function updateConversationRuntimeMutationOptions() {
 }
 
 export function describeConversationRuntime(conversation: ConversationSummary) {
-  const sourceLabel = resolveDatabaseSourceLabel({
-    id: conversation.databaseSource.id,
-    provider: conversation.databaseSource.provider,
-    status: conversation.databaseSource.status,
-    sqliteOriginalFilename:
-      conversation.databaseSource.provider === "sqlite"
-        ? conversation.databaseSource.label
-        : null,
-    lastError: conversation.databaseSource.lastError,
-    lastTestedAt: conversation.databaseSource.lastTestedAt,
-    lastSyncedAt: conversation.databaseSource.lastSyncedAt,
-    syncRequestedAt: conversation.databaseSource.syncRequestedAt,
-    createdAt: conversation.databaseSource.createdAt,
-    updatedAt: conversation.updatedAt,
-  });
+  // databaseSource.label is already resolved (includes the connection name).
+  const sourceLabel = conversation.databaseSource.label;
 
   return `${sourceLabel} · ${
     conversation.runtime.effectiveModel ?? "Unavailable LLM runtime"

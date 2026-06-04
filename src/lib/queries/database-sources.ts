@@ -6,6 +6,7 @@ export type DatabaseSourceStatus = "PENDING" | "SYNCING" | "READY" | "FAILED";
 export type DatabaseConnectionResponse = {
   id: string;
   provider: DatabaseProvider;
+  name: string | null;
   status: DatabaseSourceStatus;
   sqliteOriginalFilename: string | null;
   lastError: string | null;
@@ -39,6 +40,11 @@ function toTitleCase(value: string) {
 }
 
 export function resolveDatabaseSourceLabel(source: DatabaseConnectionResponse) {
+  const explicitName = source.name?.trim();
+  if (explicitName) {
+    return explicitName;
+  }
+
   if (source.provider === "sqlite") {
     return source.sqliteOriginalFilename?.trim() || "SQLite upload";
   }
