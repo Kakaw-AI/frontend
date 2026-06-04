@@ -361,6 +361,22 @@ export function createConversationMutationOptions() {
   });
 }
 
+async function deleteConversation(conversationId: string): Promise<void> {
+  const response = await fetch(`/api/chat/conversations/${conversationId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, "Unable to delete conversation."));
+  }
+}
+
+export function deleteConversationMutationOptions() {
+  return mutationOptions({
+    mutationFn: deleteConversation,
+  });
+}
+
 export function updateConversationRuntimeMutationOptions() {
   return mutationOptions({
     mutationFn: ({

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bird, Database, LogOut, Plus, Search, Sparkles } from "lucide-react";
+import { Bird, Database, LogOut, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatConversationTime } from "@/components/chat/chat-formatting";
 import { describeConversationRuntime, type ConversationSummary } from "@/lib/queries/conversations";
@@ -11,12 +11,16 @@ export function ChatSidebar({
   activeConversationId,
   conversations,
   onConversationClick,
+  onDeleteConversation,
+  deletingConversationId,
   onLogout,
 }: {
   user: any;
   activeConversationId: string | null;
   conversations: ConversationSummary[] | undefined;
   onConversationClick: (id: string) => void;
+  onDeleteConversation: (id: string) => void;
+  deletingConversationId: string | null;
   onLogout: () => void;
 }) {
   const openPicker = useChatStore((s) => s.openPicker);
@@ -86,22 +90,39 @@ export function ChatSidebar({
 
         <div className="space-y-2">
           {conversations?.map((conversation) => (
-            <button
+            <div
               key={conversation.id}
-              type="button"
-              onClick={() => onConversationClick(conversation.id)}
               className={
                 activeConversationId === conversation.id
-                  ? "w-full rounded-2xl border border-primary/20 bg-white px-4 py-3 text-left shadow-sm"
-                  : "w-full rounded-2xl border border-transparent bg-surface-container-lowest px-4 py-3 text-left"
+                  ? "group relative rounded-2xl border border-primary/20 bg-white shadow-sm"
+                  : "group relative rounded-2xl border border-transparent bg-surface-container-lowest"
               }
             >
-              <p className="truncate text-sm font-semibold text-on-surface">{conversation.title}</p>
-              <p className="mt-1 text-xs text-on-surface/55">{describeConversationRuntime(conversation)}</p>
-              <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
-                {formatConversationTime(conversation.lastMessageAt)}
-              </p>
-            </button>
+              <button
+                type="button"
+                onClick={() => onConversationClick(conversation.id)}
+                className="w-full rounded-2xl px-4 py-3 pr-10 text-left"
+              >
+                <p className="truncate text-sm font-semibold text-on-surface">{conversation.title}</p>
+                <p className="mt-1 text-xs text-on-surface/55">{describeConversationRuntime(conversation)}</p>
+                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
+                  {formatConversationTime(conversation.lastMessageAt)}
+                </p>
+              </button>
+              <button
+                type="button"
+                aria-label="Delete conversation"
+                title="Delete conversation"
+                disabled={deletingConversationId === conversation.id}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDeleteConversation(conversation.id);
+                }}
+                className="absolute right-2 top-2 rounded-lg p-1.5 text-on-surface/35 opacity-0 transition-opacity hover:bg-rose-50 hover:text-rose-600 focus-visible:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
           ))}
 
           {!conversations?.length ? (

@@ -2,3 +2,5 @@ import { proxyToBackend } from "../../_lib/proxy-to-backend";
 
 export const GET = proxyToBackend;
 export const POST = proxyToBackend;
+export const PATCH = proxyToBackend;
+export const DELETE = proxyToBackend;

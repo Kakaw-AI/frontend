@@ -8,6 +8,7 @@ import {
   conversationsQueryKey,
   conversationsQueryOptions,
   createConversationMutationOptions,
+  deleteConversationMutationOptions,
   retryConversationMessage,
   streamConversationMessage,
   updateConversationRuntimeMutationOptions,
@@ -137,6 +138,7 @@ export function ChatPageClient() {
   });
 
   const updateConversationRuntimeMutation = useMutation(updateConversationRuntimeMutationOptions());
+  const deleteConversationMutation = useMutation(deleteConversationMutationOptions());
 
   // Redirect /chat → first existing conversation, but only when there is no pending on-the-fly state
   // and no localStorage draft that hasn't been restored yet (guards against SPA navigation racing
@@ -223,6 +225,37 @@ export function ChatPageClient() {
 
   function handleSuggestionClick(text: string) {
     setComposerInput(text);
+  }
+
+  async function handleDeleteConversation(conversationId: string) {
+    if (deleteConversationMutation.isPending) return;
+    const confirmed =
+      typeof window === "undefined"
+        ? true
+        : window.confirm("Delete this conversation? This can't be undone.");
+    if (!confirmed) return;
+
+    try {
+      await deleteConversationMutation.mutateAsync(conversationId);
+
+      // Drop it from the sidebar list and its details cache.
+      queryClient.setQueryData<ConversationSummary[] | undefined>(
+        conversationsQueryKey,
+        (current) => current?.filter((conversation) => conversation.id !== conversationId),
+      );
+      queryClient.removeQueries({ queryKey: conversationDetailsQueryKey(conversationId) });
+
+      // If the open conversation was deleted, leave it.
+      if (activeConversationId === conversationId) {
+        router.push("/chat");
+      }
+    } catch (error) {
+      setComposerError(
+        error instanceof Error ? error.message : "Unable to delete conversation.",
+      );
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+    }
   }
 
   async function handleRetryMessage(messageId: string) {
@@ -452,6 +485,12 @@ export function ChatPageClient() {
           activeConversationId={activeConversationId}
           conversations={conversationsQuery.data}
           onConversationClick={(id) => router.push("/chat/" + id)}
+          onDeleteConversation={handleDeleteConversation}
+          deletingConversationId={
+            deleteConversationMutation.isPending
+              ? (deleteConversationMutation.variables ?? null)
+              : null
+          }
           onLogout={handleLogout}
         />
 

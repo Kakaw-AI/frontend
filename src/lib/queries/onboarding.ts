@@ -45,29 +45,26 @@ async function fetchOnboardingState(): Promise<OnboardingState> {
   return (await response.json()) as OnboardingState;
 }
 
-async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
-  const formData = new FormData();
-  formData.append("provider", input.provider);
+type DatabaseSourceRecord = {
+  id: string;
+  provider: "postgresql" | "sqlite";
+  status: "PENDING" | "SYNCING" | "READY" | "FAILED";
+  sqliteOriginalFilename: string | null;
+  lastError: string | null;
+  lastTestedAt: string | null;
+  lastSyncedAt: string | null;
+  syncRequestedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
 
-  if (input.provider === "sqlite") {
-    if (!input.file) {
-      throw new Error("Upload a SQLite database file before continuing.");
-    }
-
-    formData.append("file", input.file);
-  } else {
-    const connectionString = input.connectionString.trim();
-
-    if (!connectionString) {
-      throw new Error("Enter a connection string before continuing.");
-    }
-
-    formData.append("connectionString", connectionString);
-  }
-
+async function registerDatabaseSource(
+  body: Record<string, unknown>,
+): Promise<DatabaseSourceRecord> {
   const response = await fetch("/api/database-sources", {
     method: "POST",
-    body: formData,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -78,18 +75,70 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
     throw new Error(error.message);
   }
 
-  return (await response.json()) as {
-    id: string;
-    provider: "postgresql" | "sqlite";
-    status: "PENDING" | "SYNCING" | "READY" | "FAILED";
-    sqliteOriginalFilename: string | null;
-    lastError: string | null;
-    lastTestedAt: string | null;
-    lastSyncedAt: string | null;
-    syncRequestedAt: string | null;
-    createdAt: string;
-    updatedAt: string;
+  return (await response.json()) as DatabaseSourceRecord;
+}
+
+async function uploadSqliteToStorage(file: File): Promise<string> {
+  const contentType = file.type || "application/octet-stream";
+
+  // 1) Ask our backend for a short-lived presigned PUT URL.
+  const presignResponse = await fetch("/api/database-sources/uploads/presign", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ filename: file.name, size: file.size, contentType }),
+  });
+
+  if (!presignResponse.ok) {
+    const error = await readApiErrorResponse(
+      presignResponse,
+      "Unable to prepare the upload.",
+    );
+    throw new Error(error.message);
+  }
+
+  const { uploadUrl, objectKey } = (await presignResponse.json()) as {
+    uploadUrl: string;
+    objectKey: string;
   };
+
+  // 2) Upload the file directly to R2 — it never passes through our server.
+  const uploadResponse = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: { "content-type": contentType },
+    body: file,
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error("Failed to upload the database file to storage.");
+  }
+
+  return objectKey;
+}
+
+async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
+  if (input.provider === "sqlite") {
+    if (!input.file) {
+      throw new Error("Upload a SQLite database file before continuing.");
+    }
+
+    const objectKey = await uploadSqliteToStorage(input.file);
+
+    return registerDatabaseSource({
+      provider: "sqlite",
+      objectKey,
+      originalFilename: input.file.name,
+    });
+  }
+
+  const connectionString = input.connectionString.trim();
+  if (!connectionString) {
+    throw new Error("Enter a connection string before continuing.");
+  }
+
+  return registerDatabaseSource({
+    provider: "postgresql",
+    connectionString,
+  });
 }
 
 export function onboardingStateQueryOptions() {
