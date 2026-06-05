@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 import { normalizeApiErrorPayload, readApiErrorResponse } from "@/lib/api-error";
 import {
   type DatabaseConnectionResponse,
@@ -153,7 +154,7 @@ async function readErrorMessage(response: Response, fallback: string) {
 }
 
 async function fetchConversations(): Promise<ConversationSummary[]> {
-  const response = await fetch("/api/chat/conversations", {
+  const response = await apiFetch("/api/chat/conversations", {
     cache: "no-store",
   });
 
@@ -166,7 +167,7 @@ async function fetchConversations(): Promise<ConversationSummary[]> {
 }
 
 async function fetchConversation(conversationId: string): Promise<ConversationDetails> {
-  const response = await fetch(`/api/chat/conversations/${conversationId}`, {
+  const response = await apiFetch(`/api/chat/conversations/${conversationId}`, {
     cache: "no-store",
   });
 
@@ -181,7 +182,7 @@ async function fetchConversation(conversationId: string): Promise<ConversationDe
 async function createConversation(
   input: CreateConversationInput,
 ): Promise<ConversationSummary> {
-  const response = await fetch("/api/chat/conversations", {
+  const response = await apiFetch("/api/chat/conversations", {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -201,7 +202,7 @@ async function updateConversationRuntime(
   conversationId: string,
   input: UpdateConversationRuntimeInput,
 ): Promise<ConversationDetails> {
-  const response = await fetch(`/api/chat/conversations/${conversationId}/runtime`, {
+  const response = await apiFetch(`/api/chat/conversations/${conversationId}/runtime`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -224,7 +225,7 @@ export async function streamConversationMessage(
   content: string,
   onEvent: (event: Record<string, unknown>) => void,
 ) {
-  const response = await fetch(`/api/chat/conversations/${conversationId}/messages/stream`, {
+  const response = await apiFetch(`/api/chat/conversations/${conversationId}/messages/stream`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -361,7 +362,7 @@ export function createConversationMutationOptions() {
 }
 
 async function deleteConversation(conversationId: string): Promise<void> {
-  const response = await fetch(`/api/chat/conversations/${conversationId}`, {
+  const response = await apiFetch(`/api/chat/conversations/${conversationId}`, {
     method: "DELETE",
   });
 

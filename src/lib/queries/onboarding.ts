@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 import { readApiErrorResponse } from "@/lib/api-error";
 
 type OnboardingState = {
@@ -36,7 +37,7 @@ type SaveDatabaseSourceInput =
 export const onboardingStateQueryKey = ["me", "onboarding-state"] as const;
 
 async function fetchOnboardingState(): Promise<OnboardingState> {
-  const response = await fetch("/api/me/onboarding-state", {
+  const response = await apiFetch("/api/me/onboarding-state", {
     cache: "no-store",
   });
 
@@ -64,7 +65,7 @@ type DatabaseSourceRecord = {
 async function registerDatabaseSource(
   body: Record<string, unknown>,
 ): Promise<DatabaseSourceRecord> {
-  const response = await fetch("/api/database-sources", {
+  const response = await apiFetch("/api/database-sources", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
@@ -85,7 +86,7 @@ async function uploadSqliteToStorage(file: File): Promise<string> {
   const contentType = file.type || "application/octet-stream";
 
   // 1) Ask our backend for a short-lived presigned PUT URL.
-  const presignResponse = await fetch("/api/database-sources/uploads/presign", {
+  const presignResponse = await apiFetch("/api/database-sources/uploads/presign", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ filename: file.name, size: file.size, contentType }),

@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api";
 import { readApiErrorResponse } from "@/lib/api-error";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 
@@ -72,7 +73,7 @@ export function toDatabaseSource(source: DatabaseConnectionResponse): DatabaseSo
 }
 
 async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
-  const response = await fetch("/api/me/connections", {
+  const response = await apiFetch("/api/me/connections", {
     cache: "no-store",
   });
 
@@ -90,7 +91,7 @@ async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
 }
 
 export async function resyncDatabaseSource(id: string): Promise<void> {
-  const response = await fetch(`/api/database-sources/${id}/refresh`, {
+  const response = await apiFetch(`/api/database-sources/${id}/refresh`, {
     method: "POST",
   });
 

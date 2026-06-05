@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_BASE } from "@/lib/api";
 
 async function getSession(request: NextRequest) {
-  const response = await fetch(new URL("/api/auth/get-session", request.url), {
+  const response = await fetch(`${API_BASE}/api/auth/get-session`, {
     method: "GET",
     headers: new Headers({
       cookie: request.headers.get("cookie") ?? "",
@@ -17,7 +18,7 @@ async function getSession(request: NextRequest) {
 }
 
 async function getOnboardingState(request: NextRequest) {
-  const response = await fetch(new URL("/api/me/onboarding-state", request.url), {
+  const response = await fetch(`${API_BASE}/api/me/onboarding-state`, {
     method: "GET",
     headers: new Headers({
       cookie: request.headers.get("cookie") ?? "",

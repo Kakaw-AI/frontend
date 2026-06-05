@@ -1,4 +1,5 @@
 import { mutationOptions } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 import { readApiErrorResponse } from "@/lib/api-error";
 
 export type LlmProvider =
@@ -123,7 +124,7 @@ async function readErrorMessage(response: Response, fallback: string) {
 }
 
 async function fetchLlmConnections(): Promise<LlmConnection[]> {
-  const response = await fetch("/api/me/llm-connections", {
+  const response = await apiFetch("/api/me/llm-connections", {
     cache: "no-store",
   });
 
@@ -136,7 +137,7 @@ async function fetchLlmConnections(): Promise<LlmConnection[]> {
 }
 
 async function saveLlmConnection(input: SaveLlmConnectionInput) {
-  const response = await fetch("/api/llm-connections", {
+  const response = await apiFetch("/api/llm-connections", {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -153,7 +154,7 @@ async function saveLlmConnection(input: SaveLlmConnectionInput) {
 }
 
 async function activateLlmConnection(connectionId: string) {
-  const response = await fetch(`/api/llm-connections/${connectionId}/activate`, {
+  const response = await apiFetch(`/api/llm-connections/${connectionId}/activate`, {
     method: "POST",
   });
 
@@ -168,7 +169,7 @@ async function activateLlmConnection(connectionId: string) {
 }
 
 async function deactivateLlmConnection(connectionId: string) {
-  const response = await fetch(`/api/llm-connections/${connectionId}/deactivate`, {
+  const response = await apiFetch(`/api/llm-connections/${connectionId}/deactivate`, {
     method: "POST",
   });
 
@@ -189,7 +190,7 @@ type DeleteLlmConnectionResult = {
 async function deleteLlmConnection(
   connectionId: string,
 ): Promise<DeleteLlmConnectionResult> {
-  const response = await fetch(`/api/llm-connections/${connectionId}`, {
+  const response = await apiFetch(`/api/llm-connections/${connectionId}`, {
     method: "DELETE",
   });
 

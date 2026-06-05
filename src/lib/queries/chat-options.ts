@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 import { readApiErrorResponse } from "@/lib/api-error";
 import {
   type DatabaseConnectionResponse,
@@ -24,7 +25,7 @@ export type ChatOptions = {
 export const chatOptionsQueryKey = ["me", "chat-options"] as const;
 
 async function fetchChatOptions(): Promise<ChatOptions> {
-  const response = await fetch("/api/me/chat-options", {
+  const response = await apiFetch("/api/me/chat-options", {
     cache: "no-store",
   });
 
