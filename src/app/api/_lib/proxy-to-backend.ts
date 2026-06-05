@@ -20,6 +20,10 @@ export async function proxyToBackend(request: Request): Promise<Response> {
     method: request.method,
     headers: request.headers,
     body: request.method !== "GET" ? request.body : undefined,
+    // Pass redirects (e.g. OAuth callback 302s) through to the browser instead
+    // of following them server-side, which would swallow the Location and the
+    // Set-Cookie that completes the login.
+    redirect: "manual",
     // @ts-expect-error Node 18 fetch requires this for streaming bodies.
     duplex: "half",
   });
