@@ -241,7 +241,7 @@ export async function retryConversationMessage(
   messageId: string,
   onEvent: (event: Record<string, unknown>) => void,
 ) {
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/chat/conversations/${conversationId}/messages/${messageId}/retry`,
     {
       method: "POST",
