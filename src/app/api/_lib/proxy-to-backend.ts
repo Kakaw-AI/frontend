@@ -16,11 +16,25 @@ export async function proxyToBackend(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const backendUrl = `${resolveBackendUrl()}${url.pathname}${url.search}`;
 
-  return fetch(backendUrl, {
+  const response = await fetch(backendUrl, {
     method: request.method,
     headers: request.headers,
     body: request.method !== "GET" ? request.body : undefined,
     // @ts-expect-error Node 18 fetch requires this for streaming bodies.
     duplex: "half",
+  });
+
+  // undici (Node fetch) transparently decompresses the upstream body, but the
+  // upstream Content-Encoding/Content-Length headers stay on the Response. If we
+  // forward them, the browser tries to decode an already-decoded body and fails
+  // with ERR_CONTENT_DECODING_FAILED. Strip them and stream the decoded body.
+  const headers = new Headers(response.headers);
+  headers.delete("content-encoding");
+  headers.delete("content-length");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
   });
 }
