@@ -2,13 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { API_BASE } from "@/lib/api";
 
 async function getSession(request: NextRequest) {
-  const response = await fetch(`${API_BASE}/api/auth/get-session`, {
-    method: "GET",
-    headers: new Headers({
-      cookie: request.headers.get("cookie") ?? "",
-    }),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/auth/get-session`, {
+      method: "GET",
+      headers: new Headers({
+        cookie: request.headers.get("cookie") ?? "",
+      }),
+      cache: "no-store",
+    });
+  } catch {
+    // Backend unreachable (DNS/connection/TLS) — treat as logged out rather
+    // than crashing the page with a 500.
+    return null;
+  }
 
   if (!response.ok) {
     return null;
@@ -18,13 +25,18 @@ async function getSession(request: NextRequest) {
 }
 
 async function getOnboardingState(request: NextRequest) {
-  const response = await fetch(`${API_BASE}/api/me/onboarding-state`, {
-    method: "GET",
-    headers: new Headers({
-      cookie: request.headers.get("cookie") ?? "",
-    }),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/me/onboarding-state`, {
+      method: "GET",
+      headers: new Headers({
+        cookie: request.headers.get("cookie") ?? "",
+      }),
+      cache: "no-store",
+    });
+  } catch {
+    return null;
+  }
 
   if (!response.ok) {
     return null;
