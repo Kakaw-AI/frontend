@@ -1,11 +1,12 @@
 // This proxy runs server-side, so it resolves the backend URL at runtime.
-// In containers the server reaches the backend over the internal network
-// (BACKEND_INTERNAL_URL, e.g. http://backend:3001), which differs from any
-// public URL baked into the client bundle. NEXT_PUBLIC_BACKEND_URL remains a
+// BACKEND_PROXY_URL is the origin the Next.js server forwards to — an internal
+// network address (e.g. http://backend:3001) or a public backend domain (e.g.
+// https://kakaw-ai.nasr.work). Use NO trailing slash and NO path; the request
+// pathname (/api/...) is appended below. NEXT_PUBLIC_BACKEND_URL remains a
 // fallback for local dev.
 function resolveBackendUrl(): string {
   return (
-    process.env.BACKEND_INTERNAL_URL ??
+    process.env.BACKEND_PROXY_URL ??
     process.env.NEXT_PUBLIC_BACKEND_URL ??
     "http://localhost:3001"
   );
