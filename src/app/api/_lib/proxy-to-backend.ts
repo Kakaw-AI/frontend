@@ -36,6 +36,19 @@ export async function proxyToBackend(request: Request): Promise<Response> {
   headers.delete("content-encoding");
   headers.delete("content-length");
 
+  // Constructing a Headers from another can fold multiple Set-Cookie values into
+  // one comma-joined header, corrupting the auth/session cookies. Re-apply each
+  // Set-Cookie individually from the original response.
+  const setCookies = (
+    response.headers as Headers & { getSetCookie(): string[] }
+  ).getSetCookie();
+  if (setCookies.length > 0) {
+    headers.delete("set-cookie");
+    for (const cookie of setCookies) {
+      headers.append("set-cookie", cookie);
+    }
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
