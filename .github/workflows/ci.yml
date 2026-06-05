@@ -1,13 +1,12 @@
 name: CI
 
+# Deployment is handled by Vercel's Git integration. This workflow only runs
+# PR/branch checks (lint + build).
+
 on:
   pull_request:
   push:
     branches: [master]
-    tags: ['v*']
-
-env:
-  IMAGE: ghcr.io/${{ github.repository_owner }}/kakaw-frontend
 
 jobs:
   build-test:
@@ -19,45 +18,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Non-blocking: the repo has pre-existing lint findings. Surface them
-      # without gating builds/images; tighten to blocking once cleaned up.
+      # Non-blocking: the repo has pre-existing lint findings.
       - run: npm run lint
         continue-on-error: true
       - run: npm run build
-
-  docker:
-    if: github.event_name == 'push'
-    needs: build-test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha
-            type=semver,pattern={{version}}
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          # NEXT_PUBLIC_APP_URL is baked into the client bundle, so it must be
-          # set at build time. Configure it as a repository variable
-          # (Settings -> Secrets and variables -> Actions -> Variables).
-          build-args: |
-            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
