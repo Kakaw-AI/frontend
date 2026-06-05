@@ -4,7 +4,7 @@
 // falls back to localhost in a deployed build; override with NEXT_PUBLIC_API_URL
 // for local dev (e.g. http://localhost:3001).
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.kakaw.gitnasr.com";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://k-api.gitnasr.com";
 
 // Wrapper around fetch that targets the backend and includes cookies on the
 // cross-origin (same-site) request. Pass backend paths starting with "/api".
