@@ -5,7 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthPage() {
-  const dashboardURL = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/dashboard`;
+  // Relative path on purpose: Better Auth resolves it against the current
+  // (frontend) origin, so the post-login redirect always lands on this site —
+  // no dependency on a build-time NEXT_PUBLIC_APP_URL that could point at the
+  // wrong subdomain and trip Better Auth's trustedOrigins check.
+  const dashboardURL = "/dashboard";
 
   async function signInWithGoogle() {
     await authClient.signIn.social({
