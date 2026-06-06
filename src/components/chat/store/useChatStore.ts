@@ -6,6 +6,9 @@ export type PendingConversation = {
 };
 
 interface ChatStoreState {
+  // Mobile conversation drawer
+  isSidebarOpen: boolean;
+
   // Connection picker
   isConnectionPickerOpen: boolean;
   pickerStartsInAddLlmMode: boolean;
@@ -23,6 +26,10 @@ interface ChatStoreState {
 }
 
 interface ChatStoreActions {
+  openSidebar: () => void;
+  closeSidebar: () => void;
+  toggleSidebar: () => void;
+
   openPicker: () => void;
   openAddLlmPicker: () => void;
   closePicker: () => void;
@@ -39,6 +46,9 @@ interface ChatStoreActions {
 }
 
 export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => ({
+  // Mobile drawer default
+  isSidebarOpen: false,
+
   // Connection picker defaults
   isConnectionPickerOpen: false,
   pickerStartsInAddLlmMode: false,
@@ -55,6 +65,10 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   pendingConversation: null,
 
   // Actions
+  openSidebar: () => set({ isSidebarOpen: true }),
+  closeSidebar: () => set({ isSidebarOpen: false }),
+  toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
+
   openPicker: () =>
     set({
       isConnectionPickerOpen: true,

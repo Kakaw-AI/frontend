@@ -78,12 +78,12 @@ export function ChooseDatabasePage({
 
   return (
     <>
-      <div className="max-w-5xl w-full mx-auto px-12 py-16 flex-1">
+      <div className="max-w-5xl w-full mx-auto px-5 sm:px-8 md:px-12 py-10 md:py-16 flex-1">
         <div className="mb-12 space-y-2">
           <span className="font-body text-xs font-semibold tracking-[0.2em] text-primary uppercase">
             Step 01
           </span>
-          <h1 className="text-5xl font-headline italic text-on-surface leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline italic text-on-surface leading-tight">
             What database do you use?
           </h1>
           <p className="text-on-surface-variant max-w-xl font-body mt-4 leading-relaxed opacity-80">
@@ -160,7 +160,7 @@ export function ChooseDatabasePage({
 
       </div>
 
-      <footer className="sticky bottom-0 bg-surface/80 backdrop-blur-md px-12 py-6 flex justify-between items-center w-full max-w-5xl mx-auto border-t border-outline-variant/15">
+      <footer className="sticky bottom-0 bg-surface/80 backdrop-blur-md px-5 sm:px-8 md:px-12 py-4 md:py-6 flex flex-wrap gap-3 justify-between items-center w-full max-w-5xl mx-auto border-t border-outline-variant/15">
         <Link
           href="/"
           className="px-8 py-3 text-primary font-body font-medium hover:bg-surface-container-low rounded-lg transition-colors flex items-center gap-2"

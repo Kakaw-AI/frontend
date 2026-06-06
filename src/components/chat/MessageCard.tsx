@@ -30,7 +30,7 @@ export function MessageCard({
   const visibleArtifacts = getVisibleArtifacts(message);
 
   return (
-    <div className={isUser ? "ml-auto max-w-3xl" : "mr-auto max-w-4xl"}>
+    <div className={isUser ? "ml-auto w-fit max-w-full md:max-w-3xl" : "mr-auto w-fit max-w-full md:max-w-4xl"}>
       <div
         className={
           isUser

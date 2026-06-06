@@ -10,7 +10,7 @@ const navLinks = [
 export function Navbar() {
   return (
     <header className="bg-[#fbf9f8] fixed top-0 left-0 right-0 z-50">
-      <nav className="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+      <nav className="flex justify-between items-center w-full px-5 md:px-8 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-8">
           <Link
             href="/"

@@ -114,12 +114,12 @@ export function ConnectionDetailsPage({
   }
 
   return (
-    <div className="flex-1 p-12 max-w-5xl">
+    <div className="flex-1 p-5 sm:p-8 md:p-12 max-w-5xl">
       <header className="mb-16">
         <span className="inline-block px-3 py-1 mb-4 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-widest uppercase">
           Step 02
         </span>
-        <h1 className="text-5xl font-headline italic text-on-surface mb-6">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline italic text-on-surface mb-6">
           Connect {providerLabel}
         </h1>
         <p className="text-lg text-on-surface-variant max-w-2xl leading-relaxed">
@@ -128,7 +128,7 @@ export function ConnectionDetailsPage({
         </p>
       </header>
 
-      <section className="grid grid-cols-12 gap-12">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12">
         <div className="col-span-12 lg:col-span-8 space-y-12">
           <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_40px_60px_-15px_rgba(27,28,28,0.04)] relative overflow-hidden">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />

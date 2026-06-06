@@ -1,24 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Database, Terminal, type LucideIcon } from "lucide-react";
-
-type Step = {
-  label: string;
-  Icon: LucideIcon;
-  href: string;
-};
-
-const steps: Step[] = [
-  { label: "Select Source",      Icon: Database,  href: "/onboarding/database" },
-  { label: "Connection Details", Icon: Terminal,   href: "/onboarding/connection" },
-];
+import { steps } from "./onboarding-steps";
 
 export function OnboardingSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 flex flex-col py-8 px-4 h-full w-64 bg-[#f5f3f3]">
+    <aside className="fixed left-0 top-16 bottom-0 hidden lg:flex flex-col py-8 px-4 h-full w-64 bg-[#f5f3f3]">
       <div className="mb-8 px-4">
         <h2 className="font-headline text-2xl italic text-primary">Onboarding</h2>
         <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant opacity-60">

@@ -30,9 +30,17 @@ export function ChatSidebar({
   const openPicker = useChatStore((s) => s.openPicker);
   const openAddLlmPicker = useChatStore((s) => s.openAddLlmPicker);
   const isSigningOut = useChatStore((s) => s.isSigningOut);
+  const isSidebarOpen = useChatStore((s) => s.isSidebarOpen);
+  const closeSidebar = useChatStore((s) => s.closeSidebar);
 
   return (
-    <aside className="flex h-full w-80 shrink-0 flex-col gap-5 border-r border-outline-variant/15 bg-surface-container-low p-4">
+    // Mobile: off-canvas drawer toggled by the header hamburger. Desktop (lg+):
+    // a static in-flow column — the lg: utilities fully neutralize the drawer.
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col gap-5 border-r border-outline-variant/15 bg-surface-container-low p-4 transition-transform duration-300 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:shrink-0 lg:transition-none ${
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
       <div className="flex items-center gap-3 px-2">
         <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-primary">
           <Image src="/mascot.png" alt="Kakaw AI" fill sizes="36px" className="object-cover" />
@@ -104,7 +112,10 @@ export function ChatSidebar({
             >
               <button
                 type="button"
-                onClick={() => onConversationClick(conversation.id)}
+                onClick={() => {
+                  onConversationClick(conversation.id);
+                  closeSidebar();
+                }}
                 className="w-full rounded-2xl px-4 py-3 pr-10 text-left"
               >
                 <p className="truncate text-sm font-semibold text-on-surface">{conversation.title}</p>

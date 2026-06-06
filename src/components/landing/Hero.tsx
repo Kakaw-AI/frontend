@@ -3,14 +3,14 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="max-w-7xl mx-auto px-8 py-20 grid lg:grid-cols-12 gap-12 items-center min-h-[819px]">
+    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-12 md:py-20 grid lg:grid-cols-12 gap-12 items-center lg:min-h-[819px]">
       {/* Left column */}
       <div className="lg:col-span-7 space-y-8">
         <div className="space-y-4">
           <span className="font-label text-sm tracking-[0.08em] text-primary font-bold uppercase">
             your clever data dog
           </span>
-          <h1 className="font-headline text-6xl md:text-7xl lg:text-8xl italic text-on-surface leading-[1.1]">
+          <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl lg:text-8xl italic text-on-surface leading-[1.1]">
             Talk to Your Database Like You Talk to a Friend
           </h1>
         </div>
@@ -74,7 +74,7 @@ export function Hero() {
         </div>
 
         {/* Floating glass card */}
-        <div className="absolute -bottom-6 -left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs hidden sm:block">
+        <div className="absolute -bottom-6 -left-6 md:-left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs hidden sm:block">
           <div className="flex items-center gap-3 mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"

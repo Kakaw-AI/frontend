@@ -104,9 +104,9 @@ export function ChatConnectionPicker({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/35 px-6 py-10 backdrop-blur-sm">
-      <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-[32px] border border-outline-variant/30 bg-surface-container-lowest shadow-[0_35px_90px_-24px_rgba(27,28,28,0.28)]" style={{ maxHeight: "calc(100vh - 5rem)" }}>
-        <div className="flex items-start justify-between gap-6 border-b border-outline-variant/15 px-8 py-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/35 px-4 py-6 backdrop-blur-sm md:px-6 md:py-10">
+      <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface-container-lowest shadow-[0_35px_90px_-24px_rgba(27,28,28,0.28)] md:rounded-[32px]" style={{ maxHeight: "calc(100dvh - 3rem)" }}>
+        <div className="flex items-start justify-between gap-6 border-b border-outline-variant/15 px-5 py-5 md:px-8 md:py-6">
           <div className="space-y-2">
             <p className="font-label text-[10px] font-semibold uppercase tracking-[0.24em] text-primary">New Chat</p>
             <div>

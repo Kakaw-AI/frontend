@@ -96,6 +96,9 @@ export function TableArtifact({
           Download CSV
         </button>
       </div>
+      <p className="px-4 pb-2 text-[11px] text-on-surface/40 sm:hidden">
+        Swipe table sideways to see more →
+      </p>
       <div className="max-h-[34rem] overflow-auto">
         <table
           className="w-max min-w-full border-separate border-spacing-0 text-left"

@@ -24,11 +24,11 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col md:flex-row">
+    <main className="flex min-h-dvh flex-col md:flex-row">
       {/* ── Left Side: Authentication Form ── */}
-      <section className="w-full md:w-1/2 flex flex-col justify-center items-center px-8 md:px-24 py-16 bg-surface relative overflow-hidden">
+      <section className="w-full md:w-1/2 flex flex-col justify-center items-center px-5 sm:px-8 md:px-24 py-12 md:py-16 bg-surface relative overflow-hidden">
         {/* Logo */}
-        <div className="absolute top-12 left-12">
+        <div className="absolute top-6 left-5 md:top-12 md:left-12">
           <Link
             href="/"
             className="font-headline italic text-2xl font-bold text-primary"
@@ -39,7 +39,7 @@ export default function AuthPage() {
 
         <div className="w-full max-w-md">
           <header className="mb-12">
-            <h1 className="font-headline text-4xl italic text-on-surface mb-3">
+            <h1 className="font-headline text-3xl sm:text-4xl italic text-on-surface mb-3">
               Hey there, I&apos;m Kakaw 👋
             </h1>
             <p className="text-on-surface-variant font-body text-sm tracking-tight">
@@ -112,12 +112,12 @@ export default function AuthPage() {
       </section>
 
       {/* ── Right Side: Brand Showcase ── */}
-      <section className="w-full md:w-1/2 min-h-100 md:min-h-screen relative flex items-center justify-center overflow-hidden">
+      <section className="w-full md:w-1/2 min-h-[25rem] md:min-h-dvh relative flex items-center justify-center overflow-hidden">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-linear-to-br from-primary to-[#291800]" />
 
         {/* Brand Messaging — centered */}
-        <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
+        <div className="relative z-10 flex max-w-md flex-col items-center px-6 sm:px-12 text-center">
           <h2 className="font-headline text-3xl md:text-5xl italic text-on-primary-container leading-tight">
             Crafting data with <br />
             <span className="text-tertiary-fixed">warm intelligence.</span>

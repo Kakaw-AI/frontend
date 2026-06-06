@@ -85,14 +85,14 @@ export function DatabaseSyncPage() {
   }, [blockingSync]);
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-surface px-8 py-16">
-      <div className="w-full max-w-3xl rounded-[32px] border border-outline-variant/20 bg-surface-container-lowest p-10 shadow-[0_35px_90px_-24px_rgba(27,28,28,0.22)]">
+    <main className="flex flex-1 items-center justify-center bg-surface px-5 sm:px-8 py-10 md:py-16">
+      <div className="w-full max-w-3xl rounded-[32px] border border-outline-variant/20 bg-surface-container-lowest p-6 sm:p-8 md:p-10 shadow-[0_35px_90px_-24px_rgba(27,28,28,0.22)]">
         <div className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/75">
               Database Setup
             </p>
-            <h1 className="font-headline text-4xl italic text-primary">
+            <h1 className="font-headline text-3xl sm:text-4xl italic text-primary">
               {statusCopy.title}
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-on-surface/70">

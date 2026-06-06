@@ -56,6 +56,8 @@ export function ChatPageClient() {
     beginSignOut,
     endSignOut,
     closePicker,
+    closeSidebar,
+    isSidebarOpen,
     pendingConversation,
     setPendingConversation,
     clearPendingConversation,
@@ -63,6 +65,12 @@ export function ChatPageClient() {
 
   // The localStorage key for the current chat: conversationId or "new" for on-the-fly
   const chatKey = activeConversationId ?? "new";
+
+  // Close the mobile conversation drawer whenever the active conversation
+  // changes (selection, redirect to first conversation, or delete).
+  useEffect(() => {
+    closeSidebar();
+  }, [activeConversationId, closeSidebar]);
 
   const { readDraftText, setDraft, clearDraft } = useDraftCache(chatKey, pendingConversation);
 
@@ -479,7 +487,15 @@ export function ChatPageClient() {
         }}
       />
 
-      <div className="flex h-screen overflow-hidden bg-surface font-body text-on-surface">
+      <div className="flex h-dvh overflow-hidden bg-surface font-body text-on-surface">
+        {isSidebarOpen ? (
+          <button
+            type="button"
+            aria-label="Close conversations"
+            onClick={closeSidebar}
+            className="fixed inset-0 z-40 bg-on-surface/35 backdrop-blur-sm lg:hidden"
+          />
+        ) : null}
         <ChatSidebar
           user={user}
           activeConversationId={activeConversationId}
@@ -506,7 +522,7 @@ export function ChatPageClient() {
             onRetryMessage={handleRetryMessage}
           />
 
-          <footer className="border-t border-outline-variant/15 px-8 py-4">
+          <footer className="border-t border-outline-variant/15 px-4 py-3 md:px-8 md:py-4">
             {activeConversation ? (
               <ComposerConnectionSelect
                 activeConnectionId={activeConversation.llmConnectionId}

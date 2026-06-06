@@ -6,7 +6,7 @@ export default function OnboardingSuccessPage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-8 bg-surface">
       {/* Background decorative elements */}
-      <div className="fixed top-0 right-0 -z-10 w-1/3 h-screen bg-surface-container-low/50 pointer-events-none" />
+      <div className="fixed top-0 right-0 -z-10 w-1/3 h-dvh bg-surface-container-low/50 pointer-events-none" />
       <div className="fixed bottom-0 left-0 -z-10 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-2xl w-full text-center space-y-12">
@@ -31,7 +31,7 @@ export default function OnboardingSuccessPage() {
 
         {/* Text */}
         <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight italic">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight italic">
             You&apos;re All Set!
           </h1>
           <p className="text-xl md:text-2xl font-body text-on-surface-variant max-w-lg mx-auto leading-relaxed">
