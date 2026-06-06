@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
 
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
+  options: {
+    // GitHub-flavored markdown: pipe tables, strikethrough, autolinks.
+    // Turbopack requires serializable options, so the plugin is referenced by
+    // name (string) rather than an imported function.
+    remarkPlugins: [['remark-gfm']],
+  },
 })
 
 export default withMDX(nextConfig)

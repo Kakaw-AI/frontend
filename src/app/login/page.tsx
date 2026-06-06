@@ -1,7 +1,6 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthPage() {
@@ -117,37 +116,16 @@ export default function AuthPage() {
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-linear-to-br from-primary to-[#291800]" />
 
-        {/* Content Container */}
-        <div className="relative z-10 flex flex-col items-center text-center px-12">
-          {/* Illustration Wrapper */}
-          <div className="relative mb-12 group">
-            {/* Glassy Orbit Circles */}
-            <div className="absolute -top-4 -left-4 w-24 h-24 rounded-full glass-panel border border-white/10 opacity-40 blur-sm" />
-            <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full glass-panel border border-white/10 opacity-30 blur-md" />
-            {/* Mascot */}
-            <div className="w-64 h-64 md:w-80 md:h-80 bg-surface-container-lowest/10 backdrop-blur-sm rounded-full flex items-center justify-center p-8 editorial-shadow border border-white/10">
-              <Image
-                src="/mascot-login.png"
-                alt="Kakaw AI Mascot"
-                width={320}
-                height={320}
-                className="w-full h-full object-contain"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Brand Messaging */}
-          <div className="max-w-md space-y-4">
-            <h2 className="font-headline text-3xl md:text-5xl italic text-on-primary-container leading-tight">
-              Crafting data with <br />
-              <span className="text-tertiary-fixed">warm intelligence.</span>
-            </h2>
-            <p className="text-on-primary-container/80 font-body text-base md:text-lg leading-relaxed">
-              Join Kakaw AI to transform complex SQL queries into elegant,
-              human-readable insights. Your data, refined.
-            </p>
-          </div>
+        {/* Brand Messaging — centered */}
+        <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
+          <h2 className="font-headline text-3xl md:text-5xl italic text-on-primary-container leading-tight">
+            Crafting data with <br />
+            <span className="text-tertiary-fixed">warm intelligence.</span>
+          </h2>
+          <p className="mt-4 text-on-primary-container/80 font-body text-base md:text-lg leading-relaxed">
+            Join Kakaw AI to transform complex SQL queries into elegant,
+            human-readable insights. Your data, refined.
+          </p>
         </div>
 
         {/* Hi, I'm Kakaw — top-right */}
@@ -156,54 +134,6 @@ export default function AuthPage() {
             <p className="font-headline text-base italic text-on-primary-container leading-none">
               Hi, I&apos;m Kakaw 👋
             </p>
-          </div>
-        </div>
-
-        {/* Live Query — bottom-left */}
-        <div className="absolute bottom-12 left-10 hidden lg:block z-10">
-          <div className="glass-panel p-4 rounded-xl border border-white/10 shadow-xl text-left max-w-xs">
-            <div className="flex items-center gap-2 mb-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4 text-primary-fixed"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-              </svg>
-              <span className="text-[10px] font-sans uppercase tracking-widest text-primary font-bold">
-                Live Query
-              </span>
-            </div>
-            <p className="font-headline italic text-on-surface text-sm mb-2">
-              &ldquo;Show me top customers by revenue this quarter&hellip;&rdquo;
-            </p>
-            <div className="h-1 w-12 bg-primary rounded-full" />
-          </div>
-        </div>
-
-        {/* AI Insight — bottom-right */}
-        <div className="absolute bottom-12 right-12 hidden lg:block z-10">
-          <div className="glass-panel p-4 rounded-xl border border-white/10 shadow-xl text-left max-w-xs">
-            <div className="flex items-center gap-2 mb-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4 text-primary-fixed"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z" />
-              </svg>
-              <span className="text-[10px] font-sans uppercase tracking-widest text-primary font-bold">
-                AI Insight
-              </span>
-            </div>
-            <p className="font-headline italic text-on-surface text-sm mb-2">
-              &ldquo;Q4 sales growth is trending 12% higher in artisanal categories&hellip;&rdquo;
-            </p>
-            <div className="h-1 w-12 bg-primary rounded-full" />
           </div>
         </div>
       </section>

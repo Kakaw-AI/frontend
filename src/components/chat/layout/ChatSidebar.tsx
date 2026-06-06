@@ -1,6 +1,7 @@
 "use client";
 
-import { Bird, Database, LogOut, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { Database, LogOut, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { formatConversationTime } from "@/components/chat/chat-formatting";
 import { describeConversationRuntime, type ConversationSummary } from "@/lib/queries/conversations";
@@ -15,7 +16,7 @@ export function ChatSidebar({
   deletingConversationId,
   onLogout,
 }: {
-  user: any;
+  user: { name?: string | null; email?: string | null; image?: string | null } | null;
   activeConversationId: string | null;
   conversations: ConversationSummary[] | undefined;
   onConversationClick: (id: string) => void;
@@ -30,8 +31,8 @@ export function ChatSidebar({
   return (
     <aside className="flex h-full w-80 shrink-0 flex-col gap-5 border-r border-outline-variant/15 bg-surface-container-low p-4">
       <div className="flex items-center gap-3 px-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-on-primary">
-          <Bird size={18} />
+        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-primary">
+          <Image src="/mascot.png" alt="Kakaw AI" fill sizes="36px" className="object-cover" />
         </div>
         <div>
           <h1 className="font-headline text-xl font-bold italic text-primary">Kakaw AI</h1>
@@ -133,19 +134,57 @@ export function ChatSidebar({
         </div>
       </div>
 
-      <div className="space-y-3 border-t border-outline-variant/15 pt-4">
-        {user ? (
+      {user ? (
+        <div className="space-y-3 border-t border-outline-variant/15 pt-4">
+          <div className="flex items-center gap-3 px-2">
+            {user.image ? (
+              // Plain <img>: OAuth avatar hosts (GitHub/Google) are arbitrary, so
+              // this avoids whitelisting every domain in next.config remotePatterns.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.image}
+                alt={user.name ?? "User avatar"}
+                width={36}
+                height={36}
+                className="h-9 w-9 shrink-0 rounded-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                {getInitials(user.name, user.email)}
+              </div>
+            )}
+            <div className="min-w-0">
+              {user.name ? (
+                <p className="truncate text-sm font-semibold text-on-surface">{user.name}</p>
+              ) : null}
+              {user.email ? (
+                <p className="truncate text-xs text-on-surface/55">{user.email}</p>
+              ) : null}
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={onLogout}
             disabled={isSigningOut}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-outline-variant/15 bg-surface-container-lowest px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface/70"
+            className="group flex w-full items-center justify-center gap-2 rounded-2xl border border-outline-variant/15 bg-surface-container-lowest px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface/70 transition-colors hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <LogOut size={14} />
+            <LogOut size={14} className="transition-colors group-hover:text-rose-600" />
             {isSigningOut ? "Signing Out" : "Log Out"}
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </aside>
   );
+}
+
+function getInitials(name?: string | null, email?: string | null): string {
+  const source = name?.trim() || email?.trim() || "";
+  if (!source) return "?";
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return source.slice(0, 2).toUpperCase();
 }
