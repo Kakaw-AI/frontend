@@ -9,7 +9,21 @@
       "Bash(wc:*)",
       "Bash(git:*)",
       "Bash(curl:*)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "WebFetch(domain:kakaw.gitnasr.com)",
+      "Read(//c/Users/nasr-pc/.claude/skills/seo/**)",
+      "Read(//c/Users/nasr-pc/.claude/skills/seo/scripts/**)",
+      "Bash(python scripts/google_auth.py --check)",
+      "Bash(python scripts/backlinks_auth.py --check)",
+      "Bash(python scripts/fetch_page.py https://kakaw.gitnasr.com)",
+      "Bash(export PYTHONUTF8=1)",
+      "Bash(export PYTHONIOENCODING=utf-8)",
+      "Bash(python scripts/parse_html.py https://kakaw.gitnasr.com)",
+      "Bash(ls -1 app)",
+      "Bash(ls -1 src)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(PORT=3123 npm run start)"
     ]
   },
   "marketplaces": [
