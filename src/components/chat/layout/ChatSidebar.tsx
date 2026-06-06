@@ -16,7 +16,10 @@ export function ChatSidebar({
   deletingConversationId,
   onLogout,
 }: {
-  user: { name?: string | null; email?: string | null; image?: string | null } | null;
+  user:
+    | { name?: string | null; email?: string | null; image?: string | null }
+    | null
+    | undefined;
   activeConversationId: string | null;
   conversations: ConversationSummary[] | undefined;
   onConversationClick: (id: string) => void;
@@ -138,16 +141,13 @@ export function ChatSidebar({
         <div className="space-y-3 border-t border-outline-variant/15 pt-4">
           <div className="flex items-center gap-3 px-2">
             {user.image ? (
-              // Plain <img>: OAuth avatar hosts (GitHub/Google) are arbitrary, so
-              // this avoids whitelisting every domain in next.config remotePatterns.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              // GitHub/Google avatar hosts are whitelisted in next.config images.
+              <Image
                 src={user.image}
                 alt={user.name ?? "User avatar"}
                 width={36}
                 height={36}
                 className="h-9 w-9 shrink-0 rounded-full object-cover"
-                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">

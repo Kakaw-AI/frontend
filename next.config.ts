@@ -3,6 +3,13 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  images: {
+    // OAuth profile avatar hosts (Better Auth: GitHub + Google).
+    remotePatterns: [
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+    ],
+  },
 }
 
 const withMDX = createMDX({
