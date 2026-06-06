@@ -2,22 +2,25 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { siteGraph } from "@/lib/schema";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kakaw.ai"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Kakaw AI — Talk to Your Database Like You Talk to a Friend",
-    template: "%s | Kakaw AI",
+    template: `%s | ${SITE_NAME}`,
   },
   description:
     "Kakaw AI helps non-technical users get insights from their databases in seconds. No SQL knowledge needed.",
   openGraph: {
     type: "website",
-    siteName: "Kakaw AI",
+    siteName: SITE_NAME,
     title: "Kakaw AI — Talk to Your Database Like You Talk to a Friend",
     description:
       "Kakaw AI helps non-technical users get insights from their databases in seconds. No SQL knowledge needed.",
-    url: "https://kakaw.ai",
+    url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
@@ -58,6 +61,7 @@ export default function RootLayout({
       }
     >
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
+        <JsonLd data={siteGraph()} />
         <Providers>{children}</Providers>
       </body>
     </html>

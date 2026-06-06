@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { breadcrumbSchema, techArticleSchema } from "@/lib/schema"
 
 const validSlugs = ["getting-started", "connect-database", "setup-llm", "using-chat"]
 
@@ -33,6 +35,7 @@ export async function generateMetadata({
   return {
     title: meta.title,
     description: meta.description,
+    alternates: { canonical: `/docs/${slug}` },
   }
 }
 
@@ -50,6 +53,25 @@ export default async function DocPage({
   const { slug } = await params
   if (!validSlugs.includes(slug)) notFound()
 
+  const meta = slugMeta[slug]
   const { default: Doc } = await import(`@/content/docs/${slug}.mdx`)
-  return <Doc />
+  return (
+    <>
+      <JsonLd
+        data={[
+          techArticleSchema({
+            title: meta.title,
+            description: meta.description,
+            path: `/docs/${slug}`,
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Docs", path: "/docs" },
+            { name: meta.title, path: `/docs/${slug}` },
+          ]),
+        ]}
+      />
+      <Doc />
+    </>
+  )
 }

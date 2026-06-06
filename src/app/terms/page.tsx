@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/landing/Navbar"
+import { CONTACT_EMAIL } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "Read Kakaw AI's Terms of Service. Plain language where possible, real legal language where required.",
+  alternates: { canonical: "/terms" },
 }
 import { Footer } from "@/components/landing/Footer"
 
@@ -53,7 +55,7 @@ const sections = [
   },
   {
     title: "Contact",
-    content: `Questions about these terms? Reach us at legal@kakaw.ai.
+    content: `Questions about these terms? Reach us at ${CONTACT_EMAIL}.
 
 Last updated: April 2026`,
   },

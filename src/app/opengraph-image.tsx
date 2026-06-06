@@ -117,7 +117,7 @@ export default async function Image() {
                 color: "#e3c193",
               }}
             >
-              kakaw.ai
+              kakaw.gitnasr.com
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default async function Image() {
               color: "rgba(255, 250, 248, 0.85)",
             }}
           >
-            ✦ No SQL required
+            No SQL required
           </div>
         </div>
       </div>

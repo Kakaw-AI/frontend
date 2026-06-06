@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/landing/Navbar"
+import { CONTACT_EMAIL } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "Kakaw AI is built on a simple principle: your data is yours. Read exactly what we collect, why, and how we protect it.",
+  alternates: { canonical: "/privacy" },
 }
 import { Footer } from "@/components/landing/Footer"
 
@@ -48,7 +50,7 @@ Local models (Ollama, LM Studio) process data entirely on your machine — no da
   },
   {
     title: "Contact",
-    content: `Questions about this privacy policy? Reach us at privacy@kakaw.ai.
+    content: `Questions about this privacy policy? Reach us at ${CONTACT_EMAIL}.
 
 Last updated: April 2026`,
   },
