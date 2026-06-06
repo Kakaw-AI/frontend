@@ -24,7 +24,12 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(PORT=3123 npm run start)",
-      "Read(//g/Coding/Programming/SaaS/**)"
+      "Read(//g/Coding/Programming/SaaS/**)",
+      "Bash(npx prisma *)",
+      "Bash(OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 OTEL_SERVICE_NAME=kakaw-backend OTEL_LOG_LEVEL=error node -e \"require\\('./dist/telemetry.js'\\); console.log\\('LOADED_OK'\\); setTimeout\\(\\(\\)=>process.exit\\(0\\), 1500\\);\")",
+      "Bash(yarn add *)",
+      "Bash(OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 OTEL_SERVICE_NAME=kakaw-agent OTEL_LOG_LEVEL=error node --import @opentelemetry/instrumentation/hook.mjs --import ./dist/telemetry.js -e \"console.log\\('LOADED_OK'\\); setTimeout\\(\\(\\)=>process.exit\\(0\\),1500\\);\")",
+      "Bash(NODE_ENV=production OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 OTEL_SERVICE_NAME=kakaw-agent OTEL_LOG_LEVEL=error node --import @opentelemetry/instrumentation/hook.mjs --import ./dist/telemetry.js -e ' *)"
     ]
   },
   "marketplaces": [
