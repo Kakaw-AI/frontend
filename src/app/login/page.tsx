@@ -5,23 +5,22 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthPage() {
-  // Relative path on purpose: Better Auth resolves it against the current
-  // (frontend) origin, so the post-login redirect always lands on this site —
-  // no dependency on a build-time NEXT_PUBLIC_APP_URL that could point at the
-  // wrong subdomain and trip Better Auth's trustedOrigins check.
-  const dashboardURL = "/dashboard";
-
+  // Absolute URL built from the live browser origin (this is a client
+  // component, so window is available in the click handlers). The auth client's
+  // baseURL points at the backend (k-api.*), so a relative callbackURL would
+  // resolve against the backend and 404; an absolute frontend URL lands the
+  // user back on this site and satisfies Better Auth's trustedOrigins check.
   async function signInWithGoogle() {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: dashboardURL,
+      callbackURL: `${window.location.origin}/dashboard`,
     });
   }
 
   async function signInWithGitHub() {
     await authClient.signIn.social({
       provider: "github",
-      callbackURL: dashboardURL,
+      callbackURL: `${window.location.origin}/dashboard`,
     });
   }
 
