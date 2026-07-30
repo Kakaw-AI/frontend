@@ -8,8 +8,11 @@ import {
 } from "@/components/chat/chat-formatting";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { memo, useMemo } from "react";
 
-export function MessageCard({
+// Memoized because the answer now streams: without this, every token re-renders
+// every message in the conversation, including their charts and tables.
+export const MessageCard = memo(function MessageCard({
   message,
   isLastAssistantMessage,
   isBusy,
@@ -23,11 +26,16 @@ export function MessageCard({
   onRetry: (messageId: string) => void;
 }) {
   const isUser = message.role === "user";
-  const displayContent =
-    message.role === "assistant"
-      ? getVisibleAssistantContent(message)
-      : message.content;
-  const visibleArtifacts = getVisibleArtifacts(message);
+  const displayContent = useMemo(
+    () =>
+      message.role === "assistant"
+        ? getVisibleAssistantContent(message)
+        : message.content,
+    [message],
+  );
+  // Allocates and sorts a new array; without memoization it ran on every render
+  // of every message.
+  const visibleArtifacts = useMemo(() => getVisibleArtifacts(message), [message]);
 
   return (
     <div className={isUser ? "ml-auto w-fit max-w-full md:max-w-3xl" : "mr-auto w-fit max-w-full md:max-w-4xl"}>
@@ -102,4 +110,4 @@ export function MessageCard({
       </p>
     </div>
   );
-}
+});

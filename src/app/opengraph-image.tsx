@@ -13,9 +13,12 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
+  // mascot-og.png is a 440px downscale of mascot.png. The full-size original is
+  // 2.9 MB, which base64-encodes to a ~3.9 MB string on every OG render; this
+  // renders at 220x220 so the 2x variant is all it can use.
   const [fontData, mascotData] = await Promise.all([
     readFile(join(process.cwd(), "public/fonts/Newsreader-Italic.ttf")),
-    readFile(join(process.cwd(), "public/mascot.png"), "base64"),
+    readFile(join(process.cwd(), "public/mascot-og.png"), "base64"),
   ]).catch((err: Error) => {
     throw new Error(`OG image asset missing: ${err.message}`);
   });

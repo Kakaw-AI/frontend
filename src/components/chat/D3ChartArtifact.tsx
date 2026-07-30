@@ -1,11 +1,27 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import * as d3 from "d3";
+import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
+// Assembled from submodules rather than the `d3` meta-package, which pulls in
+// d3-geo, d3-force, d3-contour, d3-delaunay, d3-hierarchy and d3-chord that
+// nothing here uses. Keep this object in sync when reaching for a new d3 API.
+import * as d3Array from "d3-array";
+import * as d3Axis from "d3-axis";
+import * as d3Scale from "d3-scale";
+import * as d3Selection from "d3-selection";
+import * as d3Shape from "d3-shape";
+import type { PieArcDatum } from "d3-shape";
 import {
   buildBarChartRenderPlan,
   humanizeDataLabel,
 } from "@/components/chat/chat-formatting";
+
+const d3 = {
+  ...d3Array,
+  ...d3Axis,
+  ...d3Scale,
+  ...d3Selection,
+  ...d3Shape,
+};
 
 type D3ChartArtifactProps = {
   chartType?: string;
@@ -53,7 +69,7 @@ function formatCell(value: unknown) {
   }
 }
 
-export function D3ChartArtifact({
+export const D3ChartArtifact = memo(function D3ChartArtifact({
   chartType,
   title,
   spec,
@@ -63,7 +79,10 @@ export function D3ChartArtifact({
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [drawError, setDrawError] = useState<string | null>(null);
 
-  const rows = asRows(spec.data);
+  // The redraw effect lists `rows` in its dependencies. Computing it inline
+  // produced a fresh array on every render, so every chart in the conversation
+  // tore itself down and re-drew on every streamed token and every keystroke.
+  const rows = useMemo(() => asRows(spec.data), [spec.data]);
   const kind = asText(spec.kind) || chartType || "bar";
   const xField = asText(spec.xField);
   const yField = asText(spec.yField);
@@ -152,7 +171,7 @@ export function D3ChartArtifact({
 
           const radius = Math.min(innerWidth, innerHeight) / 2;
           const pie = d3.pie<{ label: string; value: number }>().value((d) => d.value);
-          const arc = d3.arc<d3.PieArcDatum<{ label: string; value: number }>>()
+          const arc = d3.arc<PieArcDatum<{ label: string; value: number }>>()
             .innerRadius(0)
             .outerRadius(radius - 12);
           const color = d3.scaleOrdinal<string, string>(COLOR_PALETTE);
@@ -500,4 +519,4 @@ export function D3ChartArtifact({
       )}
     </div>
   );
-}
+});

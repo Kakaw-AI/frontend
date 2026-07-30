@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   buildCsvContent,
   downloadTextArtifact,
@@ -10,7 +10,7 @@ import {
   sanitizeDownloadFilename,
 } from "@/components/chat/chat-formatting";
 
-export function TableArtifact({
+export const TableArtifact = memo(function TableArtifact({
   columns,
   allRows,
   rowCount,
@@ -161,4 +161,4 @@ export function TableArtifact({
       ) : null}
     </div>
   );
-}
+});

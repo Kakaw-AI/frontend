@@ -61,6 +61,17 @@ async function getOnboardingState(request: NextRequest) {
 // Actual authorization must be enforced per-page with the backend session too.
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Both lookups run on every navigation to every app route, and every branch
+  // below that reads the onboarding state also needs the session. Issuing them
+  // together turns two sequential round-trips into one before any HTML can
+  // stream. Gated on a cookie being present so anonymous hits on /login do not
+  // fire a request that can only come back unauthorized.
+  const hasSessionCookie = Boolean(request.headers.get("cookie"));
+  const onboardingStatePromise = hasSessionCookie
+    ? getOnboardingState(request)
+    : Promise.resolve(null);
+
   const session = await getSession(request);
   const isLoggedIn = Boolean(session?.session);
   const isLoginPage = pathname === "/login";
@@ -68,7 +79,7 @@ export async function proxy(request: NextRequest) {
   const isSyncPage = pathname === "/onboarding/sync";
 
   if (isLoginPage && isLoggedIn) {
-    const onboardingState = await getOnboardingState(request);
+    const onboardingState = await onboardingStatePromise;
     const destination = onboardingState?.hasDatabaseSource
       ? "/dashboard"
       : onboardingState?.blockingSync?.status === "SYNCING" ||
@@ -83,7 +94,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isLoggedIn) {
-    const onboardingState = await getOnboardingState(request);
+    const onboardingState = await onboardingStatePromise;
     const hasDatabaseSource = Boolean(onboardingState?.hasDatabaseSource);
     const blockingSyncStatus = onboardingState?.blockingSync?.status;
 

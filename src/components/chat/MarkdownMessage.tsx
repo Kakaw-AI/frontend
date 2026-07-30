@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { parseMarkdownBlocks } from "@/components/chat/chat-formatting";
 
 function renderInlineMarkdown(text: string, keyPrefix: string) {
@@ -23,8 +24,14 @@ function renderInlineMarkdown(text: string, keyPrefix: string) {
   });
 }
 
-export function MarkdownMessage({ content }: { content: string }) {
-  const blocks = parseMarkdownBlocks(content);
+export const MarkdownMessage = memo(function MarkdownMessage({
+  content,
+}: {
+  content: string;
+}) {
+  // Re-parsing the full markdown of every message on every streamed token was
+  // the single most expensive thing in the render path.
+  const blocks = useMemo(() => parseMarkdownBlocks(content), [content]);
 
   return (
     <div className="space-y-3 text-sm leading-relaxed">
@@ -132,4 +139,4 @@ export function MarkdownMessage({ content }: { content: string }) {
       })}
     </div>
   );
-}
+});

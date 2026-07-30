@@ -3,6 +3,11 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  experimental: {
+    // lucide-react is optimized by default in this Next version, so only the
+    // packages outside that list need listing here.
+    optimizePackageImports: ['@base-ui/react'],
+  },
   images: {
     // OAuth profile avatar hosts (Better Auth: GitHub + Google).
     remotePatterns: [

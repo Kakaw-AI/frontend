@@ -48,20 +48,24 @@ export function ChatPageClient() {
   const conversationsQuery = useQuery(conversationsQueryOptions());
   const activeConversationQuery = useQuery(conversationDetailsQueryOptions(activeConversationId ?? ""));
 
-  const {
-    composerInput,
-    setComposerInput,
-    setComposerError,
-    setIsSending,
-    beginSignOut,
-    endSignOut,
-    closePicker,
-    closeSidebar,
-    isSidebarOpen,
-    pendingConversation,
-    setPendingConversation,
-    clearPendingConversation,
-  } = useChatStore();
+  // Selected field by field rather than `useChatStore()`. Subscribing to the
+  // whole store meant every keystroke in the composer re-rendered this
+  // component, and with it the sidebar, the message list, every message and
+  // every chart.
+  const composerInput = useChatStore((s) => s.composerInput);
+  const setComposerInput = useChatStore((s) => s.setComposerInput);
+  const setComposerError = useChatStore((s) => s.setComposerError);
+  const setIsSending = useChatStore((s) => s.setIsSending);
+  const beginSignOut = useChatStore((s) => s.beginSignOut);
+  const endSignOut = useChatStore((s) => s.endSignOut);
+  const closePicker = useChatStore((s) => s.closePicker);
+  const closeSidebar = useChatStore((s) => s.closeSidebar);
+  const isSidebarOpen = useChatStore((s) => s.isSidebarOpen);
+  const pendingConversation = useChatStore((s) => s.pendingConversation);
+  const setPendingConversation = useChatStore((s) => s.setPendingConversation);
+  const clearPendingConversation = useChatStore((s) => s.clearPendingConversation);
+  const isConnectionPickerOpen = useChatStore((s) => s.isConnectionPickerOpen);
+  const pickerStartsInAddLlmMode = useChatStore((s) => s.pickerStartsInAddLlmMode);
 
   // The localStorage key for the current chat: conversationId or "new" for on-the-fly
   const chatKey = activeConversationId ?? "new";
@@ -447,7 +451,8 @@ export function ChatPageClient() {
   return (
     <>
       <ChatConnectionPicker
-        key={`${useChatStore((s) => s.isConnectionPickerOpen ? "open" : "closed")}:${useChatStore((s) => s.pickerStartsInAddLlmMode ? "add" : "pick")}:${activeConversationId ?? "none"}`}
+        // Hooks were previously called inline here, inside a JSX prop.
+        key={`${isConnectionPickerOpen ? "open" : "closed"}:${pickerStartsInAddLlmMode ? "add" : "pick"}:${activeConversationId ?? "none"}`}
         databaseSources={chatOptionsQuery.data?.databaseSources}
         llmConnections={chatOptionsQuery.data?.llmConnections}
         isLoading={chatOptionsQuery.isLoading}
