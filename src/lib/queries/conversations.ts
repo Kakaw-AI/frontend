@@ -49,6 +49,9 @@ export type ConversationMessage = {
   visualizationOutcome?: Record<string, unknown> | null;
   createdAt: string;
   updatedAt: string;
+  // Handle for rating this message. Arrives on a trailing trace_persisted
+  // event during a live stream, and from the server on reload.
+  traceId?: string | null;
   artifacts: MessageArtifact[];
   tokenUsage: TokenUsage | null;
   suggestions: string[];

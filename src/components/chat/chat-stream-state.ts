@@ -127,6 +127,12 @@ export function applyStreamEvent(
   const target = updatedMessages[targetIndex];
 
   switch (type) {
+    case "trace_persisted": {
+      const traceId = typeof data.traceId === "string" ? data.traceId : null;
+      if (!traceId) return conversation;
+      updatedMessages[targetIndex] = { ...target, traceId };
+      return { ...conversation, messages: updatedMessages };
+    }
     case "agent_step": {
       const text = typeof data.text === "string" ? data.text : "";
       if (!text) return conversation;
