@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
+import { DM_Sans, Gabarito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteGraph } from "@/lib/schema";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+const gabarito = Gabarito({ subsets: ["latin"], variable: "--font-display" });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -50,15 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="light h-full antialiased"
-      style={
-        {
-          "--font-inter":
-            'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
-          "--font-newsreader":
-            '"Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif',
-        } as CSSProperties
-      }
+      className={`light h-full antialiased ${gabarito.variable} ${dmSans.variable}`}
     >
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
         <JsonLd data={siteGraph()} />

@@ -70,7 +70,7 @@ export default function TermsPage() {
           <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
             Legal
           </span>
-          <h1 className="font-headline text-5xl italic mt-3 mb-4 text-on-surface leading-tight">
+          <h1 className="font-headline text-5xl mt-3 mb-4 text-on-surface leading-tight">
             Terms of Service
           </h1>
           <p className="text-on-surface-variant mb-16 text-lg">
@@ -80,7 +80,7 @@ export default function TermsPage() {
           <div className="space-y-12">
             {sections.map((section) => (
               <div key={section.title}>
-                <h2 className="font-headline text-2xl italic text-on-surface mb-4">
+                <h2 className="font-headline text-2xl text-on-surface mb-4">
                   {section.title}
                 </h2>
                 <div className="text-on-surface-variant leading-relaxed whitespace-pre-line">

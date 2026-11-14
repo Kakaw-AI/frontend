@@ -38,17 +38,16 @@ export const MessageCard = memo(function MessageCard({
   const visibleArtifacts = useMemo(() => getVisibleArtifacts(message), [message]);
 
   return (
-    <div className={isUser ? "ml-auto w-fit max-w-full md:max-w-3xl" : "mr-auto w-fit max-w-full md:max-w-4xl"}>
+    <div className={isUser ? "ml-auto w-fit max-w-full md:max-w-2xl" : "mr-auto w-full max-w-full md:max-w-4xl"}>
+      {/* The user's question is a bubble; Kakaw's answer sits on the page
+          so its charts and tables are the only boxes, never boxes in a box. */}
       <div
         className={
           isUser
-            ? "rounded-3xl rounded-br-md bg-primary px-5 py-4 text-on-primary shadow-sm"
-            : "space-y-4 rounded-3xl rounded-bl-md border border-outline-variant/15 bg-surface-container-low px-5 py-4 text-on-surface shadow-sm"
+            ? "rounded-3xl rounded-br-md bg-primary px-5 py-3 font-medium text-white"
+            : "space-y-4 text-on-surface"
         }
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-60">
-          {isUser ? "You" : "Kakaw"}
-        </p>
         {message.steps !== undefined &&  !message.error ? <StepLog message={message} /> : null}
         {displayContent ? <MarkdownMessage content={displayContent} /> : null}
         {message.error ? (
@@ -82,7 +81,7 @@ export const MessageCard = memo(function MessageCard({
         ))}
       </div>
       {!isUser && message.status === "COMPLETED" && message.tokenUsage ? (
-        <p className="mt-1.5 flex items-center gap-1 px-1 text-[11px] text-on-surface/35">
+        <p className="mt-1.5 flex items-center gap-1 text-xs text-on-surface-variant">
           <span className="font-mono">↳</span>
           {message.tokenUsage.totalTokens.toLocaleString()} tokens
         </p>
@@ -92,20 +91,20 @@ export const MessageCard = memo(function MessageCard({
       isLastAssistantMessage &&
       message.status === "COMPLETED" &&
       message.suggestions?.length ? (
-        <div className="mt-2 flex flex-wrap gap-1.5 px-1">
+        <div className="mt-3 flex flex-wrap gap-2">
           {message.suggestions.map((suggestion) => (
             <button
               key={suggestion}
               type="button"
               onClick={() => onSuggestionClick(suggestion)}
-              className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs text-primary/80 transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+              className="rounded-full border-2 border-primary bg-surface-container-lowest px-3 py-1 text-xs font-semibold text-on-surface transition-colors hover:bg-accent"
             >
               {suggestion}
             </button>
           ))}
         </div>
       ) : null}
-      <p className="mt-2 px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/35">
+      <p className={`mt-1.5 text-xs text-on-surface-variant ${isUser ? "px-2 text-right" : ""}`}>
         {formatConversationTime(message.createdAt)}
       </p>
     </div>

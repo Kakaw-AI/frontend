@@ -117,10 +117,11 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
       return;
     }
 
-    setDrawError(null);
-
     const draw = () => {
       try {
+        // Cleared per draw, so a redraw that succeeds (new data, or a resize)
+        // also removes an error left by an earlier attempt.
+        setDrawError(null);
         const rect = container.getBoundingClientRect();
         const width = Math.max(rect.width, 320);
         const height = 320;
@@ -391,8 +392,12 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             .attr("y", (row) => yScale(asNumber(row[yField]) ?? 0))
             .attr("width", xScale.bandwidth())
             .attr("height", (row) => innerHeight - yScale(asNumber(row[yField]) ?? 0))
-            .attr("rx", 10)
-            .attr("fill", (_row, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
+            .attr("rx", 8)
+            // One series, one colour: colouring each bar differently implies
+            // categories that the data does not have.
+            .attr("fill", COLOR_PALETTE[0])
+            .attr("stroke", "var(--primary)")
+            .attr("stroke-width", 2);
         }
         appendAxisLabels();
       } catch (err) {
@@ -405,6 +410,10 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
     const observer = new ResizeObserver(draw);
     observer.observe(container);
     return () => observer.disconnect();
+    // barPlan, xLabel and yLabel are derived during render from the values
+    // listed here. barPlan is a new object every render, so listing it would
+    // redraw the chart on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartType, kind, xField, yField, rows, seriesField, stacked, spec]);
 
   function downloadSVG() {
@@ -438,17 +447,14 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
   }
 
   const header = (
-    <div className="border-b border-outline-variant/10 px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/75">
-        Visualization
-      </p>
-      <h4 className="mt-1 text-sm font-semibold text-on-surface">{displayTitle}</h4>
+    <div className="border-b-2 border-primary px-4 py-3">
+      <h4 className="text-sm font-bold text-on-surface">{displayTitle}</h4>
     </div>
   );
 
   if (!xField || !yField) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
+      <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
         {header}
         <div className="flex items-center justify-center h-32 text-sm text-on-surface/50 border-dashed">
           Chart data is incomplete — missing axis fields
@@ -458,7 +464,7 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
+    <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
       {header}
 
       <div ref={containerRef} id={containerId} className="w-full px-3 py-2">
@@ -472,7 +478,7 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
       </div>
 
       {rows.length > 0 && (
-        <div className="border-t border-outline-variant/10 px-4 py-2">
+        <div className="border-t-2 border-primary/10 px-4 py-2">
           {barPlan?.notice ? (
             <p className="mb-2 text-[11px] text-on-surface/55">{barPlan.notice}</p>
           ) : null}
@@ -503,14 +509,14 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             <button
               type="button"
               onClick={downloadSVG}
-              className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
+              className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
             >
               Download SVG
             </button>
             <button
               type="button"
               onClick={downloadCSV}
-              className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-medium text-on-surface/70 hover:bg-surface-container-low transition-colors"
+              className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
             >
               Download CSV
             </button>

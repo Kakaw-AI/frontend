@@ -6,10 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertCircle, LoaderCircle, RefreshCw } from "lucide-react";
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
-import {
-  onboardingStateQueryKey,
-  onboardingStateQueryOptions,
-} from "@/lib/queries/onboarding";
+import { onboardingStateQueryOptions } from "@/lib/queries/onboarding";
 import { resyncDatabaseSource } from "@/lib/queries/database-sources";
 
 function formatRelativeTime(value: string | null) {
@@ -92,7 +89,7 @@ export function DatabaseSyncPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/75">
               Database Setup
             </p>
-            <h1 className="font-headline text-3xl sm:text-4xl italic text-primary">
+            <h1 className="font-headline text-3xl sm:text-4xl text-primary">
               {statusCopy.title}
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-on-surface/70">

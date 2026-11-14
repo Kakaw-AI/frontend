@@ -25,6 +25,7 @@ export function ChatConnectionPicker({
   onActivateLlmConnection,
   onDeactivateLlmConnection,
   onDeleteLlmConnection,
+  onDeleteDatabaseSource,
   onConfirmSelection,
 }: {
   databaseSources: DatabaseSource[] | undefined;
@@ -42,6 +43,8 @@ export function ChatConnectionPicker({
   onActivateLlmConnection: (connectionId: string) => Promise<void>;
   onDeactivateLlmConnection: (connectionId: string) => Promise<void>;
   onDeleteLlmConnection: (connectionId: string) => Promise<void>;
+  /** Resolves false when the user cancels the confirmation. */
+  onDeleteDatabaseSource: (sourceId: string) => Promise<boolean>;
   onConfirmSelection: (selection: { source: DatabaseSource; llmConnection: LlmConnection }) => void;
 }) {
   const isOpen = useChatStore((s) => s.isConnectionPickerOpen);
@@ -53,6 +56,8 @@ export function ChatConnectionPicker({
   const [isAddConnectionFormOpen, setIsAddConnectionFormOpen] = useState(false);
   const [connectionActionState, setConnectionActionState] = useState<{ id: string; action: ConnectionActionKind } | null>(null);
   const [connectionActionError, setConnectionActionError] = useState<string | null>(null);
+  const [deletingSourceId, setDeletingSourceId] = useState<string | null>(null);
+  const [sourceActionError, setSourceActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -103,6 +108,22 @@ export function ChatConnectionPicker({
     }
   }
 
+  async function handleDeleteSource(sourceId: string) {
+    setSourceActionError(null);
+    setDeletingSourceId(sourceId);
+
+    try {
+      const deleted = await onDeleteDatabaseSource(sourceId);
+      if (deleted && selectedSourceId === sourceId) setSelectedSourceId(null);
+    } catch (error) {
+      setSourceActionError(
+        error instanceof Error ? error.message : "Unable to delete this data source.",
+      );
+    } finally {
+      setDeletingSourceId(null);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/35 px-4 py-6 backdrop-blur-sm md:px-6 md:py-10">
       <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface-container-lowest shadow-[0_35px_90px_-24px_rgba(27,28,28,0.28)] md:rounded-[32px]" style={{ maxHeight: "calc(100dvh - 3rem)" }}>
@@ -110,7 +131,7 @@ export function ChatConnectionPicker({
           <div className="space-y-2">
             <p className="font-label text-[10px] font-semibold uppercase tracking-[0.24em] text-primary">New Chat</p>
             <div>
-              <h3 className="font-headline text-3xl italic text-primary">Choose your runtime stack</h3>
+              <h3 className="font-headline text-3xl text-primary">Choose your runtime stack</h3>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface/65">
                 Start each conversation with both an indexed data source and a validated LLM connection.
               </p>
@@ -177,7 +198,10 @@ export function ChatConnectionPicker({
                 <DatabaseSourceSection
                   databaseSources={databaseSources}
                   selectedSourceId={selectedSourceId}
+                  deletingSourceId={deletingSourceId}
+                  actionError={sourceActionError}
                   onSelect={setSelectedSourceId}
+                  onDelete={(id) => void handleDeleteSource(id)}
                 />
                 <LlmConnectionSection
                   llmConnections={llmConnections}

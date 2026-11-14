@@ -77,26 +77,26 @@ export const TableArtifact = memo(function TableArtifact({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
-      <div className="flex items-center justify-between gap-3 border-b border-outline-variant/10 px-4 py-2">
+    <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
+      <div className="flex items-center justify-between gap-3 border-b-2 border-primary px-4 py-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface/45">
-            Query Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
+          <p className="text-sm font-bold text-on-surface">
+            Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
           </p>
-          <p className="mt-1 text-[11px] text-on-surface/45">
-            Showing {showingRowsLabel} rows. Scroll horizontally for wide results.
+          <p className="mt-0.5 text-xs text-on-surface-variant">
+            Showing {showingRowsLabel} rows
           </p>
         </div>
         <button
           type="button"
           onClick={handleDownloadCsv}
           disabled={columns.length === 0}
-          className="rounded-full border border-outline-variant/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface/60 transition hover:border-primary/35 hover:text-primary disabled:cursor-not-allowed disabled:opacity-45"
+          className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-45"
         >
           Download CSV
         </button>
       </div>
-      <p className="px-4 pb-2 text-[11px] text-on-surface/40 sm:hidden">
+      <p className="px-4 pt-2 text-xs text-on-surface-variant sm:hidden">
         Swipe table sideways to see more →
       </p>
       <div className="max-h-[34rem] overflow-auto">
@@ -104,7 +104,7 @@ export const TableArtifact = memo(function TableArtifact({
           className="w-max min-w-full border-separate border-spacing-0 text-left"
           style={{ fontSize: "12.5px" }}
         >
-          <thead className="sticky top-0 z-10 bg-surface shadow-[0_1px_0_rgba(0,0,0,0.08)]">
+          <thead className="sticky top-0 z-10 bg-surface-container">
             <tr>
               {columns.map((column) => {
                 const isActive = sortColumn === column;
@@ -113,13 +113,12 @@ export const TableArtifact = memo(function TableArtifact({
                   <th
                     key={column}
                     onClick={() => handleSort(column)}
-                    className={`cursor-pointer select-none whitespace-nowrap border-b border-outline-variant/10 px-4 py-3 font-semibold text-on-surface/55 transition-colors hover:text-on-surface/80 ${numericColumns.has(column) ? "text-right" : "text-left"}`}
+                    className={`cursor-pointer select-none whitespace-nowrap px-4 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-on-surface-variant transition-colors hover:text-on-surface ${numericColumns.has(column) ? "text-right" : "text-left"}`}
                   >
                     <span className="inline-flex items-center gap-1">
                       {humanizeDataLabel(column)}
                       <span
-                        className="text-[10px]"
-                        style={{ color: isActive ? "#705731" : undefined }}
+                        className={`text-[10px] ${isActive ? "text-secondary" : ""}`}
                       >
                         {isActive ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}
                       </span>
@@ -129,16 +128,13 @@ export const TableArtifact = memo(function TableArtifact({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-outline-variant/10">
+          <tbody>
             {visibleRows.map((row, index) => (
-              <tr
-                key={index}
-                className={index % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface"}
-              >
+              <tr key={index} className="hover:bg-surface">
                 {columns.map((column) => (
                   <td
                     key={column}
-                    className={`max-w-72 min-w-32 border-b border-outline-variant/10 px-4 py-3 align-top text-on-surface/75 ${numericColumns.has(column) ? "text-right font-medium tabular-nums" : "whitespace-pre-wrap break-words"}`}
+                    className={`max-w-72 min-w-32 border-t border-primary/10 px-4 py-2.5 align-top text-on-surface ${numericColumns.has(column) ? "text-right font-mono tabular-nums" : "whitespace-pre-wrap break-words"}`}
                   >
                     {formatArtifactCellValue(row[column])}
                   </td>
@@ -149,11 +145,11 @@ export const TableArtifact = memo(function TableArtifact({
         </table>
       </div>
       {visibleCount < sortedRows.length ? (
-        <div className="border-t border-outline-variant/10 px-4 py-3 text-center">
+        <div className="border-t-2 border-primary px-4 py-3 text-center">
           <button
             type="button"
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="rounded-md border border-outline-variant/15 px-4 py-1.5 text-xs font-medium text-primary transition-colors hover:border-primary/30"
+            className="rounded-full border-2 border-primary px-4 py-1.5 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
           >
             Load more
           </button>

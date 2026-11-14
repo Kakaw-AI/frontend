@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 export default function AuthPage() {
   // Absolute URL built from the live browser origin (this is a client
@@ -29,21 +30,16 @@ export default function AuthPage() {
       <section className="w-full md:w-1/2 flex flex-col justify-center items-center px-5 sm:px-8 md:px-24 py-12 md:py-16 bg-surface relative overflow-hidden">
         {/* Logo */}
         <div className="absolute top-6 left-5 md:top-12 md:left-12">
-          <Link
-            href="/"
-            className="font-headline italic text-2xl font-bold text-primary"
-          >
-            Kakaw AI
-          </Link>
+          <Logo />
         </div>
 
         <div className="w-full max-w-md">
           <header className="mb-12">
-            <h1 className="font-headline text-3xl sm:text-4xl italic text-on-surface mb-3">
-              Hey there, I&apos;m Kakaw 👋
+            <h1 className="font-headline text-3xl sm:text-4xl text-on-surface mb-3">
+              Sign in to Kakaw
             </h1>
             <p className="text-on-surface-variant font-body text-sm tracking-tight">
-              Sign in to start talking to your data in plain English.
+              Then ask your data anything, in plain English.
             </p>
           </header>
 
@@ -51,7 +47,7 @@ export default function AuthPage() {
           <div className="flex flex-col gap-4">
             <button
               onClick={signInWithGoogle}
-              className="flex items-center justify-center gap-3 bg-surface-container-lowest py-4 px-6 rounded-xl editorial-shadow hover:bg-surface-container-low transition-colors duration-300 w-full"
+              className="flex items-center justify-center gap-3 pod-card pod-shadow py-4 px-6 rounded-full hover:bg-accent transition-colors w-full"
             >
               <svg
                 className="w-5 h-5"
@@ -82,7 +78,7 @@ export default function AuthPage() {
 
             <button
               onClick={signInWithGitHub}
-              className="flex items-center justify-center gap-3 bg-surface-container-lowest py-4 px-6 rounded-xl editorial-shadow hover:bg-surface-container-low transition-colors duration-300 w-full"
+              className="flex items-center justify-center gap-3 pod-card pod-shadow py-4 px-6 rounded-full hover:bg-accent transition-colors w-full"
             >
               <svg
                 className="w-5 h-5 fill-on-surface"
@@ -97,7 +93,7 @@ export default function AuthPage() {
             </button>
           </div>
 
-          <p className="mt-10 text-center text-xs text-on-surface-variant/60 font-body">
+          <p className="mt-10 text-center text-xs text-on-surface-variant font-body">
             By continuing, you agree to our{" "}
             <Link href="/terms" className="underline underline-offset-2 hover:text-on-surface-variant">
               Terms of Service
@@ -112,29 +108,16 @@ export default function AuthPage() {
       </section>
 
       {/* ── Right Side: Brand Showcase ── */}
-      <section className="w-full md:w-1/2 min-h-[25rem] md:min-h-dvh relative flex items-center justify-center overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-linear-to-br from-primary to-[#291800]" />
-
-        {/* Brand Messaging — centered */}
-        <div className="relative z-10 flex max-w-md flex-col items-center px-6 sm:px-12 text-center">
-          <h2 className="font-headline text-3xl md:text-5xl italic text-on-primary-container leading-tight">
-            Crafting data with <br />
-            <span className="text-tertiary-fixed">warm intelligence.</span>
+      <section className="w-full md:w-1/2 min-h-[25rem] md:min-h-dvh flex items-center justify-center bg-primary px-6 sm:px-12 py-16">
+        <div className="max-w-md">
+          <h2 className="font-headline text-4xl xl:text-5xl text-white leading-[1.15]">
+            <span className="block">Ask your database.</span>
+            <span className="pod-mark mt-2 inline-block text-primary">Get the answer.</span>
           </h2>
-          <p className="mt-4 text-on-primary-container/80 font-body text-base md:text-lg leading-relaxed">
-            Join Kakaw AI to transform complex SQL queries into elegant,
-            human-readable insights. Your data, refined.
+          <p className="mt-6 text-white/80 font-body text-base md:text-lg leading-relaxed">
+            Type a question in plain words. Kakaw writes the SQL, runs it, and
+            shows you the result as a table or a chart.
           </p>
-        </div>
-
-        {/* Hi, I'm Kakaw — top-right */}
-        <div className="absolute top-10 right-10 hidden lg:block z-10">
-          <div className="glass-panel px-4 py-3 rounded-2xl rounded-bl-md border border-white/10 shadow-xl">
-            <p className="font-headline text-base italic text-on-primary-container leading-none">
-              Hi, I&apos;m Kakaw 👋
-            </p>
-          </div>
         </div>
       </section>
     </main>

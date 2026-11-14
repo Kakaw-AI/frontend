@@ -66,11 +66,11 @@ export function Features() {
     <section id="features" className="scroll-mt-32 bg-surface-container-low py-24">
       <div className="max-w-7xl mx-auto px-8">
         <div className="mb-16">
-          <h2 className="font-headline text-4xl italic mb-4">
+          <h2 className="font-headline text-4xl mb-4">
             Master your data without code
           </h2>
           <p className="text-on-surface-variant max-w-md">
-            Kakaw brings the nose of a trained retriever and the speed of AI
+            Kakaw brings the know-how of a data analyst and the speed of AI
             to your data.
           </p>
         </div>
@@ -85,7 +85,7 @@ export function Features() {
                 {feature.icon}
               </div>
               <div>
-                <h3 className="font-headline text-2xl italic mb-3">
+                <h3 className="font-headline text-2xl mb-3">
                   {feature.title}
                 </h3>
                 <p className="text-on-surface-variant text-sm leading-relaxed">

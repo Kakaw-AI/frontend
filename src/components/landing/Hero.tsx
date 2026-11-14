@@ -1,96 +1,89 @@
-import Image from "next/image";
 import Link from "next/link";
+
+const BARS = [
+  { label: "Home Decor", value: 22, width: 205 },
+  { label: "Kitchen", value: 14, width: 130 },
+  { label: "Garden", value: 9, width: 84 },
+  { label: "Toys", value: 4, width: 38 },
+];
 
 export function Hero() {
   return (
-    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-12 md:py-20 grid lg:grid-cols-12 gap-12 items-center lg:min-h-[819px]">
-      {/* Left column */}
+    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-12 md:py-20 grid lg:grid-cols-12 gap-12 items-center">
       <div className="lg:col-span-7 space-y-8">
-        <div className="space-y-4">
-          <span className="font-label text-sm tracking-[0.08em] text-primary font-bold uppercase">
-            your clever data dog
+        <div className="space-y-5">
+          <span className="block font-mono text-xs tracking-[0.1em] text-on-surface-variant font-semibold uppercase">
+            No SQL needed
           </span>
-          <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl lg:text-8xl italic text-on-surface leading-[1.1]">
-            Talk to Your Database Like You Talk to a Friend
+          {/* One phrase per line so the highlight never splits mid-phrase */}
+          <h1 className="font-headline text-4xl sm:text-5xl xl:text-6xl text-on-surface leading-[1.15]">
+            <span className="block">Ask your database.</span>
+            <span className="pod-mark mt-2 inline-block">Get the answer.</span>
           </h1>
         </div>
 
         <p className="text-on-surface-variant text-lg md:text-xl max-w-xl leading-relaxed">
-          Kakaw AI helps non-technical users get insights from their databases
-          in seconds. No SQL knowledge needed.
+          Type a question in plain words. Kakaw writes the SQL, runs it, and
+          shows you the result as a table or a chart.
         </p>
 
         <div className="flex flex-wrap gap-4 pt-4">
           <Link
             href="/login"
-            className="primary-gradient text-on-primary px-8 py-4 rounded-xl font-medium shadow-2xl shadow-primary/10 hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"
+            className="bg-primary text-on-primary px-8 py-4 rounded-full font-bold border-2 border-primary pod-shadow hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
           >
-            Start Talking to Your Data
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            Connect a database
           </Link>
-          <button className="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-medium hover:bg-surface-container-highest transition-all flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5 fill-current"
-              viewBox="0 0 24 24"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            Watch 30s Demo
-          </button>
+          <Link
+            href="#how-it-works"
+            className="bg-surface-container-lowest text-on-surface px-8 py-4 rounded-full font-bold border-2 border-primary hover:bg-accent transition-colors"
+          >
+            See how it works
+          </Link>
         </div>
       </div>
 
-      {/* Right column */}
-      <div className="lg:col-span-5 relative overflow-visible">
-        <div className="absolute -inset-4 bg-primary-fixed/20 blur-3xl rounded-full" />
-        <div className="relative z-10 aspect-square overflow-hidden rounded-3xl bg-surface-container-low p-8 border border-outline-variant/15 flex items-center justify-center">
-          <div className="absolute right-6 top-6 z-20 glass-panel px-4 py-3 rounded-2xl rounded-bl-md border border-outline-variant/15 shadow-xl">
-            <p className="font-headline text-lg italic text-primary leading-none">
-              Hi, I&apos;m Kakaw
-            </p>
-          </div>
-          <Image
-            src="/mascot.png"
-            alt="Friendly Chihuahua Mascot — Kakaw"
-            width={480}
-            height={480}
-            className="w-full h-full object-contain drop-shadow-2xl"
-            priority
-          />
-        </div>
-
-        {/* Floating glass card */}
-        <div className="absolute -bottom-6 -left-6 md:-left-12 z-20 glass-panel p-6 rounded-2xl border border-outline-variant/15 shadow-xl max-w-xs hidden sm:block">
-          <div className="flex items-center gap-3 mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5 text-primary"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-            </svg>
-            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
-              Live Insight
-            </span>
-          </div>
-          <p className="font-headline italic text-lg text-primary leading-tight">
-            &ldquo;Your revenue in Q4 grew by 22% mainly driven by the &apos;Home
-            Decor&apos; category.&rdquo;
+      {/* A sample question and its answer, in place of a product screenshot */}
+      <div className="lg:col-span-5">
+        <div className="pod-card pod-shadow rounded-3xl p-6 sm:p-8">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-on-surface-variant">
+            You asked
+          </p>
+          <p className="font-bold text-on-surface mb-4">
+            Which categories grew most in Q4?
+          </p>
+          <svg
+            viewBox="0 0 330 124"
+            role="img"
+            aria-label="Bar chart of Q4 growth: Home Decor 22%, Kitchen 14%, Garden 9%, Toys 4%"
+            className="w-full font-mono text-[11px]"
+          >
+            {BARS.map((bar, i) => (
+              <g key={bar.label}>
+                <text x="0" y={i * 32 + 17} className="fill-on-surface-variant">
+                  {bar.label}
+                </text>
+                <rect
+                  x="92"
+                  y={i * 32 + 2}
+                  width={bar.width}
+                  height="22"
+                  rx="6"
+                  strokeWidth="2"
+                  className={`stroke-primary ${i === 0 ? "fill-chart-1" : "fill-chart-2"}`}
+                />
+                <text
+                  x={92 + bar.width + 6}
+                  y={i * 32 + 17}
+                  className="fill-on-surface-variant"
+                >
+                  {bar.value}%
+                </text>
+              </g>
+            ))}
+          </svg>
+          <p className="mt-3 text-sm text-on-surface-variant">
+            Home Decor led with 22% growth over Q3.
           </p>
         </div>
       </div>

@@ -59,7 +59,7 @@ export function ExtendedFeatures() {
   return (
     <section id="extended-features" className="py-24 max-w-7xl mx-auto px-8">
       <div className="mb-16">
-        <h2 className="font-headline text-4xl italic mb-4">
+        <h2 className="font-headline text-4xl mb-4">
           Everything you need to go from question to insight
         </h2>
         <p className="text-on-surface-variant max-w-md">
@@ -77,7 +77,7 @@ export function ExtendedFeatures() {
               {feature.icon}
             </div>
             <div>
-              <h3 className="font-headline text-xl italic mb-2">{feature.title}</h3>
+              <h3 className="font-headline text-xl mb-2">{feature.title}</h3>
               <p className="text-on-surface-variant text-sm leading-relaxed">{feature.body}</p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { deleteAccount } from "@/lib/queries/account";
 import { chatOptionsQueryKey, chatOptionsQueryOptions, type ChatOptions } from "@/lib/queries/chat-options";
 import {
   conversationDetailsQueryKey,
@@ -15,6 +16,7 @@ import {
   type ConversationDetails,
   type ConversationSummary,
 } from "@/lib/queries/conversations";
+import { deleteDatabaseSource } from "@/lib/queries/database-sources";
 import {
   activateLlmConnectionMutationOptions,
   deactivateLlmConnectionMutationOptions,
@@ -214,6 +216,54 @@ export function ChatPageClient() {
     } finally {
       endSignOut();
     }
+  }
+
+  async function handleDeleteAccount() {
+    if (useChatStore.getState().isSigningOut) return;
+    const confirmed = window.confirm(
+      "Delete your account? This removes your conversations, data sources, uploaded files and saved API keys. It can't be undone.",
+    );
+    if (!confirmed) return;
+
+    beginSignOut();
+    try {
+      await deleteAccount();
+      queryClient.clear();
+      router.replace("/");
+      router.refresh();
+    } catch (error) {
+      setComposerError(
+        error instanceof Error ? error.message : "Unable to delete your account.",
+      );
+    } finally {
+      endSignOut();
+    }
+  }
+
+  /** Resolves false when the user cancels; throws when the delete fails. */
+  async function handleDeleteDatabaseSource(sourceId: string) {
+    const confirmed = window.confirm(
+      "Delete this data source? Its conversations and stored credentials are deleted with it. This can't be undone.",
+    );
+    if (!confirmed) return false;
+
+    await deleteDatabaseSource(sourceId);
+
+    queryClient.setQueryData<ChatOptions | undefined>(
+      chatOptionsQueryKey,
+      (current) => current ? { ...current, databaseSources: current.databaseSources.filter((item) => item.id !== sourceId) } : current,
+    );
+    if (pendingConversation?.databaseSourceId === sourceId) {
+      clearPendingConversation();
+      if (!activeConversationId) clearDraft();
+    }
+    // Its conversations went with it.
+    await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+    if (activeConversation?.databaseSource.id === sourceId) {
+      closePicker();
+      router.push("/chat");
+    }
+    return true;
   }
 
   async function handleSwitchConversationConnection(llmConnectionId: string | null) {
@@ -480,6 +530,7 @@ export function ChatPageClient() {
           await deleteLlmConnectionMutation.mutateAsync(id);
           await invalidateConversationCaches(activeConversationId);
         }}
+        onDeleteDatabaseSource={handleDeleteDatabaseSource}
         onConfirmSelection={(selection) => {
           // Deferred creation: store the selection, do NOT call the API yet
           setPendingConversation({
@@ -513,9 +564,10 @@ export function ChatPageClient() {
               : null
           }
           onLogout={handleLogout}
+          onDeleteAccount={() => void handleDeleteAccount()}
         />
 
-        <main className="flex min-w-0 flex-1 flex-col bg-surface-container-lowest">
+        <main className="flex min-w-0 flex-1 flex-col bg-surface">
           <ChatHeader activeConversation={activeConversation} />
 
           <MessageList
@@ -527,7 +579,9 @@ export function ChatPageClient() {
             onRetryMessage={handleRetryMessage}
           />
 
-          <footer className="border-t border-outline-variant/15 px-4 py-3 md:px-8 md:py-4">
+          {/* Same padding and max width as MessageList so the edges line up */}
+          <footer className="px-4 pb-4 pt-2 md:px-8 md:pb-6">
+           <div className="mx-auto max-w-4xl">
             {activeConversation ? (
               <ComposerConnectionSelect
                 activeConnectionId={activeConversation.llmConnectionId}
@@ -549,6 +603,7 @@ export function ChatPageClient() {
               onDraftChange={setDraft}
               onSendMessage={handleSendMessage}
             />
+           </div>
           </footer>
         </main>
       </div>

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, ArrowRight, CircleDot } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function OnboardingSuccessPage() {
   return (
@@ -10,28 +10,15 @@ export default function OnboardingSuccessPage() {
       <div className="fixed bottom-0 left-0 -z-10 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-2xl w-full text-center space-y-12">
-        {/* Mascot */}
-        <div className="relative group">
-          <div className="absolute inset-0 bg-primary opacity-5 blur-3xl rounded-full scale-75 group-hover:scale-90 transition-transform duration-700" />
-          <div className="relative flex justify-center">
-            <div className="w-64 h-64 md:w-80 md:h-80 relative">
-              <Image
-                src="/mascot-success.png"
-                alt="Kakaw mascot — you're all set!"
-                fill
-                className="object-contain filter drop-shadow-2xl"
-                priority
-              />
-              <div className="absolute -top-4 -right-4 bg-primary-container text-on-primary-container p-3 rounded-full shadow-lg">
-                <Sparkles size={22} />
-              </div>
-            </div>
+        <div className="flex justify-center">
+          <div className="pod-shadow flex h-28 w-28 items-center justify-center rounded-full border-2 border-primary bg-accent text-primary">
+            <Check size={56} strokeWidth={3} aria-hidden="true" />
           </div>
         </div>
 
         {/* Text */}
         <div className="space-y-4">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight italic">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight">
             You&apos;re All Set!
           </h1>
           <p className="text-xl md:text-2xl font-body text-on-surface-variant max-w-lg mx-auto leading-relaxed">
@@ -43,7 +30,7 @@ export default function OnboardingSuccessPage() {
         <div className="flex flex-col items-center gap-6">
           <Link
             href="/dashboard"
-            className="group relative px-10 py-4 bg-linear-to-br from-primary to-primary-container text-on-primary font-body font-semibold rounded-lg shadow-xl hover:shadow-2xl active:scale-95 transition-all duration-300 flex items-center gap-2"
+            className="group relative px-10 py-4 bg-primary pod-shadow border-2 border-primary text-on-primary font-body font-bold rounded-full hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2"
           >
             Go to Dashboard
             <ArrowRight size={18} />
@@ -57,8 +44,8 @@ export default function OnboardingSuccessPage() {
         </div>
 
         {/* First Prompt Insight Card */}
-        <div className="mt-24 text-left border-l-4 border-primary bg-surface-container-lowest p-8 shadow-sm max-w-md mx-auto translate-x-4">
-          <h4 className="font-headline italic text-lg text-primary mb-2">
+        <div className="mt-24 text-left pod-card pod-shadow rounded-3xl p-8 max-w-md mx-auto">
+          <h4 className="font-headline text-lg text-primary mb-2">
             First Prompt Idea
           </h4>
           <p className="font-body text-sm text-on-surface-variant mb-4">
@@ -69,21 +56,13 @@ export default function OnboardingSuccessPage() {
             <span className="px-2 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase rounded tracking-wider">
               SQL Optimized
             </span>
-            <span className="px-2 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase rounded tracking-wider">
-              Kakaw AI
-            </span>
           </div>
         </div>
       </div>
 
       {/* Footer branding */}
-      <footer className="mt-auto py-8 opacity-20 hover:opacity-100 transition-opacity">
-        <div className="flex items-center gap-2 grayscale">
-          <CircleDot size={20} className="text-primary" />
-          <span className="font-headline italic text-lg text-primary font-bold">
-            Kakaw DB
-          </span>
-        </div>
+      <footer className="mt-auto py-8">
+        <Logo className="text-lg" />
       </footer>
     </main>
   );

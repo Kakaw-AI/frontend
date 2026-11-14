@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 const footerLinks: Record<string, { label: string; href: string }[]> = {
   Product: [
@@ -18,9 +19,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-start gap-12">
         {/* Brand */}
         <div className="space-y-4">
-          <span className="font-headline text-2xl italic font-bold text-primary">
-            Kakaw AI
-          </span>
+          <Logo />
           <p className="text-on-surface-variant max-w-xs text-sm">
             Your clever little data companion for teams who love insights,
             not SQL.
@@ -95,7 +94,7 @@ export function Footer() {
 
       <div className="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-outline-variant/15 text-center md:text-left">
         <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
-          © 2026 Kakaw AI. Fetched fresh by a very good boy.
+          © 2026 Kakaw AI.
         </p>
       </div>
     </footer>

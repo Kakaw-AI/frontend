@@ -9,25 +9,27 @@ export function ChatHeader({ activeConversation }: { activeConversation: Convers
   const openSidebar = useChatStore((s) => s.openSidebar);
 
   return (
-    <header className="flex items-center justify-between border-b border-outline-variant/15 px-4 py-4 md:px-8 md:py-5">
+    <header className="flex items-center justify-between border-b-2 border-primary/10 px-4 py-3 md:px-8 md:py-4">
       <div className="flex min-w-0 items-center gap-2">
         <button
           type="button"
           onClick={openSidebar}
           aria-label="Open conversations"
-          className="-ml-1 shrink-0 rounded-lg p-2 text-on-surface/70 transition-colors hover:bg-surface-container lg:hidden"
+          className="-ml-1 shrink-0 rounded-full p-2 text-on-surface transition-colors hover:bg-surface-container lg:hidden"
         >
           <Menu size={20} />
         </button>
         <div className="min-w-0">
-          <h2 className="truncate font-headline text-xl italic text-primary md:text-2xl">
+          <h2 className="truncate font-headline text-lg text-on-surface md:text-xl">
             {activeConversation
               ? formatConversationTitle(activeConversation.title)
               : "Select or create a conversation"}
           </h2>
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-on-surface/35">
-            Your conversation history
-          </p>
+          {activeConversation ? (
+            <p className="mt-0.5 truncate text-xs text-on-surface-variant">
+              {activeConversation.databaseSource.label}
+            </p>
+          ) : null}
         </div>
       </div>
     </header>

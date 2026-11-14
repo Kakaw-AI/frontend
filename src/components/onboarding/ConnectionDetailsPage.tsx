@@ -119,7 +119,7 @@ export function ConnectionDetailsPage({
         <span className="inline-block px-3 py-1 mb-4 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-widest uppercase">
           Step 02
         </span>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline italic text-on-surface mb-6">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline text-on-surface mb-6">
           Connect {providerLabel}
         </h1>
         <p className="text-lg text-on-surface-variant max-w-2xl leading-relaxed">
@@ -168,7 +168,7 @@ export function ConnectionDetailsPage({
               </label>
               <p className="mt-2 text-sm text-on-surface-variant">
                 {isSqlite
-                  ? "Grab a .db, .sqlite, or .sqlite3 file and drop it in — Kakaw will sniff it and verify before saving."
+                  ? "Grab a .db, .sqlite, or .sqlite3 file and drop it in — Kakaw will check it and verify before saving."
                   : "Copy it straight from your provider dashboard and drop it here. Kakaw will test it before saving anything."}
               </p>
             </div>
@@ -308,8 +308,8 @@ export function ConnectionDetailsPage({
         </div>
 
         <div className="col-span-12 lg:col-span-4 space-y-8">
-          <div className="glass-panel p-6 rounded-xl space-y-6">
-            <h3 className="font-headline text-xl italic text-primary">
+          <div className="pod-card p-6 rounded-3xl space-y-6">
+            <h3 className="font-headline text-xl text-primary">
               Need Help?
             </h3>
             <div className="space-y-4">

@@ -83,7 +83,7 @@ export function ChooseDatabasePage({
           <span className="font-body text-xs font-semibold tracking-[0.2em] text-primary uppercase">
             Step 01
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline italic text-on-surface leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline text-on-surface leading-tight">
             What database do you use?
           </h1>
           <p className="text-on-surface-variant max-w-xl font-body mt-4 leading-relaxed opacity-80">
@@ -174,7 +174,7 @@ export function ChooseDatabasePage({
           </span>
           <Link
             href={`/onboarding/connection?provider=${encodeURIComponent(activeSelection)}`}
-            className="px-10 py-3 bg-linear-to-br from-primary to-primary-container text-on-primary font-body font-semibold rounded-md shadow-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"
+            className="px-10 py-3 bg-primary pod-shadow border-2 border-primary text-on-primary font-body font-bold rounded-full hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2"
           >
             Continue
             <ArrowRight size={16} />

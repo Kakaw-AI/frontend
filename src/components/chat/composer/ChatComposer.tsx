@@ -41,7 +41,6 @@ export function ChatComposer({
       el.style.height = "auto";
       el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatKey]);
 
   // On input change: notify parent to persist draft
@@ -78,10 +77,10 @@ export function ChatComposer({
   return (
     <div
       className={[
-        "flex flex-col rounded-3xl border bg-surface-container-low transition-shadow",
+        "flex flex-col rounded-3xl border-2 bg-surface-container-lowest transition-shadow",
         !isEnabled || isComposerLocked
-          ? "border-outline-variant/15"
-          : "border-primary/40 shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]",
+          ? "border-primary/25"
+          : "pod-shadow border-primary focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-surface",
       ].join(" ")}
     >
       <textarea
@@ -96,12 +95,13 @@ export function ChatComposer({
           }
         }}
         disabled={!isEnabled || isComposerLocked}
-        className="w-full resize-none border-none bg-transparent px-5 pt-4 pb-2 text-[15px] leading-relaxed placeholder:text-on-surface/30 focus:ring-0"
+        aria-label="Message"
+        className="w-full resize-none border-none bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
         style={{ minHeight: "44px", maxHeight: "200px", overflowY: "auto" }}
         placeholder={placeholder}
       />
       <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-1">
-        <p className="text-[10px] text-on-surface/35">
+        <p className="text-xs text-on-surface-variant">
           {isSending || hasStreamingAssistantMessage ? (
             "Responding…"
           ) : isPendingRuntimeUpdate ? (
@@ -109,21 +109,21 @@ export function ChatComposer({
           ) : activeConversation && !isConversationRuntimeAvailable ? (
             "Read-only history"
           ) : (
-            <>
-              <kbd className="rounded border border-outline-variant/20 bg-surface-container px-1 py-0.5 font-mono text-[9px]">Enter</kbd>
-              {" send · "}
-              <kbd className="rounded border border-outline-variant/20 bg-surface-container px-1 py-0.5 font-mono text-[9px]">⇧ Enter</kbd>
-              {" newline"}
-            </>
+            <span className="hidden sm:inline">
+              <kbd className="rounded-md border border-primary/30 bg-surface-container px-1.5 py-0.5 font-mono text-[11px]">Enter</kbd>
+              {" to send · "}
+              <kbd className="rounded-md border border-primary/30 bg-surface-container px-1.5 py-0.5 font-mono text-[11px]">⇧ Enter</kbd>
+              {" for a new line"}
+            </span>
           )}
         </p>
         <button
           type="button"
           onClick={handleSend}
           disabled={!isEnabled || !input.trim() || isComposerLocked}
-          className="flex items-center gap-1.5 rounded-2xl bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary shadow-sm shadow-primary/20 disabled:opacity-40"
+          className="flex items-center gap-1.5 rounded-full border-2 border-primary bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors disabled:cursor-not-allowed disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant"
         >
-          <SendHorizontal size={13} />
+          <SendHorizontal size={14} />
           Send
         </button>
       </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 const navLinks = [
   { label: "Features", href: "/#features" },
@@ -9,21 +10,16 @@ const navLinks = [
 
 export function Navbar() {
   return (
-    <header className="bg-[#fbf9f8] fixed top-0 left-0 right-0 z-50">
+    <header className="bg-surface border-b-2 border-primary/10 fixed top-0 left-0 right-0 z-50">
       <nav className="flex justify-between items-center w-full px-5 md:px-8 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-8">
-          <Link
-            href="/"
-            className="font-headline text-2xl italic font-bold text-primary"
-          >
-            Kakaw AI
-          </Link>
+          <Logo />
           <div className="hidden lg:flex gap-6 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-on-surface/60 hover:text-primary font-body text-sm tracking-tight transition-colors duration-300"
+                className="text-on-surface-variant hover:text-on-surface font-body text-sm font-medium transition-colors"
               >
                 {link.label}
               </Link>
@@ -34,7 +30,7 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/login"
-            className="bg-primary text-on-primary px-6 py-2 rounded-lg font-body text-sm tracking-tight font-medium hover:opacity-90"
+            className="bg-primary text-on-primary border-2 border-primary px-5 py-2 rounded-full font-body text-sm font-bold hover:bg-primary-container transition-colors"
           >
             Get Started
           </Link>

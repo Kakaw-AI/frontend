@@ -4,17 +4,17 @@ import Link from 'next/link'
 export function useMDXComponents(): MDXComponents {
   return {
     h1: ({ children }) => (
-      <h1 className="font-headline text-4xl italic text-on-surface mb-6 mt-10 leading-tight">
+      <h1 className="font-headline text-4xl text-on-surface mb-6 mt-10 leading-tight">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="font-headline text-3xl italic text-on-surface mb-4 mt-8 leading-tight">
+      <h2 className="font-headline text-3xl text-on-surface mb-4 mt-8 leading-tight">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="font-headline text-2xl italic text-on-surface mb-3 mt-6 leading-tight">
+      <h3 className="font-headline text-2xl text-on-surface mb-3 mt-6 leading-tight">
         {children}
       </h3>
     ),

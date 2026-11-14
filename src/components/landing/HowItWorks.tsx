@@ -27,7 +27,7 @@ export function HowItWorks() {
       <div className="grid lg:grid-cols-2 gap-16 items-start">
         {/* Sticky left panel */}
         <div className="sticky top-32">
-          <h2 className="font-headline text-5xl italic mb-6 leading-tight">
+          <h2 className="font-headline text-5xl mb-6 leading-tight">
             From Database to
             <br />
             Insight in 4 Steps
@@ -42,7 +42,7 @@ export function HowItWorks() {
                 {step.number}
               </span>
               <div>
-                <h4 className="font-headline text-2xl italic mb-2">
+                <h4 className="font-headline text-2xl mb-2">
                   {step.title}
                 </h4>
                 <p className="text-on-surface-variant leading-relaxed">

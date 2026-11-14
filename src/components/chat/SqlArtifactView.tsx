@@ -21,14 +21,15 @@ export function SqlArtifactView({
       <button
         type="button"
         onClick={() => setIsExpanded((current) => !current)}
-        className="text-left text-xs font-medium text-on-surface/40 transition hover:text-on-surface/65"
+        aria-expanded={isExpanded}
+        className="rounded-full border-2 border-primary/20 px-3 py-1 font-mono text-xs font-medium text-on-surface-variant transition-colors hover:border-primary hover:text-on-surface"
       >
-        {isExpanded ? "Hide SQL executed" : "Show SQL executed"}
+        {isExpanded ? "Hide SQL" : "Show SQL"}
       </button>
 
       {isExpanded ? (
-        <div className="overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest">
-          <pre className="overflow-x-auto px-4 py-4 text-xs leading-relaxed text-on-surface/80">
+        <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container">
+          <pre className="overflow-x-auto px-4 py-3 font-mono text-[13px] leading-relaxed text-on-surface">
             <code>{sql}</code>
           </pre>
         </div>

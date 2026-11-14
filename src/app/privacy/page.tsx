@@ -46,7 +46,7 @@ Local models (Ollama, LM Studio) process data entirely on your machine — no da
   },
   {
     title: "Your Rights",
-    content: `You may request deletion of your account and associated data at any time by contacting us. Upon deletion, your email, hashed password, database connection metadata, and session data will be permanently removed.`,
+    content: `You can delete a data source, or your whole account, at any time from inside the app. Deleting a data source removes its saved connection details, its uploaded file and the conversations that used it. Deleting your account permanently removes your profile, sessions, conversations, data sources and saved API keys. You can also ask us to do this for you by contacting us.`,
   },
   {
     title: "Contact",
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
             Legal
           </span>
-          <h1 className="font-headline text-5xl italic mt-3 mb-4 text-on-surface leading-tight">
+          <h1 className="font-headline text-5xl mt-3 mb-4 text-on-surface leading-tight">
             Privacy Policy
           </h1>
           <p className="text-on-surface-variant mb-16 text-lg">
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           <div className="space-y-12">
             {sections.map((section) => (
               <div key={section.title}>
-                <h2 className="font-headline text-2xl italic text-on-surface mb-4">
+                <h2 className="font-headline text-2xl text-on-surface mb-4">
                   {section.title}
                 </h2>
                 <div className="text-on-surface-variant leading-relaxed whitespace-pre-line">
