@@ -14,7 +14,8 @@ function readAnalyticsOutcome(
     value === "no_rows" ||
     value === "narrowed" ||
     value === "chart_rendered" ||
-    value === "completed_text"
+    value === "completed_text" ||
+    value === "clarification"
     ? value
     : null;
 }

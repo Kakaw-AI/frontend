@@ -1,7 +1,7 @@
 name: CI
 
 # Deployment is handled by Vercel's Git integration. This workflow only runs
-# PR/branch checks (lint + build).
+# PR/branch checks (lint + tests + build).
 
 on:
   pull_request:
@@ -18,7 +18,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Non-blocking: the repo has pre-existing lint findings.
       - run: npm run lint
-        continue-on-error: true
+      - run: npm test
       - run: npm run build

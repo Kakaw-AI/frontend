@@ -34,6 +34,7 @@ npm run dev     # http://localhost:3000
 | --- | --- |
 | `npm run build` / `start` | Production build and server |
 | `npm run lint` | ESLint |
+| `npm test` | Vitest (`test/`) |
 
 This project uses a Next.js version with breaking changes. Read the guides in `node_modules/next/dist/docs/` before changing framework-level code (see `AGENTS.md`).
 

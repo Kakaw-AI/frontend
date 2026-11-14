@@ -45,6 +45,7 @@ export type ConversationMessage = {
     | "narrowed"
     | "chart_rendered"
     | "completed_text"
+    | "clarification"
     | null;
   visualizationOutcome?: Record<string, unknown> | null;
   createdAt: string;

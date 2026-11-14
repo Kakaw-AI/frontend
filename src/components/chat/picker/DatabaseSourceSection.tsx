@@ -3,18 +3,24 @@
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
 import type { DatabaseSource } from "@/lib/queries/database-sources";
-import { Database } from "lucide-react";
+import { Database, LoaderCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatTimestamp } from "./picker-utils";
 
 export function DatabaseSourceSection({
   databaseSources,
   selectedSourceId,
+  deletingSourceId,
+  actionError,
   onSelect,
+  onDelete,
 }: {
   databaseSources: DatabaseSource[] | undefined;
   selectedSourceId: string | null;
+  deletingSourceId: string | null;
+  actionError: string | null;
   onSelect: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   return (
     <section className="space-y-4 rounded-[28px] border border-outline-variant/15 bg-surface-container-low p-5">
@@ -26,6 +32,12 @@ export function DatabaseSourceSection({
           <h4 className="mt-1 text-lg font-semibold text-on-surface">Data source</h4>
         </div>
       </div>
+
+      {actionError ? (
+        <p className="rounded-2xl border border-rose-200/70 bg-rose-50/70 px-4 py-3 text-sm text-rose-800">
+          {actionError}
+        </p>
+      ) : null}
 
       {!databaseSources?.length ? (
         <div className="flex min-h-56 flex-col items-center justify-center gap-4 rounded-[24px] border border-dashed border-outline-variant/20 bg-surface-container-lowest px-8 text-center">
@@ -51,19 +63,25 @@ export function DatabaseSourceSection({
             const disabled = !source.canStartChat;
             const selected = selectedSourceId === source.id;
 
+            // A card rather than one big button: the delete control sits beside
+            // the select control, and a source that failed to sync cannot be
+            // selected but must still be removable.
             return (
-              <button
+              <div
                 key={source.id}
-                type="button"
-                disabled={disabled}
-                onClick={() => onSelect(source.id)}
-                className={`w-full rounded-[24px] border px-5 py-4 text-left transition-all ${
+                className={`rounded-[24px] border px-5 py-4 transition-all ${
                   disabled
-                    ? "cursor-not-allowed border-outline-variant/15 bg-surface-container-low opacity-70"
+                    ? "border-outline-variant/15 bg-surface-container-low"
                     : selected
                       ? "border-primary/45 bg-white shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]"
                       : "border-outline-variant/20 bg-white hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_18px_40px_-24px_rgba(112,87,49,0.45)]"
                 }`}
+              >
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => onSelect(source.id)}
+                className="w-full text-left disabled:cursor-not-allowed disabled:opacity-70"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="flex items-start gap-4">
@@ -92,6 +110,23 @@ export function DatabaseSourceSection({
                   <DatabaseSourceStatusBadge status={source.status} />
                 </div>
               </button>
+
+                <div className="mt-4 flex flex-wrap gap-2 border-t border-outline-variant/15 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => onDelete(source.id)}
+                    disabled={deletingSourceId === source.id}
+                    className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-800 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deletingSourceId === source.id ? (
+                      <LoaderCircle size={12} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={12} />
+                    )}
+                    Delete
+                  </button>
+                </div>
+              </div>
             );
           })}
         </div>

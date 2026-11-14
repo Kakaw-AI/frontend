@@ -123,19 +123,6 @@ async function readErrorMessage(response: Response, fallback: string) {
   return error.message;
 }
 
-async function fetchLlmConnections(): Promise<LlmConnection[]> {
-  const response = await apiFetch("/api/me/llm-connections", {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, "Unable to load LLM connections."));
-  }
-
-  const data = (await response.json()) as LlmConnectionResponse[];
-  return data.map(toLlmConnection);
-}
-
 async function saveLlmConnection(input: SaveLlmConnectionInput) {
   const response = await apiFetch("/api/llm-connections", {
     method: "POST",

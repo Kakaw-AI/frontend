@@ -72,22 +72,22 @@ export function toDatabaseSource(source: DatabaseConnectionResponse): DatabaseSo
   };
 }
 
-async function fetchDatabaseSources(): Promise<DatabaseSource[]> {
-  const response = await apiFetch("/api/me/connections", {
-    cache: "no-store",
+/**
+ * Deletes a data source along with its conversations, synced schema and stored
+ * credentials (and the uploaded file, for SQLite).
+ */
+export async function deleteDatabaseSource(id: string): Promise<void> {
+  const response = await apiFetch(`/api/database-sources/${id}`, {
+    method: "DELETE",
   });
 
   if (!response.ok) {
     const error = await readApiErrorResponse(
       response,
-      "Unable to load database sources.",
+      "Unable to delete this data source.",
     );
     throw new Error(error.message);
   }
-
-  const data = (await response.json()) as DatabaseConnectionResponse[];
-
-  return data.map(toDatabaseSource);
 }
 
 export async function resyncDatabaseSource(id: string): Promise<void> {
