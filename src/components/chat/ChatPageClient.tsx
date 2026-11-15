@@ -400,7 +400,7 @@ export function ChatPageClient() {
             conversationDetailsQueryKey(newConversationId),
             (current) => applyStreamEvent(current, event),
           );
-        });
+        }, useChatStore.getState().thinkingEnabled);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Unable to stream chat response.";
         setComposerError(message);
@@ -453,7 +453,7 @@ export function ChatPageClient() {
           conversationDetailsQueryKey(activeConversationId),
           (current) => applyStreamEvent(current, event),
         );
-      });
+      }, useChatStore.getState().thinkingEnabled);
       clearDraft(); // clear saved draft for this conversation after successful send
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to stream chat response.";

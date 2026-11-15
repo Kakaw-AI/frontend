@@ -228,13 +228,14 @@ export async function streamConversationMessage(
   conversationId: string,
   content: string,
   onEvent: (event: Record<string, unknown>) => void,
+  thinking = true,
 ) {
   const response = await apiFetch(`/api/chat/conversations/${conversationId}/messages/stream`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, thinking }),
   });
 
   await consumeChatStream(response, onEvent);

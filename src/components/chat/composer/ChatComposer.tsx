@@ -1,6 +1,6 @@
 "use client";
 
-import { SendHorizontal } from "lucide-react";
+import { Brain, SendHorizontal } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
@@ -32,6 +32,8 @@ export function ChatComposer({
   const input = useChatStore((s) => s.composerInput);
   const setInput = useChatStore((s) => s.setComposerInput);
   const isSending = useChatStore((s) => s.isSending);
+  const thinkingEnabled = useChatStore((s) => s.thinkingEnabled);
+  const toggleThinking = useChatStore((s) => s.toggleThinking);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // On chatKey change: resize textarea to fit restored content
@@ -117,6 +119,21 @@ export function ChatComposer({
             </span>
           )}
         </p>
+        <button
+          type="button"
+          onClick={toggleThinking}
+          aria-pressed={thinkingEnabled}
+          title={thinkingEnabled ? "Thinking on (local models)" : "Thinking off (local models)"}
+          className={[
+            "ml-auto flex items-center gap-1.5 rounded-full border-2 px-3 py-2 text-sm font-bold transition-colors",
+            thinkingEnabled
+              ? "border-primary/40 text-on-surface"
+              : "border-primary/25 bg-surface-container text-on-surface-variant line-through",
+          ].join(" ")}
+        >
+          <Brain size={14} />
+          Think
+        </button>
         <button
           type="button"
           onClick={handleSend}

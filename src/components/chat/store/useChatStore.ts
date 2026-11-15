@@ -20,6 +20,8 @@ interface ChatStoreState {
   composerInput: string;
   composerError: string | null;
   isSending: boolean;
+  /** Off sends "no thinking" to local models. */
+  thinkingEnabled: boolean;
 
   // User's runtime pick on the new-chat screen (/chat); null = use the default
   pendingConversation: PendingConversation | null;
@@ -39,6 +41,7 @@ interface ChatStoreActions {
   setComposerInput: (input: string) => void;
   setComposerError: (error: string | null) => void;
   setIsSending: (sending: boolean) => void;
+  toggleThinking: () => void;
 
   setPendingConversation: (p: PendingConversation | null) => void;
   clearPendingConversation: () => void;
@@ -59,6 +62,7 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   composerInput: "",
   composerError: null,
   isSending: false,
+  thinkingEnabled: true,
 
   // Ephemeral defaults
   pendingConversation: null,
@@ -86,6 +90,7 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   setComposerInput: (input) => set({ composerInput: input }),
   setComposerError: (error) => set({ composerError: error }),
   setIsSending: (sending) => set({ isSending: sending }),
+  toggleThinking: () => set((s) => ({ thinkingEnabled: !s.thinkingEnabled })),
 
   setPendingConversation: (p) => set({ pendingConversation: p }),
   clearPendingConversation: () => set({ pendingConversation: null }),
