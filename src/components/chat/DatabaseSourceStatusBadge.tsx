@@ -4,44 +4,13 @@ import { cn } from "@/lib/utils";
 import type { DatabaseSourceStatus } from "@/lib/queries/database-sources";
 import type { LlmConnectionStatus } from "@/lib/queries/llm-connections";
 
-const STATUS_CONFIG: Record<
-  DatabaseSourceStatus | LlmConnectionStatus,
-  {
-    label: string;
-    dotClassName: string;
-    className: string;
-  }
-> = {
-  SUCCESS: {
-    label: "Connected",
-    dotClassName: "bg-emerald-500",
-    className:
-      "border-emerald-200/80 bg-emerald-50/80 text-emerald-800",
-  },
-  READY: {
-    label: "Ready",
-    dotClassName: "bg-emerald-500",
-    className:
-      "border-emerald-200/80 bg-emerald-50/80 text-emerald-800",
-  },
-  PENDING: {
-    label: "Pending",
-    dotClassName: "bg-amber-500",
-    className:
-      "border-amber-200/80 bg-amber-50/80 text-amber-800",
-  },
-  SYNCING: {
-    label: "Syncing",
-    dotClassName: "bg-sky-500",
-    className:
-      "border-sky-200/80 bg-sky-50/80 text-sky-800",
-  },
-  FAILED: {
-    label: "Failed",
-    dotClassName: "bg-rose-500",
-    className:
-      "border-rose-200/80 bg-rose-50/80 text-rose-800",
-  },
+// Pod palette: yellow = good, lilac = in progress, pink = broken.
+const STATUS_CONFIG: Record<DatabaseSourceStatus | LlmConnectionStatus, { label: string; className: string }> = {
+  SUCCESS: { label: "Connected", className: "bg-accent text-primary" },
+  READY: { label: "Ready", className: "bg-accent text-primary" },
+  PENDING: { label: "Pending", className: "bg-surface-container text-on-surface" },
+  SYNCING: { label: "Indexing", className: "bg-surface-container text-on-surface" },
+  FAILED: { label: "Failed", className: "bg-secondary-container text-on-secondary-container" },
 };
 
 export function DatabaseSourceStatusBadge({
@@ -56,12 +25,11 @@ export function DatabaseSourceStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 font-label text-[10px] font-semibold uppercase tracking-[0.2em]",
+        "inline-flex shrink-0 items-center rounded-full border-2 border-primary px-2.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em]",
         config.className,
         className,
       )}
     >
-      <span className={cn("h-2 w-2 rounded-full", config.dotClassName)} />
       {config.label}
     </span>
   );

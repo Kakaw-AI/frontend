@@ -159,14 +159,42 @@
   }
 }
 
-/* Pod building blocks */
-.pod-shadow {
+/* Pod building blocks. Every screen builds buttons, fields, labels and
+   alerts from these so they look the same everywhere. */
+@utility pod-shadow {
   box-shadow: 4px 4px 0 var(--primary);
 }
 
-.pod-card {
+@utility pod-card {
   background: #ffffff;
   border: 2px solid var(--primary);
+}
+
+/* Primary action: plum pill with the offset shadow that presses in on hover. */
+@utility pod-btn {
+  @apply pod-shadow inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-6 py-3 text-sm font-bold text-on-primary transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0 disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant disabled:shadow-none;
+}
+
+/* Secondary action: white pill that turns yellow on hover. */
+@utility pod-btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Destructive small action. */
+@utility pod-btn-danger {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-secondary bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-secondary transition-colors hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility pod-input {
+  @apply block w-full rounded-2xl border-2 border-primary/20 bg-surface-container-lowest px-4 py-3 text-base text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:outline-none;
+}
+
+@utility pod-label {
+  @apply font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-on-surface-variant;
+}
+
+@utility pod-alert {
+  @apply flex items-start gap-2 rounded-2xl border-2 border-secondary bg-secondary-container px-4 py-3 text-sm text-on-secondary-container;
 }
 
 .pod-mark {

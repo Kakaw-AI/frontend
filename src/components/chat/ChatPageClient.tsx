@@ -154,7 +154,6 @@ export function ChatPageClient() {
   const visibleComposerError = runtimeWarning ?? composerError;
 
   const selectedSource = useMemo(() => activeConversation?.databaseSource ?? null, [activeConversation]);
-  const selectedLlmConnection = useMemo(() => activeConversation?.llmConnection ?? null, [activeConversation]);
 
   // New-chat runtime: the user's pick if still usable, else the most recent
   // conversation's, else the first ready one. No confirm step.
@@ -471,16 +470,12 @@ export function ChatPageClient() {
   return (
     <>
       <ChatConnectionPicker
-        // Hooks were previously called inline here, inside a JSX prop.
-        key={`${isConnectionPickerOpen ? "open" : "closed"}:${pickerStartsInAddLlmMode ? "add" : "pick"}:${activeConversationId ?? "none"}`}
+        // Remount per open so its local state starts fresh.
+        key={`${isConnectionPickerOpen ? "open" : "closed"}:${pickerStartsInAddLlmMode ? "add" : "manage"}`}
         databaseSources={chatOptionsQuery.data?.databaseSources}
         llmConnections={chatOptionsQuery.data?.llmConnections}
         isLoading={chatOptionsQuery.isLoading}
-        isRefreshing={chatOptionsQuery.isFetching && Boolean(chatOptionsQuery.data)}
         error={chatOptionsQuery.error instanceof Error ? chatOptionsQuery.error : null}
-        activeSourceId={selectedSource?.id ?? null}
-        activeLlmConnectionId={selectedLlmConnection?.id ?? null}
-        isCreatingConversation={false}
         isCreatingLlmConnection={createLlmConnectionMutation.isPending}
         createLlmError={createLlmConnectionMutation.error instanceof Error ? createLlmConnectionMutation.error : null}
         onRetry={() => void chatOptionsQuery.refetch()}
@@ -501,16 +496,6 @@ export function ChatPageClient() {
           await invalidateConversationCaches(activeConversationId);
         }}
         onDeleteDatabaseSource={handleDeleteDatabaseSource}
-        onConfirmSelection={(selection) => {
-          // Deferred creation: store the selection, do NOT call the API yet
-          setPendingConversation({
-            databaseSourceId: selection.source.id,
-            llmConnectionId: selection.llmConnection.id,
-          });
-          closePicker();
-          // Navigate to /chat (no ID) so the on-the-fly state is active
-          router.push("/chat");
-        }}
       />
 
       <div className="flex h-dvh overflow-hidden bg-surface font-body text-on-surface">
