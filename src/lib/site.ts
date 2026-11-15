@@ -8,7 +8,7 @@
  * production domain.
  */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kakaw.gitnasr.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kakaw.nasr.work";
 
 export const SITE_NAME = "Kakaw AI";
 

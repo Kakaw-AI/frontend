@@ -3,9 +3,9 @@
   <img alt="frontend — kakaw-ai by gitnasr" src=".github/banner-light.svg" width="100%">
 </picture>
 
-The web app for [Kakaw AI](https://kakaw.gitnasr.com): ask your database questions in plain English and get tables and charts back. No SQL needed.
+The web app for [Kakaw AI](https://kakaw.nasr.work): ask your database questions in plain English and get tables and charts back. No SQL needed.
 
-[Backend](https://github.com/Kakaw-AI/backend) · [Agent](https://github.com/Kakaw-AI/agent) · [Monitoring](https://github.com/Kakaw-AI/monitoring) · [Site](https://kakaw.gitnasr.com) · [Docs](https://kakaw.gitnasr.com/docs)
+[Backend](https://github.com/Kakaw-AI/backend) · [Agent](https://github.com/Kakaw-AI/agent) · [Monitoring](https://github.com/Kakaw-AI/monitoring) · [Site](https://kakaw.nasr.work) · [Docs](https://kakaw.nasr.work/docs)
 
 ## What is in here
 

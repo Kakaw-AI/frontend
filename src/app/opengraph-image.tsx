@@ -79,7 +79,7 @@ export default async function Image() {
           </div>
         </div>
 
-        <div style={{ display: "flex", fontSize: 30 }}>kakaw.gitnasr.com</div>
+        <div style={{ display: "flex", fontSize: 30 }}>kakaw.nasr.work</div>
       </div>
     ),
     {
