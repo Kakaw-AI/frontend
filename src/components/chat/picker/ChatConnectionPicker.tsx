@@ -129,11 +129,11 @@ export function ChatConnectionPicker({
       <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface-container-lowest shadow-[0_35px_90px_-24px_rgba(27,28,28,0.28)] md:rounded-[32px]" style={{ maxHeight: "calc(100dvh - 3rem)" }}>
         <div className="flex items-start justify-between gap-6 border-b border-outline-variant/15 px-5 py-5 md:px-8 md:py-6">
           <div className="space-y-2">
-            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.24em] text-primary">New Chat</p>
+            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.24em] text-primary">Connections</p>
             <div>
-              <h3 className="font-headline text-3xl text-primary">Choose your runtime stack</h3>
+              <h3 className="font-headline text-3xl text-primary">Your data sources and models</h3>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface/65">
-                Start each conversation with both an indexed data source and a validated LLM connection.
+                Add, enable or remove models and data sources. Pick a pair to start a chat with it.
               </p>
             </div>
           </div>

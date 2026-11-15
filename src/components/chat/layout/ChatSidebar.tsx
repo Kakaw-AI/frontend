@@ -30,7 +30,6 @@ export function ChatSidebar({
   onLogout: () => void;
   onDeleteAccount: () => void;
 }) {
-  const openPicker = useChatStore((s) => s.openPicker);
   const openAddLlmPicker = useChatStore((s) => s.openAddLlmPicker);
   const isSigningOut = useChatStore((s) => s.isSigningOut);
   const isSidebarOpen = useChatStore((s) => s.isSidebarOpen);
@@ -48,14 +47,14 @@ export function ChatSidebar({
         <Logo />
       </div>
 
-      <button
-        type="button"
-        onClick={openPicker}
+      <Link
+        href="/chat"
+        onClick={closeSidebar}
         className="pod-shadow flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-4 py-3 text-sm font-bold text-on-primary transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
       >
         <Plus size={16} strokeWidth={2.5} />
         New chat
-      </button>
+      </Link>
 
       <div className="flex gap-2">
         <Link

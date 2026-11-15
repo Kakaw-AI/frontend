@@ -64,7 +64,7 @@ export function MessageList({
     return (
       <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
         <div className="rounded-3xl border-2 border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
-          Select a conversation or create a new one.
+          Pick a database and model below, then ask your first question.
         </div>
       </section>
     );

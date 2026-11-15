@@ -21,7 +21,7 @@ interface ChatStoreState {
   composerError: string | null;
   isSending: boolean;
 
-  // Ephemeral / on-the-fly chat
+  // User's runtime pick on the new-chat screen (/chat); null = use the default
   pendingConversation: PendingConversation | null;
 }
 
@@ -30,7 +30,6 @@ interface ChatStoreActions {
   closeSidebar: () => void;
   toggleSidebar: () => void;
 
-  openPicker: () => void;
   openAddLlmPicker: () => void;
   closePicker: () => void;
 
@@ -69,12 +68,6 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   closeSidebar: () => set({ isSidebarOpen: false }),
   toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
 
-  openPicker: () =>
-    set({
-      isConnectionPickerOpen: true,
-      pickerStartsInAddLlmMode: false,
-      composerError: null,
-    }),
   openAddLlmPicker: () =>
     set({
       isConnectionPickerOpen: true,

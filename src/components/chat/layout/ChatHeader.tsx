@@ -23,7 +23,7 @@ export function ChatHeader({ activeConversation }: { activeConversation: Convers
           <h2 className="truncate font-headline text-lg text-on-surface md:text-xl">
             {activeConversation
               ? formatConversationTitle(activeConversation.title)
-              : "Select or create a conversation"}
+              : "New chat"}
           </h2>
           {activeConversation ? (
             <p className="mt-0.5 truncate text-xs text-on-surface-variant">

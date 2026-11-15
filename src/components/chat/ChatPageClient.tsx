@@ -30,12 +30,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { useChatStore } from "./store/useChatStore";
-import { useDraftCache, readNewChatDraft } from "./hooks/useDraftCache";
+import { useDraftCache } from "./hooks/useDraftCache";
 import { ChatSidebar } from "./layout/ChatSidebar";
 import { ChatHeader } from "./layout/ChatHeader";
 import { MessageList } from "./messages/MessageList";
 import { ChatComposer } from "./composer/ChatComposer";
 import { ComposerConnectionSelect } from "./composer/ComposerConnectionSelect";
+import { NewChatRuntimeSelect } from "./composer/NewChatRuntimeSelect";
 import { ChatConnectionPicker } from "./picker/ChatConnectionPicker";
 
 export function ChatPageClient() {
@@ -69,7 +70,7 @@ export function ChatPageClient() {
   const isConnectionPickerOpen = useChatStore((s) => s.isConnectionPickerOpen);
   const pickerStartsInAddLlmMode = useChatStore((s) => s.pickerStartsInAddLlmMode);
 
-  // The localStorage key for the current chat: conversationId or "new" for on-the-fly
+  // /chat is the new-chat screen; its draft text lives under "new".
   const chatKey = activeConversationId ?? "new";
 
   // Close the mobile conversation drawer whenever the active conversation
@@ -78,22 +79,7 @@ export function ChatPageClient() {
     closeSidebar();
   }, [activeConversationId, closeSidebar]);
 
-  const { readDraftText, setDraft, clearDraft } = useDraftCache(chatKey, pendingConversation);
-
-  // On startup: restore on-the-fly state from localStorage if present
-  useEffect(() => {
-    if (!pendingConversation) {
-      const saved = readNewChatDraft();
-      if (saved) {
-        setPendingConversation({
-          databaseSourceId: saved.databaseSourceId,
-          llmConnectionId: saved.llmConnectionId,
-        });
-      }
-    }
-    // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { readDraftText, setDraft, clearDraft } = useDraftCache(chatKey);
 
   // On chatKey change: restore draft text into composer
   useEffect(() => {
@@ -154,15 +140,6 @@ export function ChatPageClient() {
   const updateConversationRuntimeMutation = useMutation(updateConversationRuntimeMutationOptions());
   const deleteConversationMutation = useMutation(deleteConversationMutationOptions());
 
-  // Redirect /chat → first existing conversation, but only when there is no pending on-the-fly state
-  // and no localStorage draft that hasn't been restored yet (guards against SPA navigation racing
-  // the startup restore effect on the same render cycle).
-  useEffect(() => {
-    if (!activeConversationId && !pendingConversation && !readNewChatDraft() && conversationsQuery.data?.length) {
-      router.replace("/chat/" + conversationsQuery.data[0].id);
-    }
-  }, [activeConversationId, pendingConversation, conversationsQuery.data, router]);
-
   const activeConversation = activeConversationQuery.data;
   const hasStreamingAssistantMessage = Boolean(
     activeConversation?.messages.some((message) => message.role === "assistant" && message.status === "STREAMING"),
@@ -179,18 +156,16 @@ export function ChatPageClient() {
   const selectedSource = useMemo(() => activeConversation?.databaseSource ?? null, [activeConversation]);
   const selectedLlmConnection = useMemo(() => activeConversation?.llmConnection ?? null, [activeConversation]);
 
-  // Resolve a human-readable label for the pending on-the-fly state
-  const pendingLabel = useMemo(() => {
-    if (!pendingConversation || !chatOptionsQuery.data) return null;
-    const src = chatOptionsQuery.data.databaseSources.find(
-      (s) => s.id === pendingConversation.databaseSourceId,
-    );
-    const llm = chatOptionsQuery.data.llmConnections.find(
-      (c) => c.id === pendingConversation.llmConnectionId,
-    );
-    if (!src || !llm) return null;
-    return `${src.label} · ${llm.defaultModel ?? "selected model"}`;
-  }, [pendingConversation, chatOptionsQuery.data]);
+  // New-chat runtime: the user's pick if still usable, else the most recent
+  // conversation's, else the first ready one. No confirm step.
+  const readySources = useMemo(() => chatOptionsQuery.data?.databaseSources.filter((s) => s.canStartChat) ?? [], [chatOptionsQuery.data]);
+  const readyConnections = useMemo(() => chatOptionsQuery.data?.llmConnections.filter((c) => c.canStartChat) ?? [], [chatOptionsQuery.data]);
+  const recentConversation = conversationsQuery.data?.[0];
+  const newChatSource = pickReady(readySources, pendingConversation?.databaseSourceId, recentConversation?.databaseSourceId);
+  const newChatModel = pickReady(readyConnections, pendingConversation?.llmConnectionId, recentConversation?.llmConnectionId);
+  const pendingLabel = !activeConversationId && newChatSource && newChatModel
+    ? `${newChatSource.label} · ${newChatModel.defaultModel ?? "selected model"}`
+    : null;
 
   useEffect(() => {
     if (activeConversation?.runtime.isAvailableForChat) {
@@ -253,10 +228,7 @@ export function ChatPageClient() {
       chatOptionsQueryKey,
       (current) => current ? { ...current, databaseSources: current.databaseSources.filter((item) => item.id !== sourceId) } : current,
     );
-    if (pendingConversation?.databaseSourceId === sourceId) {
-      clearPendingConversation();
-      if (!activeConversationId) clearDraft();
-    }
+    if (pendingConversation?.databaseSourceId === sourceId) clearPendingConversation();
     // Its conversations went with it.
     await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
     if (activeConversation?.databaseSource.id === sourceId) {
@@ -379,10 +351,10 @@ export function ChatPageClient() {
     const content = composerInput.trim();
     if (!content || isComposerLocked) return;
 
-    // ── On-the-fly path: create conversation first, then send ──────────────
-    if (!activeConversationId && pendingConversation) {
-      if (!pendingConversation.databaseSourceId) {
-        setComposerError("No database source selected.");
+    // ── New chat: create the conversation, then send ───────────────────────
+    if (!activeConversationId) {
+      if (!newChatSource || !newChatModel) {
+        setComposerError("Pick a ready database and model first.");
         return;
       }
 
@@ -393,8 +365,8 @@ export function ChatPageClient() {
       let newConversationId: string;
       try {
         const conversation = await createConversationMutation.mutateAsync({
-          databaseSourceId: pendingConversation.databaseSourceId,
-          llmConnectionId: pendingConversation.llmConnectionId,
+          databaseSourceId: newChatSource.id,
+          llmConnectionId: newChatModel.id,
           title: "New chat",
         });
         newConversationId = conversation.id;
@@ -496,8 +468,6 @@ export function ChatPageClient() {
     }
   }
 
-  const readyConnections = chatOptionsQuery.data?.llmConnections.filter((c) => c.canStartChat) ?? [];
-
   return (
     <>
       <ChatConnectionPicker
@@ -590,6 +560,17 @@ export function ChatPageClient() {
                 visibleComposerError={visibleComposerError}
                 onSwitch={handleSwitchConversationConnection}
               />
+            ) : !activeConversationId && chatOptionsQuery.data ? (
+              <NewChatRuntimeSelect
+                sources={readySources}
+                models={readyConnections}
+                sourceId={newChatSource?.id ?? null}
+                modelId={newChatModel?.id ?? null}
+                error={composerError}
+                onChange={({ databaseSourceId, llmConnectionId }) => {
+                  if (databaseSourceId && llmConnectionId) setPendingConversation({ databaseSourceId, llmConnectionId });
+                }}
+              />
             ) : null}
 
             <ChatComposer
@@ -609,4 +590,12 @@ export function ChatPageClient() {
       </div>
     </>
   );
+}
+
+function pickReady<T extends { id: string }>(ready: T[], ...preferredIds: (string | null | undefined)[]): T | null {
+  for (const id of preferredIds) {
+    const match = id ? ready.find((item) => item.id === id) : undefined;
+    if (match) return match;
+  }
+  return ready[0] ?? null;
 }
