@@ -31,7 +31,7 @@ export function ChatComposer({
 }) {
   const input = useChatStore((s) => s.composerInput);
   const setInput = useChatStore((s) => s.setComposerInput);
-  const isSending = useChatStore((s) => s.isSending);
+  const isSending = useChatStore((s) => s.sendingKeys.includes(chatKey));
   const thinkingEnabled = useChatStore((s) => s.thinkingEnabled);
   const toggleThinking = useChatStore((s) => s.toggleThinking);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

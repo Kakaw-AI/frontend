@@ -49,7 +49,18 @@ export function ChatPageClient() {
 
   const chatOptionsQuery = useQuery(chatOptionsQueryOptions());
   const conversationsQuery = useQuery(conversationsQueryOptions());
-  const activeConversationQuery = useQuery(conversationDetailsQueryOptions(activeConversationId ?? ""));
+  // True while this tab is streaming a reply into the open conversation.
+  const isStreamingHere = useChatStore((s) => activeConversationId !== null && s.sendingKeys.includes(activeConversationId));
+  const activeConversationQuery = useQuery({
+    ...conversationDetailsQueryOptions(activeConversationId ?? ""),
+    // The live steps exist only in this cache until the reply finishes, so a
+    // server copy fetched on the way back into the chat would wipe them.
+    refetchOnMount: !isStreamingHere,
+    // A reply streaming without this tab's stream (e.g. after a reload): poll
+    // until the server marks it finished.
+    refetchInterval: (query) =>
+      !isStreamingHere && query.state.data?.messages.some((m) => m.status === "STREAMING") ? 3000 : false,
+  });
 
   // Selected field by field rather than `useChatStore()`. Subscribing to the
   // whole store meant every keystroke in the composer re-rendered this
@@ -58,7 +69,8 @@ export function ChatPageClient() {
   const composerInput = useChatStore((s) => s.composerInput);
   const setComposerInput = useChatStore((s) => s.setComposerInput);
   const setComposerError = useChatStore((s) => s.setComposerError);
-  const setIsSending = useChatStore((s) => s.setIsSending);
+  const startSending = useChatStore((s) => s.startSending);
+  const stopSending = useChatStore((s) => s.stopSending);
   const beginSignOut = useChatStore((s) => s.beginSignOut);
   const endSignOut = useChatStore((s) => s.endSignOut);
   const closePicker = useChatStore((s) => s.closePicker);
@@ -147,7 +159,7 @@ export function ChatPageClient() {
   const isConversationRuntimeAvailable = activeConversation?.runtime.isAvailableForChat ?? false;
   const runtimeWarning = activeConversation && !isConversationRuntimeAvailable ? activeConversation.runtime.warning : null;
   const isPendingRuntimeUpdate = updateConversationRuntimeMutation.isPending;
-  const isSending = useChatStore((s) => s.isSending);
+  const isSending = useChatStore((s) => s.sendingKeys.includes(chatKey));
   const composerError = useChatStore((s) => s.composerError);
 
   const isComposerLocked = isSending || isPendingRuntimeUpdate || hasStreamingAssistantMessage || Boolean(activeConversation && !isConversationRuntimeAvailable);
@@ -294,8 +306,9 @@ export function ChatPageClient() {
   async function handleRetryMessage(messageId: string) {
     if (!activeConversationId || isComposerLocked) return;
 
+    const conversationId = activeConversationId;
     setComposerError(null);
-    setIsSending(true);
+    startSending(conversationId);
 
     // Reset the failed bubble in place so the retry reuses it.
     queryClient.setQueryData<ConversationDetails | undefined>(
@@ -316,7 +329,7 @@ export function ChatPageClient() {
       setComposerError(message);
       markStreamingMessageFailed(activeConversationId, message, messageId);
     } finally {
-      setIsSending(false);
+      stopSending(conversationId);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(activeConversationId) }),
         queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
@@ -358,7 +371,7 @@ export function ChatPageClient() {
       }
 
       setComposerError(null);
-      setIsSending(true);
+      startSending("new");
       setComposerInput("");
 
       let newConversationId: string;
@@ -375,13 +388,16 @@ export function ChatPageClient() {
           conversationDetailsQueryKey(newConversationId),
           { ...conversation, messages: [] },
         );
+        // Hand the lock to the real conversation so the new-chat screen is free.
+        startSending(newConversationId);
+        stopSending("new");
         clearPendingConversation();
         clearDraft(); // remove kakaw:draft:new
         // Navigate to the real conversation URL
         router.push("/chat/" + newConversationId);
       } catch (error) {
         setComposerError(error instanceof Error ? error.message : "Unable to create conversation.");
-        setIsSending(false);
+        stopSending("new");
         // Restore the input so the user doesn't lose their message
         setComposerInput(content);
         return;
@@ -405,7 +421,7 @@ export function ChatPageClient() {
         setComposerError(message);
         markStreamingMessageFailed(newConversationId, message);
       } finally {
-        setIsSending(false);
+        stopSending(newConversationId);
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(newConversationId) }),
           queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),
@@ -432,8 +448,9 @@ export function ChatPageClient() {
       return;
     }
 
+    const conversationId = activeConversationId;
     setComposerError(null);
-    setIsSending(true);
+    startSending(conversationId);
     setComposerInput("");
 
     queryClient.setQueryData<ConversationDetails | undefined>(
@@ -459,7 +476,7 @@ export function ChatPageClient() {
       setComposerError(message);
       markStreamingMessageFailed(activeConversationId, message);
     } finally {
-      setIsSending(false);
+      stopSending(conversationId);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(activeConversationId) }),
         queryClient.invalidateQueries({ queryKey: conversationsQueryKey }),

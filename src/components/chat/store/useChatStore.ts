@@ -19,7 +19,8 @@ interface ChatStoreState {
   // Composer
   composerInput: string;
   composerError: string | null;
-  isSending: boolean;
+  /** Chats with a send in flight: conversation ids, or "new" before one exists. */
+  sendingKeys: string[];
   /** Off sends "no thinking" to local models. */
   thinkingEnabled: boolean;
 
@@ -40,7 +41,8 @@ interface ChatStoreActions {
 
   setComposerInput: (input: string) => void;
   setComposerError: (error: string | null) => void;
-  setIsSending: (sending: boolean) => void;
+  startSending: (key: string) => void;
+  stopSending: (key: string) => void;
   toggleThinking: () => void;
 
   setPendingConversation: (p: PendingConversation | null) => void;
@@ -61,7 +63,7 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   // Composer defaults
   composerInput: "",
   composerError: null,
-  isSending: false,
+  sendingKeys: [],
   thinkingEnabled: true,
 
   // Ephemeral defaults
@@ -89,7 +91,8 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
 
   setComposerInput: (input) => set({ composerInput: input }),
   setComposerError: (error) => set({ composerError: error }),
-  setIsSending: (sending) => set({ isSending: sending }),
+  startSending: (key) => set((s) => ({ sendingKeys: [...s.sendingKeys, key] })),
+  stopSending: (key) => set((s) => ({ sendingKeys: s.sendingKeys.filter((k) => k !== key) })),
   toggleThinking: () => set((s) => ({ thinkingEnabled: !s.thinkingEnabled })),
 
   setPendingConversation: (p) => set({ pendingConversation: p }),

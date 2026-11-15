@@ -117,7 +117,9 @@ type UpdateConversationRuntimeInput = {
   llmModelOverride: string | null;
 };
 
-export const conversationsQueryKey = ["chat", "conversations"] as const;
+// Not a prefix of the details keys below: invalidating the list must not also
+// refetch every conversation, which would wipe a reply still streaming in.
+export const conversationsQueryKey = ["chat", "conversation-list"] as const;
 
 export function conversationDetailsQueryKey(conversationId: string) {
   return ["chat", "conversations", conversationId] as const;
