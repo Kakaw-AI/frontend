@@ -48,7 +48,8 @@ export const MessageCard = memo(function MessageCard({
             : "space-y-4 text-on-surface"
         }
       >
-        {message.steps !== undefined &&  !message.error ? <StepLog message={message} /> : null}
+        {/* A reply loaded from the server mid-stream has no steps yet; still show the spinner. */}
+        {(message.steps != null || message.status === "STREAMING") && !message.error ? <StepLog message={message} /> : null}
         {displayContent ? <MarkdownMessage content={displayContent} /> : null}
         {message.error ? (
           <div className="space-y-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
