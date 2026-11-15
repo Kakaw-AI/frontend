@@ -3,7 +3,7 @@
 import { buildIdleStepMessage } from "@/components/chat/step-log-state";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function StepLog({ message }: { message: ConversationMessage }) {
   const steps = message.steps ?? [];
@@ -64,9 +64,28 @@ export function StepLog({ message }: { message: ConversationMessage }) {
           ) : (
             <LoaderCircle size={14} className="shrink-0 animate-spin" />
           )}
-          <span className={step.done ? "text-on-surface/35 " : ""}>{step.text}</span>
+          <span className={step.done ? "text-on-surface/35 " : ""}>
+            {step.text}
+            {step.done ? null : <RunningFor />}
+          </span>
         </div>
       ))}
     </div>
   );
+}
+
+/**
+ * Seconds the current step has been on screen. SQL drafts on reasoning models
+ * can take 30 s or more with nothing else changing; a ticking count shows the
+ * reply is still alive. Remounts, and so restarts, with each new step.
+ */
+function RunningFor() {
+  const [startedAt] = useState(() => Date.now());
+  const [now, setNow] = useState(startedAt);
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const seconds = Math.floor((now - startedAt) / 1000);
+  return seconds >= 3 ? <span className="tabular-nums text-on-surface/35"> · {seconds}s</span> : null;
 }

@@ -123,7 +123,7 @@ export function ChatComposer({
           type="button"
           onClick={toggleThinking}
           aria-pressed={thinkingEnabled}
-          title={thinkingEnabled ? "Thinking on (local models)" : "Thinking off (local models)"}
+          title={thinkingEnabled ? "Thinking on: slower, better on hard questions" : "Thinking off: fastest replies"}
           className={[
             "ml-auto flex items-center gap-1.5 rounded-full border-2 px-3 py-2 text-sm font-bold transition-colors",
             thinkingEnabled
