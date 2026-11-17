@@ -36,14 +36,14 @@ export function DatabaseSourceSection({
       ) : null}
 
       {!databaseSources?.length ? (
-        <p className="rounded-2xl border-2 border-dashed border-primary/30 px-4 py-6 text-center text-sm text-on-surface-variant">
+        <p className="rounded-2xl border border-dashed border-primary/30 px-4 py-6 text-center text-sm text-on-surface-variant">
           No databases yet.
         </p>
       ) : (
         <ul className="space-y-2">
           {databaseSources.map((source) => (
             <li key={source.id} className="pod-card flex items-start gap-3 rounded-2xl p-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-primary bg-surface-container">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-container">
                 <DatabaseLogo provider={source.provider} className="h-6 w-6" />
               </span>
               <div className="min-w-0 flex-1">

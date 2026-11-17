@@ -87,7 +87,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
   return (
     <>
       <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-primary bg-surface-container">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-surface-container">
           <DatabaseLogo provider={provider} className="h-7 w-7" />
         </span>
         <h1 className="font-headline text-3xl text-on-surface sm:text-4xl">Connect {providerLabel}</h1>
@@ -98,7 +98,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
           : "Kakaw tests the connection before it saves anything."}
       </p>
 
-      <form onSubmit={handleSubmit} className="pod-card mt-8 space-y-6 rounded-3xl p-5 md:p-6" aria-describedby={errorMessage ? "connect-error" : undefined}>
+      <form onSubmit={handleSubmit} className="pod-card mt-8 space-y-6 rounded-lg p-5 md:p-6" aria-describedby={errorMessage ? "connect-error" : undefined}>
         {isSqlite ? (
           <div>
             <label htmlFor="sqlite-file" className="text-sm font-bold text-on-surface">Database file</label>
@@ -114,8 +114,8 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
                 setIsDragging(false);
                 pickFile(event.dataTransfer.files[0]);
               }}
-              className={`mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors has-[:focus-visible]:border-primary ${
-                isDragging ? "border-primary bg-accent" : "border-primary/30 bg-surface-container-low hover:border-primary hover:bg-surface-container"
+              className={`mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed px-6 py-10 text-center transition-colors has-[:focus-visible]:border-border ${
+                isDragging ? "border-border bg-accent" : "border-primary/30 bg-surface-container-low hover:border-border hover:bg-surface-container"
               }`}
             >
               {sqliteFile ? (

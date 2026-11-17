@@ -47,7 +47,7 @@ export default function AuthPage() {
           <div className="flex flex-col gap-4">
             <button
               onClick={signInWithGoogle}
-              className="flex items-center justify-center gap-3 pod-card pod-shadow py-4 px-6 rounded-full hover:bg-accent transition-colors w-full"
+              className="flex items-center justify-center gap-3 pod-card py-4 px-6 rounded-[8px] hover:bg-accent transition-colors w-full"
             >
               <svg
                 className="w-5 h-5"
@@ -78,7 +78,7 @@ export default function AuthPage() {
 
             <button
               onClick={signInWithGitHub}
-              className="flex items-center justify-center gap-3 pod-card pod-shadow py-4 px-6 rounded-full hover:bg-accent transition-colors w-full"
+              className="flex items-center justify-center gap-3 pod-card py-4 px-6 rounded-[8px] hover:bg-accent transition-colors w-full"
             >
               <svg
                 className="w-5 h-5 fill-on-surface"
@@ -112,7 +112,7 @@ export default function AuthPage() {
         <div className="max-w-md">
           <h2 className="font-headline text-4xl xl:text-5xl text-white leading-[1.15]">
             <span className="block">Ask your database.</span>
-            <span className="pod-mark mt-2 inline-block text-primary">Get the answer.</span>
+            <span className="pod-mark mt-2 inline-block">Get the answer.</span>
           </h2>
           <p className="mt-6 text-white/80 font-body text-base md:text-lg leading-relaxed">
             Type a question in plain words. Kakaw writes the SQL, runs it, and

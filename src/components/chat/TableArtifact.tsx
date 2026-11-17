@@ -77,8 +77,8 @@ export const TableArtifact = memo(function TableArtifact({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
-      <div className="flex items-center justify-between gap-3 border-b-2 border-primary px-4 py-3">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface-container-lowest">
+      <div className="flex items-center justify-between gap-3 border-b-2 border-border px-4 py-3">
         <div>
           <p className="text-sm font-bold text-on-surface">
             Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
@@ -91,7 +91,7 @@ export const TableArtifact = memo(function TableArtifact({
           type="button"
           onClick={handleDownloadCsv}
           disabled={columns.length === 0}
-          className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-45"
+          className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-45"
         >
           Download CSV
         </button>
@@ -145,11 +145,11 @@ export const TableArtifact = memo(function TableArtifact({
         </table>
       </div>
       {visibleCount < sortedRows.length ? (
-        <div className="border-t-2 border-primary px-4 py-3 text-center">
+        <div className="border-t-2 border-border px-4 py-3 text-center">
           <button
             type="button"
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="rounded-full border-2 border-primary px-4 py-1.5 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+            className="rounded-[8px] border border-border px-4 py-1.5 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
           >
             Load more
           </button>

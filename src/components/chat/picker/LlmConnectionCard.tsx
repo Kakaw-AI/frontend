@@ -27,7 +27,7 @@ export function LlmConnectionCard({
 }) {
   return (
     <li className={`pod-card flex flex-wrap items-start gap-3 rounded-2xl p-3 ${connection.isActive ? "" : "opacity-70"}`}>
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-primary bg-surface-container">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-container">
         <LlmProviderLogo provider={connection.provider} className="h-6 w-6" />
       </span>
       <div className="min-w-0 flex-1">

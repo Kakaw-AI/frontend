@@ -10,7 +10,7 @@ const navLinks = [
 
 export function Navbar() {
   return (
-    <header className="bg-surface border-b-2 border-primary/10 fixed top-0 left-0 right-0 z-50">
+    <header className="bg-surface border-b border-border fixed top-0 left-0 right-0 z-50">
       <nav className="flex justify-between items-center w-full px-5 md:px-8 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-8">
           <Logo />
@@ -30,7 +30,7 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/login"
-            className="bg-primary text-on-primary border-2 border-primary px-5 py-2 rounded-full font-body text-sm font-bold hover:bg-primary-container transition-colors"
+            className="pod-btn px-5 py-2"
           >
             Get Started
           </Link>

@@ -35,10 +35,10 @@ export function HowItWorks() {
         </div>
 
         {/* Steps */}
-        <div className="space-y-12">
+        <div className="space-y-8">
           {steps.map((step) => (
-            <div key={step.number} className="flex gap-8 group">
-              <span className="font-headline text-6xl text-outline-variant/30 group-hover:text-primary/30 transition-colors select-none">
+            <div key={step.number} className="flex gap-6 border-t border-border pt-6">
+              <span className="w-10 shrink-0 font-mono text-sm font-medium text-on-surface-variant">
                 {step.number}
               </span>
               <div>

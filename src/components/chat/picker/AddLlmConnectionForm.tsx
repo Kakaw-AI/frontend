@@ -58,7 +58,7 @@ export function AddLlmConnectionForm({
           {LLM_PROVIDER_OPTIONS.map((option) => (
             <label
               key={option.value}
-              className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-primary/20 p-3 transition-colors hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border border-primary/20 p-3 transition-colors hover:border-border has-[:checked]:border-border has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
             >
               <input
                 type="radio"

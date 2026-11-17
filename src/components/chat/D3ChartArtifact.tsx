@@ -32,11 +32,11 @@ type D3ChartArtifactProps = {
 type ChartRow = Record<string, unknown>;
 
 const COLOR_PALETTE = [
-  "var(--chart-1, #6366f1)",
-  "var(--chart-2, #8b5cf6)",
-  "var(--chart-3, #06b6d4)",
-  "var(--chart-4, #10b981)",
-  "var(--chart-5, #f59e0b)",
+  "var(--chart-1, #2a1810)",
+  "var(--chart-2, #e8a317)",
+  "var(--chart-3, #2b6a78)",
+  "var(--chart-4, #2f6b4f)",
+  "var(--chart-5, #8a5a00)",
 ];
 
 function asRows(value: unknown): ChartRow[] {
@@ -187,7 +187,7 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             .join("path")
             .attr("d", arc)
             .attr("fill", (d) => color(d.data.label))
-            .attr("stroke", "#fff")
+            .attr("stroke", "var(--card, #fff9f0)")
             .attr("stroke-width", 1.5);
 
           chart
@@ -447,14 +447,14 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
   }
 
   const header = (
-    <div className="border-b-2 border-primary px-4 py-3">
+    <div className="border-b-2 border-border px-4 py-3">
       <h4 className="text-sm font-bold text-on-surface">{displayTitle}</h4>
     </div>
   );
 
   if (!xField || !yField) {
     return (
-      <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface-container-lowest">
         {header}
         <div className="flex items-center justify-center h-32 text-sm text-on-surface/50 border-dashed">
           Chart data is incomplete — missing axis fields
@@ -464,7 +464,7 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border-2 border-primary bg-surface-container-lowest">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface-container-lowest">
       {header}
 
       <div ref={containerRef} id={containerId} className="w-full px-3 py-2">
@@ -509,14 +509,14 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             <button
               type="button"
               onClick={downloadSVG}
-              className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
+              className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
             >
               Download SVG
             </button>
             <button
               type="button"
               onClick={downloadCSV}
-              className="rounded-full border-2 border-primary px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
+              className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface hover:bg-accent transition-colors"
             >
               Download CSV
             </button>

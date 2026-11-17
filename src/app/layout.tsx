@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
-import { DM_Sans, Gabarito } from "next/font/google";
+import { Bricolage_Grotesque, Figtree, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteGraph } from "@/lib/schema";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-const gabarito = Gabarito({ subsets: ["latin"], variable: "--font-display" });
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
+const display = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["600", "800"],
+  variable: "--font-display",
+});
+const body = Figtree({ subsets: ["latin"], variable: "--font-body-src" });
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["500"],
+  variable: "--font-mono-src",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -53,7 +62,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`light h-full antialiased ${gabarito.variable} ${dmSans.variable}`}
+      className={`light h-full antialiased ${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
         <JsonLd data={siteGraph()} />

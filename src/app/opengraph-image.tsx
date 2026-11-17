@@ -12,13 +12,14 @@ export const size = {
 
 export const contentType = "image/png";
 
-const PLUM = "#2a1039";
-const YELLOW = "#ffd23f";
-const PINK = "#e0356b";
+// Kakaw brand: cream, cocoa and pod gold.
+const PAPER = "#f6eee2";
+const INK = "#2a1810";
+const POD = "#e8a317";
 
 export default async function Image() {
   const fontData = await readFile(
-    join(process.cwd(), "public/fonts/Gabarito-ExtraBold.ttf"),
+    join(process.cwd(), "public/fonts/BricolageGrotesque-ExtraBold.woff"),
   ).catch((err: Error) => {
     throw new Error(`OG image asset missing: ${err.message}`);
   });
@@ -32,27 +33,26 @@ export default async function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#fbf6ea",
-          color: PLUM,
+          background: PAPER,
+          color: INK,
           padding: 72,
-          fontFamily: "Gabarito",
+          fontFamily: "Bricolage Grotesque",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", fontSize: 44 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            fontSize: 44,
+            letterSpacing: "-0.03em",
+          }}
+        >
           Kakaw
-          <div
-            style={{
-              display: "flex",
-              width: 18,
-              height: 18,
-              borderRadius: 9,
-              background: PINK,
-              marginLeft: 6,
-              marginTop: 14,
-            }}
-          />
+          <svg width="21" height="28" viewBox="0 0 24 32" style={{ marginLeft: 5, marginBottom: 2 }}>
+            <path d="M12 0C20 5 20 27 12 32C4 27 4 5 12 0Z" fill={POD} />
+            <path d="M12 0V32" stroke={PAPER} strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
         </div>
-
         <div
           style={{
             display: "flex",
@@ -60,19 +60,18 @@ export default async function Image() {
             alignItems: "flex-start",
             fontSize: 104,
             lineHeight: 1.05,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
           }}
         >
           <div style={{ display: "flex" }}>Ask your database.</div>
           <div
             style={{
               display: "flex",
-              background: YELLOW,
-              border: `4px solid ${PLUM}`,
-              borderRadius: 24,
+              background: POD,
+              color: INK,
+              borderRadius: 12,
               padding: "0 20px 8px",
               marginTop: 12,
-              boxShadow: `8px 8px 0 ${PLUM}`,
             }}
           >
             Get the answer.
@@ -84,7 +83,9 @@ export default async function Image() {
     ),
     {
       ...size,
-      fonts: [{ name: "Gabarito", data: fontData, style: "normal", weight: 800 }],
+      fonts: [
+        { name: "Bricolage Grotesque", data: fontData, style: "normal", weight: 800 },
+      ],
     },
   );
 }

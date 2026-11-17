@@ -92,7 +92,7 @@ export function ChatConnectionPicker({
       ref={dialogRef}
       onClose={closePicker}
       aria-labelledby="connections-title"
-      className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-3xl border-2 border-primary bg-surface p-0 text-on-surface pod-shadow backdrop:bg-on-surface/35 backdrop:backdrop-blur-sm"
+      className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-lg border border-border bg-surface p-0 text-on-surface backdrop:bg-on-surface/35 backdrop:backdrop-blur-sm"
     >
       {isOpen ? (
         <div className="flex max-h-[calc(100dvh-3rem)] flex-col">

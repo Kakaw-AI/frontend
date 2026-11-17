@@ -73,7 +73,7 @@ export function LlmConnectionSection({
       {active.length ? (
         <ul className="space-y-2">{active.map((c) => card(c, ["deactivate", "delete"]))}</ul>
       ) : !isAddConnectionFormOpen ? (
-        <p className="rounded-2xl border-2 border-dashed border-primary/30 px-4 py-6 text-center text-sm text-on-surface-variant">
+        <p className="rounded-2xl border border-dashed border-primary/30 px-4 py-6 text-center text-sm text-on-surface-variant">
           No models turned on.
         </p>
       ) : null}

@@ -6,8 +6,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-body-src), system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-heading: var(--font-headline);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -47,98 +47,104 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   /* Font families via next/font CSS vars */
   --font-headline: var(--font-display), system-ui, sans-serif;
-  --font-body: var(--font-dm-sans), system-ui, sans-serif;
-  --font-label: var(--font-dm-sans), system-ui, sans-serif;
+  --font-body: var(--font-body-src), system-ui, sans-serif;
+  --font-label: var(--font-body-src), system-ui, sans-serif;
 }
 
-/* Kakaw "Pod" palette: plum ink, pod yellow, pink, lilac surfaces.
-   Token names are the old Material-style ones so existing components
-   pick the new look up without edits. */
+/* Kakaw brand (D:/Coding/Kakaw-AI/brand): cream, cocoa and one pod-gold accent.
+   Token names are the old Material-style ones so existing components pick
+   the new look up without edits. Red is for the cursor, rules, bars and
+   Gold is for graphics, fills and the highlight; gold text uses pod-text.
+   Red is for errors only. */
 @theme {
-  --color-surface: #fbf6ea;
-  --color-surface-dim: #e6dfd0;
-  --color-surface-bright: #fbf6ea;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f6eedc;
-  --color-surface-container: #f1e7ff;
-  --color-surface-container-high: #e8dafc;
-  --color-surface-container-highest: #dfcdf9;
-  --color-surface-variant: #e8dafc;
-  --color-surface-tint: #2a1039;
+  --color-surface: #f6eee2;
+  --color-surface-dim: #eadfcc;
+  --color-surface-bright: #f6eee2;
+  --color-surface-container-lowest: #fff9f0;
+  --color-surface-container-low: #efe4d3;
+  --color-surface-container: #e8dcc9;
+  --color-surface-container-high: #e3d5c2;
+  --color-surface-container-highest: #d6c6af;
+  --color-surface-variant: #e3d5c2;
+  --color-surface-tint: #2a1810;
 
-  --color-on-surface: #2a1039;
-  --color-on-surface-variant: #6a5578;
-  --color-on-background: #2a1039;
+  --color-on-surface: #2a1810;
+  --color-on-surface-variant: #75604f;
+  --color-on-background: #2a1810;
 
-  --color-primary-container: #46205c;
-  --color-primary-fixed: #ffd23f;
-  --color-primary-fixed-dim: #f2bd1d;
-  --color-on-primary: #ffd23f;
-  --color-on-primary-fixed: #2a1039;
-  --color-on-primary-fixed-variant: #46205c;
-  --color-on-primary-container: #ffffff;
-  --color-inverse-primary: #ffd23f;
+  --color-primary-container: #2a1810;
+  --color-primary-fixed: #e3d5c2;
+  --color-primary-fixed-dim: #d6c6af;
+  --color-on-primary: #f6eee2;
+  --color-on-primary-fixed: #2a1810;
+  --color-on-primary-fixed-variant: #2a1810;
+  --color-on-primary-container: #f6eee2;
+  --color-inverse-primary: #f6eee2;
 
-  --color-secondary-container: #ffe0ea;
-  --color-secondary-fixed: #ffe0ea;
-  --color-secondary-fixed-dim: #ffb9cf;
+  --color-secondary-container: #f7dfd9;
+  --color-secondary-fixed: #f7dfd9;
+  --color-secondary-fixed-dim: #ecc3ba;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-fixed: #3d0a1d;
-  --color-on-secondary-fixed-variant: #7a1238;
-  --color-on-secondary-container: #7a1238;
+  --color-on-secondary-fixed: #2a1810;
+  --color-on-secondary-fixed-variant: #b3261e;
+  --color-on-secondary-container: #b3261e;
 
-  --color-tertiary: #5b3a8c;
-  --color-tertiary-container: #7a57ad;
-  --color-tertiary-fixed: #f1e7ff;
-  --color-tertiary-fixed-dim: #d9c2fb;
+  --color-tertiary: #2b6a78;
+  --color-tertiary-container: #2b6a78;
+  --color-tertiary-fixed: #dcebed;
+  --color-tertiary-fixed-dim: #bcd9de;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-fixed: #2a1039;
-  --color-on-tertiary-fixed-variant: #46205c;
+  --color-on-tertiary-fixed: #2a1810;
+  --color-on-tertiary-fixed-variant: #2b6a78;
   --color-on-tertiary-container: #ffffff;
 
-  --color-outline: #6a5578;
-  --color-outline-variant: #2a1039;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
+  --color-outline: #75604f;
+  --color-outline-variant: #e3d5c2;
+  --color-error-container: #f7dfd9;
+  --color-on-error-container: #b3261e;
 
-  --color-inverse-surface: #2a1039;
-  --color-inverse-on-surface: #fbf6ea;
+  --color-inverse-surface: #2a1810;
+  --color-inverse-on-surface: #f6eee2;
+
+  --color-pod: #e8a317;
+  --color-pod-text: #8a5a00;
 }
 
 :root {
-  --background: #fbf6ea;
-  --foreground: #2a1039;
-  --card: #ffffff;
-  --card-foreground: #2a1039;
-  --popover: #ffffff;
-  --popover-foreground: #2a1039;
-  --primary: #2a1039;
-  --primary-foreground: #ffd23f;
-  /* #c81e5b, not the brighter chart pink: white text needs 4.5:1 on it */
-  --secondary: #c81e5b;
+  --background: #f6eee2;
+  --foreground: #2a1810;
+  --card: #fff9f0;
+  --card-foreground: #2a1810;
+  --popover: #fff9f0;
+  --popover-foreground: #2a1810;
+  --primary: #2a1810;
+  --primary-foreground: #f6eee2;
+  /* error red: white text on it is 6:1 */
+  --secondary: #b3261e;
   --secondary-foreground: #ffffff;
-  --muted: #f1e7ff;
-  --muted-foreground: #6a5578;
-  --accent: #ffd23f;
-  --accent-foreground: #2a1039;
-  --destructive: #ba1a1a;
-  --border: #2a1039;
-  --input: #2a1039;
-  --ring: #c81e5b;
+  --muted: #efe4d3;
+  --muted-foreground: #75604f;
+  --accent: #e3d5c2;
+  --accent-foreground: #2a1810;
+  --destructive: #b3261e;
+  --border: #e3d5c2;
+  --input: #e3d5c2;
+  --ring: #2a1810;
   --radius: 1rem;
-  --chart-1: #e0356b;
-  --chart-2: #ffd23f;
-  --chart-3: #2a1039;
-  --chart-4: #7a57ad;
-  --chart-5: #ff8a5c;
-  --sidebar: #f1e7ff;
-  --sidebar-foreground: #2a1039;
-  --sidebar-primary: #2a1039;
-  --sidebar-primary-foreground: #ffd23f;
-  --sidebar-accent: #ffd23f;
-  --sidebar-accent-foreground: #2a1039;
-  --sidebar-border: #2a1039;
-  --sidebar-ring: #c81e5b;
+  /* chart series: cocoa, pod gold, leaf, teal, clay */
+  --chart-1: #2a1810;
+  --chart-2: #e8a317;
+  --chart-3: #2f6b4f;
+  --chart-4: #2b6a78;
+  --chart-5: #a4452c;
+  --sidebar: #efe4d3;
+  --sidebar-foreground: #2a1810;
+  --sidebar-primary: #2a1810;
+  --sidebar-primary-foreground: #f6eee2;
+  --sidebar-accent: #e3d5c2;
+  --sidebar-accent-foreground: #2a1810;
+  --sidebar-border: #e3d5c2;
+  --sidebar-ring: #2a1810;
 }
 
 @layer base {
@@ -151,56 +157,61 @@
   html {
     @apply font-body;
   }
-  /* Headings default to Gabarito ExtraBold, slightly tightened. In the base
-     layer, so an explicit font-* or tracking-* utility still wins. */
+  /* Bricolage Grotesque 800, tight tracking. In the base layer, so an
+     explicit font-* or tracking-* utility still wins. */
   .font-headline {
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
 }
 
-/* Pod building blocks. Every screen builds buttons, fields, labels and
-   alerts from these so they look the same everywhere. */
+/* Building blocks. Every screen builds buttons, fields, labels and alerts
+   from these so they look the same everywhere. Flat, no offset shadows.
+   Radii: inputs and buttons 10px, cards 16px. */
 @utility pod-shadow {
-  box-shadow: 4px 4px 0 var(--primary);
+  box-shadow: none;
 }
 
 @utility pod-card {
-  background: #ffffff;
-  border: 2px solid var(--primary);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
 }
 
-/* Primary action: plum pill with the offset shadow that presses in on hover. */
+/* Primary action: ink button, lightens on hover, presses on click. */
 @utility pod-btn {
-  @apply pod-shadow inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-6 py-3 text-sm font-bold text-on-primary transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0 disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-[10px] border border-primary bg-primary px-6 py-3 text-sm font-bold text-on-primary transition-colors hover:border-on-surface-variant hover:bg-on-surface-variant active:translate-y-px disabled:cursor-not-allowed disabled:border-transparent disabled:bg-surface-container disabled:text-on-surface-variant;
 }
 
-/* Secondary action: white pill that turns yellow on hover. */
+/* Secondary action: paper button with a line border, tints on hover. */
 @utility pod-btn-ghost {
-  @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-[10px] border border-border bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 /* Destructive small action. */
 @utility pod-btn-danger {
-  @apply inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-secondary bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-secondary transition-colors hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-secondary bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-secondary transition-colors hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility pod-input {
-  @apply block w-full rounded-2xl border-2 border-primary/20 bg-surface-container-lowest px-4 py-3 text-base text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:outline-none;
+  @apply block w-full rounded-[10px] border border-border bg-surface-container-lowest px-4 py-3 text-base text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20;
 }
 
 @utility pod-label {
-  @apply font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-on-surface-variant;
+  @apply font-mono text-xs font-medium uppercase tracking-[0.08em] text-on-surface-variant;
 }
 
 @utility pod-alert {
-  @apply flex items-start gap-2 rounded-2xl border-2 border-secondary bg-secondary-container px-4 py-3 text-sm text-on-secondary-container;
+  @apply flex items-start gap-2 rounded-[10px] border border-secondary bg-secondary-container px-4 py-3 text-sm text-on-secondary-container;
 }
 
+/* Emphasis: one key word per heading, pod gold behind cocoa text. */
 .pod-mark {
-  background: var(--accent);
+  background: var(--color-pod);
+  color: var(--primary);
   padding: 0.02em 0.2em 0.08em;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
+

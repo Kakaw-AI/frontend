@@ -39,7 +39,7 @@ export function ChatSidebar({
     // Mobile: off-canvas drawer toggled by the header hamburger. Desktop (lg+):
     // a static in-flow column — the lg: utilities fully neutralize the drawer.
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-full w-72 max-w-[85vw] flex-col gap-4 border-r-2 border-primary bg-surface-container p-4 transition-transform duration-300 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:shrink-0 lg:transition-none ${
+      className={`fixed inset-y-0 left-0 z-50 flex h-full w-72 max-w-[85vw] flex-col gap-4 border-r-2 border-border bg-surface-container p-4 transition-transform duration-300 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:shrink-0 lg:transition-none ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -50,7 +50,7 @@ export function ChatSidebar({
       <Link
         href="/chat"
         onClick={closeSidebar}
-        className="pod-shadow flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-4 py-3 text-sm font-bold text-on-primary transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        className="pod-btn"
       >
         <Plus size={16} strokeWidth={2.5} />
         New chat
@@ -59,7 +59,7 @@ export function ChatSidebar({
       <div className="flex gap-2">
         <Link
           href="/onboarding/database"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-surface-container-lowest px-3 py-2 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-[8px] border border-border bg-surface-container-lowest px-3 py-2 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
         >
           <Database size={14} />
           Database
@@ -67,7 +67,7 @@ export function ChatSidebar({
         <button
           type="button"
           onClick={openAddLlmPicker}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-surface-container-lowest px-3 py-2 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-[8px] border border-border bg-surface-container-lowest px-3 py-2 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
         >
           <Sparkles size={14} />
           Model
@@ -78,7 +78,7 @@ export function ChatSidebar({
         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
         <input
           aria-label="Search conversations"
-          className="w-full rounded-full border-2 border-primary/20 bg-surface-container-lowest py-2 pr-4 pl-10 text-sm placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
+          className="w-full rounded-[8px] border border-primary/20 bg-surface-container-lowest py-2 pr-4 pl-10 text-sm placeholder:text-on-surface-variant focus:border-border focus:outline-none"
           placeholder="Search conversations"
           type="text"
           readOnly
@@ -96,8 +96,8 @@ export function ChatSidebar({
               key={conversation.id}
               className={
                 activeConversationId === conversation.id
-                  ? "group relative rounded-2xl border-2 border-primary bg-surface-container-lowest"
-                  : "group relative rounded-2xl border-2 border-transparent hover:bg-surface-container-lowest/70"
+                  ? "group relative rounded-2xl border border-border bg-surface-container-lowest"
+                  : "group relative rounded-2xl border border-transparent hover:bg-surface-container-lowest/70"
               }
             >
               <button
@@ -130,7 +130,7 @@ export function ChatSidebar({
           ))}
 
           {!conversations?.length ? (
-            <div className="rounded-2xl border-2 border-dashed border-primary/30 px-4 py-5 text-sm text-on-surface-variant">
+            <div className="rounded-2xl border border-dashed border-primary/30 px-4 py-5 text-sm text-on-surface-variant">
               No conversations yet.
             </div>
           ) : null}
@@ -150,7 +150,7 @@ export function ChatSidebar({
                 className="h-9 w-9 shrink-0 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-accent text-xs font-bold text-primary">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-border bg-accent text-xs font-bold text-primary">
                 {getInitials(user.name, user.email)}
               </div>
             )}

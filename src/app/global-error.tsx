@@ -22,9 +22,9 @@ export default function GlobalError({
           gap: "1rem",
           padding: "1.5rem",
           textAlign: "center",
-          fontFamily: 'Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
-          color: "#1b1c1c",
-          background: "#fbf9f8",
+          fontFamily: 'Figtree, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+          color: "#2a1810",
+          background: "#f6eee2",
         }}
       >
         <title>Something went wrong | Kakaw AI</title>
@@ -43,12 +43,12 @@ export default function GlobalError({
           onClick={() => unstable_retry()}
           style={{
             border: 0,
-            borderRadius: "9999px",
+            borderRadius: "8px",
             padding: "0.6rem 1.4rem",
             font: "inherit",
             fontWeight: 600,
-            color: "#ffffff",
-            background: "#705731",
+            color: "#f6eee2",
+            background: "#2a1810",
             cursor: "pointer",
           }}
         >

@@ -53,7 +53,7 @@ export function MessageList({
   if (isLoading) {
     return (
       <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
-        <div className="rounded-3xl border-2 border-primary bg-surface-container-lowest px-6 py-8 text-sm text-on-surface-variant">
+        <div className="rounded-lg border border-border bg-surface-container-lowest px-6 py-8 text-sm text-on-surface-variant">
           Loading conversation...
         </div>
       </section>
@@ -63,7 +63,7 @@ export function MessageList({
   if (!activeConversation) {
     return (
       <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
-        <div className="rounded-3xl border-2 border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
+        <div className="rounded-lg border border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
           Pick a database and model below, then ask your first question.
         </div>
       </section>
@@ -85,7 +85,7 @@ export function MessageList({
         ))}
 
         {!activeConversation.messages.length ? (
-          <div className="rounded-3xl border-2 border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
+          <div className="rounded-lg border border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
             Ask a question to get started.
           </div>
         ) : null}

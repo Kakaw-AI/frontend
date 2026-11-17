@@ -24,7 +24,7 @@ export function OnboardingStepper() {
             >
               <span
                 className={[
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-primary text-xs font-bold",
+                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] border border-border text-xs font-bold",
                   isActive ? "bg-primary text-on-primary" : isDone ? "bg-accent text-primary" : "bg-surface-container-lowest text-on-surface-variant",
                 ].join(" ")}
               >

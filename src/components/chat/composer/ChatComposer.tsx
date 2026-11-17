@@ -79,10 +79,10 @@ export function ChatComposer({
   return (
     <div
       className={[
-        "flex flex-col rounded-3xl border-2 bg-surface-container-lowest transition-shadow",
+        "flex flex-col rounded-lg border bg-surface-container-lowest transition-shadow",
         !isEnabled || isComposerLocked
           ? "border-primary/25"
-          : "pod-shadow border-primary focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-surface",
+          : "border-border focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-surface",
       ].join(" ")}
     >
       <textarea
@@ -125,7 +125,7 @@ export function ChatComposer({
           aria-pressed={thinkingEnabled}
           title={thinkingEnabled ? "Thinking on: slower, better on hard questions" : "Thinking off: fastest replies"}
           className={[
-            "ml-auto flex items-center gap-1.5 rounded-full border-2 px-3 py-2 text-sm font-bold transition-colors",
+            "ml-auto flex items-center gap-1.5 rounded-[8px] border px-3 py-2 text-sm font-bold transition-colors",
             thinkingEnabled
               ? "border-primary/40 text-on-surface"
               : "border-primary/25 bg-surface-container text-on-surface-variant line-through",
@@ -138,7 +138,7 @@ export function ChatComposer({
           type="button"
           onClick={handleSend}
           disabled={!isEnabled || !input.trim() || isComposerLocked}
-          className="flex items-center gap-1.5 rounded-full border-2 border-primary bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors disabled:cursor-not-allowed disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant"
+          className="flex items-center gap-1.5 rounded-[8px] border border-primary bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors disabled:cursor-not-allowed disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant"
         >
           <SendHorizontal size={14} />
           Send

@@ -44,7 +44,7 @@ export const MessageCard = memo(function MessageCard({
       <div
         className={
           isUser
-            ? "rounded-3xl rounded-br-md bg-primary px-5 py-3 font-medium text-white"
+            ? "rounded-lg rounded-br-md bg-primary px-5 py-3 font-medium text-on-primary"
             : "space-y-4 text-on-surface"
         }
       >
@@ -98,7 +98,7 @@ export const MessageCard = memo(function MessageCard({
               key={suggestion}
               type="button"
               onClick={() => onSuggestionClick(suggestion)}
-              className="rounded-full border-2 border-primary bg-surface-container-lowest px-3 py-1 text-xs font-semibold text-on-surface transition-colors hover:bg-accent"
+              className="rounded-[8px] border border-border bg-surface-container-lowest px-3 py-1 text-xs font-semibold text-on-surface transition-colors hover:bg-accent"
             >
               {suggestion}
             </button>

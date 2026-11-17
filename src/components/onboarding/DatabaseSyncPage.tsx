@@ -51,7 +51,7 @@ export function DatabaseSyncPage() {
           : "Kakaw is indexing your tables, columns and sample rows. You'll go to chat as soon as it's done."}
       </p>
 
-      <section className="pod-card mt-8 space-y-4 rounded-3xl p-5 md:p-6" aria-live="polite">
+      <section className="pod-card mt-8 space-y-4 rounded-lg p-5 md:p-6" aria-live="polite">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate font-bold text-on-surface">{blockingSync?.label ?? "Your database"}</p>

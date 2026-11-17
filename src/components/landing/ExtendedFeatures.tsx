@@ -73,7 +73,7 @@ export function ExtendedFeatures() {
             key={feature.title}
             className="bg-surface-container-lowest p-8 rounded-2xl flex flex-col gap-4 group hover:-translate-y-1 transition-transform duration-300"
           >
-            <div className="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-primary">
+            <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
               {feature.icon}
             </div>
             <div>

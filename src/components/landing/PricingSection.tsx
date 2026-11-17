@@ -15,7 +15,7 @@ export function PricingSection() {
       className="scroll-mt-32 bg-surface py-24 border-t border-outline-variant/15"
     >
       <div className="max-w-4xl mx-auto px-8">
-        <div className="bg-surface-container rounded-[2rem] p-8 md:p-12 border-2 border-primary pod-shadow">
+        <div className="bg-surface-container rounded-xl p-8 md:p-12 border border-border">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.9fr)] lg:items-center">
             <div className="text-left">
               <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
@@ -35,7 +35,7 @@ export function PricingSection() {
                 {providers.map((provider) => (
                   <span
                     key={provider}
-                    className="rounded-full border border-outline-variant/15 bg-white/60 px-4 py-2 text-sm text-on-surface-variant backdrop-blur"
+                    className="rounded-full border border-border bg-surface-container-lowest px-4 py-2 font-mono text-xs text-on-surface-variant"
                   >
                     {provider}
                   </span>
@@ -43,7 +43,7 @@ export function PricingSection() {
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] bg-surface-container-lowest p-6 md:p-8 text-left ring-1 ring-outline-variant/10">
+            <div className="rounded-lg bg-surface-container-lowest p-6 md:p-8 text-left border border-border">
               <p className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
                 One simple plan
               </p>
@@ -70,7 +70,7 @@ export function PricingSection() {
 
               <Link
                 href="/login"
-                className="bg-primary pod-shadow mt-8 inline-flex w-full items-center justify-center rounded-full border-2 border-primary px-6 py-4 text-base font-bold text-on-primary transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                className="pod-btn mt-8 w-full py-4 text-base"
               >
                 Get Started
               </Link>
