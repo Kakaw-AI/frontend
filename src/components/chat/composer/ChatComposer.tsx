@@ -87,6 +87,7 @@ export function ChatComposer({
     >
       <textarea
         ref={textareaRef}
+        dir="auto"
         rows={1}
         value={input}
         onChange={handleInput}

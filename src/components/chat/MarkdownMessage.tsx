@@ -45,7 +45,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                 : "text-base font-semibold";
 
           return (
-            <p key={`block-${blockIndex}`} className={className}>
+            <p key={`block-${blockIndex}`} dir="auto" className={className}>
               {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
             </p>
           );
@@ -53,9 +53,9 @@ export const MarkdownMessage = memo(function MarkdownMessage({
 
         if (block.type === "unordered-list") {
           return (
-            <ul key={`block-${blockIndex}`} className="list-disc space-y-1.5 pl-5">
+            <ul key={`block-${blockIndex}`} dir="auto" className="list-disc space-y-1.5 ps-5">
               {block.items.map((item, lineIndex) => (
-                <li key={`block-${blockIndex}-item-${lineIndex}`}>
+                <li dir="auto" key={`block-${blockIndex}-item-${lineIndex}`}>
                   {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
                 </li>
               ))}
@@ -65,9 +65,9 @@ export const MarkdownMessage = memo(function MarkdownMessage({
 
         if (block.type === "ordered-list") {
           return (
-            <ol key={`block-${blockIndex}`} className="list-decimal space-y-1.5 pl-5">
+            <ol key={`block-${blockIndex}`} dir="auto" className="list-decimal space-y-1.5 ps-5">
               {block.items.map((item, lineIndex) => (
-                <li key={`block-${blockIndex}-item-${lineIndex}`}>
+                <li dir="auto" key={`block-${blockIndex}-item-${lineIndex}`}>
                   {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
                 </li>
               ))}
@@ -99,12 +99,13 @@ export const MarkdownMessage = memo(function MarkdownMessage({
               key={`block-${blockIndex}`}
               className="overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest"
             >
-              <table className="min-w-full border-collapse text-left text-sm">
+              <table className="min-w-full border-collapse text-start text-sm">
                 <thead className="bg-surface-container-high text-on-surface/80">
                   <tr>
                     {block.headers.map((header, headerIndex) => (
                       <th
                         key={`block-${blockIndex}-header-${headerIndex}`}
+                        dir="auto"
                         className="border-b border-outline-variant/15 px-4 py-2.5 font-semibold"
                       >
                         {renderInlineMarkdown(header, `block-${blockIndex}-header-${headerIndex}`)}
@@ -118,6 +119,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                       {row.map((cell, cellIndex) => (
                         <td
                           key={`block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`}
+                          dir="auto"
                           className="px-4 py-2.5 align-top"
                         >
                           {renderInlineMarkdown(cell, `block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`)}
@@ -132,7 +134,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
         }
 
         return (
-          <p key={`block-${blockIndex}`} className="whitespace-pre-wrap">
+          <p key={`block-${blockIndex}`} dir="auto" className="whitespace-pre-wrap">
             {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
           </p>
         );
