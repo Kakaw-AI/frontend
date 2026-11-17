@@ -108,6 +108,9 @@
 
   --color-pod: #e8a317;
   --color-pod-text: #8a5a00;
+
+  /* the red period in the wordmark; 4.4:1 on the cream page */
+  --color-dot: #d23a2c;
 }
 
 :root {

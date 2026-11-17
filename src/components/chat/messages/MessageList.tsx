@@ -4,6 +4,9 @@ import { MessageCard } from "@/components/chat/MessageCard";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 import { useEffect, useMemo, useRef } from "react";
 
+const sectionClass = "min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-6";
+const emptyClass = "py-16 text-center text-sm text-on-surface-variant";
+
 export function MessageList({
   activeConversation,
   isLoading,
@@ -52,27 +55,23 @@ export function MessageList({
 
   if (isLoading) {
     return (
-      <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
-        <div className="rounded-lg border border-border bg-surface-container-lowest px-6 py-8 text-sm text-on-surface-variant">
-          Loading conversation...
-        </div>
+      <section className={sectionClass}>
+        <p className={emptyClass}>Loading conversation…</p>
       </section>
     );
   }
 
   if (!activeConversation) {
     return (
-      <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
-        <div className="rounded-lg border border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
-          Pick a database and model below, then ask your first question.
-        </div>
+      <section className={sectionClass}>
+        <p className={emptyClass}>Pick a database and model below, then ask your first question.</p>
       </section>
     );
   }
 
   return (
-    <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
-      <div className="mx-auto max-w-4xl space-y-8">
+    <section className={sectionClass}>
+      <div className="mx-auto max-w-3xl space-y-5">
         {activeConversation.messages.map((message, index) => (
           <MessageCard
             key={message.id}
@@ -84,12 +83,8 @@ export function MessageList({
           />
         ))}
 
-        {!activeConversation.messages.length ? (
-          <div className="rounded-lg border border-dashed border-primary/30 px-6 py-12 text-center text-sm text-on-surface-variant">
-            Ask a question to get started.
-          </div>
-        ) : null}
-        
+        {!activeConversation.messages.length ? <p className={emptyClass}>Ask a question to get started.</p> : null}
+
         <div ref={bottomRef} className="h-px w-full" />
       </div>
     </section>

@@ -18,7 +18,7 @@ export function ComposerConnectionSelect({
   onSwitch: (id: string | null) => void;
 }) {
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+    <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <Select
         value={activeConnectionId ?? ""}
         onValueChange={(id: string | null) => {
@@ -26,7 +26,7 @@ export function ComposerConnectionSelect({
         }}
         disabled={isPending || !readyConnections.length}
       >
-        <SelectTrigger className="w-full sm:w-60">
+        <SelectTrigger className="w-full text-[13px] sm:w-52">
           <SelectValue placeholder="No connection">
             {(id: string | null) =>
               readyConnections.find((c) => c.id === id)?.label ?? "No connection"
@@ -42,7 +42,7 @@ export function ComposerConnectionSelect({
         </SelectContent>
       </Select>
       {visibleComposerError ? (
-        <span className="flex items-center gap-1.5 text-xs text-rose-700">
+        <span className="flex items-center gap-1.5 text-xs text-secondary">
           <AlertTriangle size={12} />
           {visibleComposerError}
         </span>

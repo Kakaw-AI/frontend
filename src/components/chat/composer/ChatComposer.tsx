@@ -79,10 +79,10 @@ export function ChatComposer({
   return (
     <div
       className={[
-        "flex flex-col rounded-lg border bg-surface-container-lowest transition-shadow",
+        "flex flex-col rounded-xl border bg-surface-container-lowest transition-colors",
         !isEnabled || isComposerLocked
-          ? "border-primary/25"
-          : "border-border focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-surface",
+          ? "border-border opacity-80"
+          : "border-outline-variant focus-within:border-on-surface-variant",
       ].join(" ")}
     >
       <textarea
@@ -99,12 +99,27 @@ export function ChatComposer({
         }}
         disabled={!isEnabled || isComposerLocked}
         aria-label="Message"
-        className="w-full resize-none border-none bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
-        style={{ minHeight: "44px", maxHeight: "200px", overflowY: "auto" }}
+        className="w-full resize-none border-none bg-transparent px-3.5 pt-3 pb-1 text-sm leading-6 placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
+        style={{ minHeight: "36px", maxHeight: "200px", overflowY: "auto" }}
         placeholder={placeholder}
       />
-      <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-1">
-        <p className="text-xs text-on-surface-variant">
+      <div className="flex items-center gap-2 px-2.5 pb-2 pt-0.5">
+        <button
+          type="button"
+          onClick={toggleThinking}
+          aria-pressed={thinkingEnabled}
+          title={thinkingEnabled ? "Thinking on: slower, better on hard questions" : "Thinking off: fastest replies"}
+          className={[
+            "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors",
+            thinkingEnabled
+              ? "bg-accent text-on-surface"
+              : "text-on-surface-variant hover:bg-accent/60",
+          ].join(" ")}
+        >
+          <Brain size={13} />
+          Think
+        </button>
+        <p className="min-w-0 truncate text-[11px] text-on-surface-variant">
           {isSending || hasStreamingAssistantMessage ? (
             "Responding…"
           ) : isPendingRuntimeUpdate ? (
@@ -112,37 +127,18 @@ export function ChatComposer({
           ) : activeConversation && !isConversationRuntimeAvailable ? (
             "Read-only history"
           ) : (
-            <span className="hidden sm:inline">
-              <kbd className="rounded-md border border-primary/30 bg-surface-container px-1.5 py-0.5 font-mono text-[11px]">Enter</kbd>
-              {" to send · "}
-              <kbd className="rounded-md border border-primary/30 bg-surface-container px-1.5 py-0.5 font-mono text-[11px]">⇧ Enter</kbd>
-              {" for a new line"}
-            </span>
+            <span className="hidden sm:inline">Enter to send · Shift+Enter for a new line</span>
           )}
         </p>
         <button
           type="button"
-          onClick={toggleThinking}
-          aria-pressed={thinkingEnabled}
-          title={thinkingEnabled ? "Thinking on: slower, better on hard questions" : "Thinking off: fastest replies"}
-          className={[
-            "ml-auto flex items-center gap-1.5 rounded-[8px] border px-3 py-2 text-sm font-bold transition-colors",
-            thinkingEnabled
-              ? "border-primary/40 text-on-surface"
-              : "border-primary/25 bg-surface-container text-on-surface-variant line-through",
-          ].join(" ")}
-        >
-          <Brain size={14} />
-          Think
-        </button>
-        <button
-          type="button"
           onClick={handleSend}
           disabled={!isEnabled || !input.trim() || isComposerLocked}
-          className="flex items-center gap-1.5 rounded-[8px] border border-primary bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors disabled:cursor-not-allowed disabled:border-primary/25 disabled:bg-surface-container disabled:text-on-surface-variant"
+          aria-label="Send"
+          title="Send"
+          className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-on-primary transition-colors hover:bg-on-surface-variant disabled:cursor-not-allowed disabled:bg-surface-container disabled:text-on-surface-variant"
         >
           <SendHorizontal size={14} />
-          Send
         </button>
       </div>
     </div>

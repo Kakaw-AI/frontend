@@ -20,9 +20,9 @@ export function StepLog({ message }: { message: ConversationMessage }) {
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-on-surface/40 transition hover:text-on-surface/65 "
+          className="flex items-center gap-1.5 text-xs text-on-surface-variant transition hover:text-on-surface"
         >
-          <CheckCircle2 size={12} className="text-green-500" />
+          <CheckCircle2 size={12} className="text-chart-3" />
           <span>
             {steps.length} step{steps.length !== 1 ? "s" : ""}
             {elapsedLabel}
@@ -34,9 +34,9 @@ export function StepLog({ message }: { message: ConversationMessage }) {
             {steps.map((step) => (
               <div
                 key={step.seq}
-                className="flex items-center gap-2 text-xs text-on-surface/35 "
+                className="flex items-center gap-2 text-xs text-on-surface-variant"
               >
-                <CheckCircle2 size={11} className="shrink-0 text-green-500" />
+                <CheckCircle2 size={11} className="shrink-0 text-chart-3" />
                 <span>{step.text}</span>
               </div>
             ))}
@@ -48,8 +48,8 @@ export function StepLog({ message }: { message: ConversationMessage }) {
 
   if (steps.length === 0) {
     return (
-        <div className="flex items-center gap-2 text-sm text-on-surface/55">
-        <LoaderCircle size={16} className="animate-spin" />
+    <div className="flex items-center gap-2 text-[13px] text-on-surface-variant">
+        <LoaderCircle size={14} className="animate-spin" />
         <span>{buildIdleStepMessage()}</span>
       </div>
     );
@@ -58,13 +58,13 @@ export function StepLog({ message }: { message: ConversationMessage }) {
   return (
     <div className="space-y-1">
       {steps.map((step) => (
-        <div key={step.seq} className="flex items-center gap-2 text-sm text-on-surface/55 wrap-break-word">
+        <div key={step.seq} className="flex items-center gap-2 text-[13px] text-on-surface wrap-break-word">
           {step.done ? (
-            <CheckCircle2 size={14} className="shrink-0 text-green-500" />
+            <CheckCircle2 size={13} className="shrink-0 text-chart-3" />
           ) : (
-            <LoaderCircle size={14} className="shrink-0 animate-spin" />
+            <LoaderCircle size={13} className="shrink-0 animate-spin text-on-surface-variant" />
           )}
-          <span className={step.done ? "text-on-surface/35 " : ""}>
+          <span className={step.done ? "text-on-surface-variant" : ""}>
             {step.text}
             {step.done ? null : <RunningFor />}
           </span>
@@ -87,5 +87,5 @@ function RunningFor() {
     return () => clearInterval(timer);
   }, []);
   const seconds = Math.floor((now - startedAt) / 1000);
-  return seconds >= 3 ? <span className="tabular-nums text-on-surface/35"> · {seconds}s</span> : null;
+  return seconds >= 3 ? <span className="tabular-nums text-on-surface-variant"> · {seconds}s</span> : null;
 }

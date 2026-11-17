@@ -9,29 +9,23 @@ export function ChatHeader({ activeConversation }: { activeConversation: Convers
   const openSidebar = useChatStore((s) => s.openSidebar);
 
   return (
-    <header className="flex items-center justify-between border-b-2 border-primary/10 px-4 py-3 md:px-8 md:py-4">
-      <div className="flex min-w-0 items-center gap-2">
-        <button
-          type="button"
-          onClick={openSidebar}
-          aria-label="Open conversations"
-          className="-ml-1 shrink-0 rounded-full p-2 text-on-surface transition-colors hover:bg-surface-container lg:hidden"
-        >
-          <Menu size={20} />
-        </button>
-        <div className="min-w-0">
-          <h2 className="truncate font-headline text-lg text-on-surface md:text-xl">
-            {activeConversation
-              ? formatConversationTitle(activeConversation.title)
-              : "New chat"}
-          </h2>
-          {activeConversation ? (
-            <p className="mt-0.5 truncate text-xs text-on-surface-variant">
-              {activeConversation.databaseSource.label}
-            </p>
-          ) : null}
-        </div>
-      </div>
+    <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-3 md:px-6">
+      <button
+        type="button"
+        onClick={openSidebar}
+        aria-label="Open conversations"
+        className="-ml-1 shrink-0 rounded-md p-1.5 text-on-surface transition-colors hover:bg-accent/60 lg:hidden"
+      >
+        <Menu size={18} />
+      </button>
+      <h2 className="min-w-0 truncate text-sm font-semibold text-on-surface">
+        {activeConversation ? formatConversationTitle(activeConversation.title) : "New chat"}
+      </h2>
+      {activeConversation ? (
+        <span className="hidden min-w-0 shrink-0 truncate text-xs text-on-surface-variant sm:inline">
+          {activeConversation.databaseSource.label}
+        </span>
+      ) : null}
     </header>
   );
 }

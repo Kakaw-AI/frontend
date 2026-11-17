@@ -34,7 +34,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
   const blocks = useMemo(() => parseMarkdownBlocks(content), [content]);
 
   return (
-    <div className="space-y-3 text-sm leading-relaxed">
+    <div className="space-y-2.5 text-sm leading-6">
       {blocks.map((block, blockIndex) => {
         if (block.type === "heading") {
           const className =
@@ -79,14 +79,12 @@ export const MarkdownMessage = memo(function MarkdownMessage({
           return (
             <div
               key={`block-${blockIndex}`}
-              className="overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3"
+              className="overflow-x-auto rounded-lg border border-border bg-surface-container-lowest px-3 py-2"
             >
               {block.language ? (
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface/45">
-                  {block.language}
-                </p>
+                <p className="mb-1 font-mono text-[11px] text-on-surface-variant">{block.language}</p>
               ) : null}
-              <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-6 text-on-surface/80">
+              <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-5 text-on-surface">
                 {block.code}
               </pre>
             </div>
@@ -97,16 +95,16 @@ export const MarkdownMessage = memo(function MarkdownMessage({
           return (
             <div
               key={`block-${blockIndex}`}
-              className="overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest"
+              className="overflow-x-auto rounded-lg border border-border bg-surface-container-lowest"
             >
-              <table className="min-w-full border-collapse text-start text-sm">
-                <thead className="bg-surface-container-high text-on-surface/80">
+              <table className="min-w-full border-collapse text-start text-[13px]">
+                <thead className="bg-surface-container text-on-surface">
                   <tr>
                     {block.headers.map((header, headerIndex) => (
                       <th
                         key={`block-${blockIndex}-header-${headerIndex}`}
                         dir="auto"
-                        className="border-b border-outline-variant/15 px-4 py-2.5 font-semibold"
+                        className="border-b border-border px-3 py-1.5 font-semibold"
                       >
                         {renderInlineMarkdown(header, `block-${blockIndex}-header-${headerIndex}`)}
                       </th>
@@ -115,12 +113,12 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                 </thead>
                 <tbody>
                   {block.rows.map((row, rowIndex) => (
-                    <tr key={`block-${blockIndex}-row-${rowIndex}`} className="border-b border-outline-variant/10 last:border-b-0">
+                    <tr key={`block-${blockIndex}-row-${rowIndex}`} className="border-b border-border/60 last:border-b-0">
                       {row.map((cell, cellIndex) => (
                         <td
                           key={`block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`}
                           dir="auto"
-                          className="px-4 py-2.5 align-top"
+                          className="px-3 py-1.5 align-top"
                         >
                           {renderInlineMarkdown(cell, `block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`)}
                         </td>

@@ -53,8 +53,8 @@ export function ArtifactView({
     ).message;
 
     return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-        {message}
+      <div className="rounded-lg border border-secondary/30 bg-secondary-container px-3 py-2 text-sm text-on-secondary-container">
+        Error: {message}
       </div>
     );
   }

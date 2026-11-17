@@ -552,8 +552,8 @@ export function ChatPageClient() {
           />
 
           {/* Same padding and max width as MessageList so the edges line up */}
-          <footer className="px-4 pb-4 pt-2 md:px-8 md:pb-6">
-           <div className="mx-auto max-w-4xl">
+          <footer className="px-4 pb-3 pt-1 md:px-6 md:pb-4">
+           <div className="mx-auto max-w-3xl">
             {activeConversation ? (
               <ComposerConnectionSelect
                 activeConnectionId={activeConversation.llmConnectionId}

@@ -27,13 +27,13 @@ export function NewChatRuntimeSelect({
   const linkClass = "text-xs font-bold text-primary underline underline-offset-2";
 
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+    <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
       {sources.length ? (
         <Select
           value={sourceId ?? ""}
           onValueChange={(id: string | null) => onChange({ databaseSourceId: id, llmConnectionId: modelId })}
         >
-          <SelectTrigger aria-label="Database" className="w-full sm:w-60">
+          <SelectTrigger aria-label="Database" className="w-full text-[13px] sm:w-52">
             <SelectValue placeholder="Choose a database">
               {(id: string | null) => sources.find((s) => s.id === id)?.label ?? "Choose a database"}
             </SelectValue>
@@ -53,7 +53,7 @@ export function NewChatRuntimeSelect({
           value={modelId ?? ""}
           onValueChange={(id: string | null) => onChange({ databaseSourceId: sourceId, llmConnectionId: id })}
         >
-          <SelectTrigger aria-label="Model" className="w-full sm:w-60">
+          <SelectTrigger aria-label="Model" className="w-full text-[13px] sm:w-52">
             <SelectValue placeholder="Choose a model">
               {(id: string | null) => models.find((c) => c.id === id)?.label ?? "Choose a model"}
             </SelectValue>
@@ -69,7 +69,7 @@ export function NewChatRuntimeSelect({
       )}
 
       {error ? (
-        <span className="flex items-center gap-1.5 text-xs text-rose-700">
+        <span className="flex items-center gap-1.5 text-xs text-secondary">
           <AlertTriangle size={12} />
           {error}
         </span>
