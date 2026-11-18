@@ -1,3 +1,4 @@
+import { FadeUp } from "@/components/amicro/fade-up";
 import { ArtifactView } from "@/components/chat/ArtifactView";
 import { MarkdownMessage } from "@/components/chat/MarkdownMessage";
 import { StepLog } from "@/components/chat/StepLog";
@@ -35,10 +36,21 @@ export const MessageCard = memo(function MessageCard({
   );
   // Allocates and sorts a new array; without memoization it ran on every render
   // of every message.
-  const visibleArtifacts = useMemo(() => getVisibleArtifacts(message), [message]);
+  const visibleArtifacts = useMemo(
+    () => getVisibleArtifacts(message),
+    [message],
+  );
 
   return (
-    <div className={isUser ? "ml-auto w-fit max-w-full md:max-w-xl" : "mr-auto w-full max-w-full"}>
+    <FadeUp
+      yOffset={8}
+      duration={0.35}
+      className={
+        isUser
+          ? "ml-auto w-fit max-w-full md:max-w-xl"
+          : "mr-auto w-full max-w-full"
+      }
+    >
       {/* The user's question is a soft bubble; Kakaw's answer sits on the page
           so its charts and tables are the only boxes, never boxes in a box. */}
       <div
@@ -49,7 +61,10 @@ export const MessageCard = memo(function MessageCard({
         }
       >
         {/* A reply loaded from the server mid-stream has no steps yet; still show the spinner. */}
-        {(message.steps != null || message.status === "STREAMING") && !message.error ? <StepLog message={message} /> : null}
+        {(message.steps != null || message.status === "STREAMING") &&
+        !message.error ? (
+          <StepLog message={message} />
+        ) : null}
         {displayContent ? <MarkdownMessage content={displayContent} /> : null}
         {message.error ? (
           <div className="space-y-2 rounded-lg border border-secondary/30 bg-secondary-container px-3 py-2 text-sm text-on-secondary-container">
@@ -69,7 +84,9 @@ export const MessageCard = memo(function MessageCard({
                   Retry
                 </button>
                 {message.errorRetryable ? (
-                  <span className="text-xs opacity-80">Temporary issue, retrying may help.</span>
+                  <span className="text-xs opacity-80">
+                    Temporary issue, retrying may help.
+                  </span>
                 ) : null}
               </div>
             ) : null}
@@ -97,12 +114,14 @@ export const MessageCard = memo(function MessageCard({
           ))}
         </div>
       ) : null}
-      <p className={`mt-1 text-[11px] text-on-surface-variant ${isUser ? "px-1 text-right" : ""}`}>
+      <p
+        className={`mt-1 text-[11px] text-on-surface-variant ${isUser ? "px-1 text-right" : ""}`}
+      >
         {formatConversationTime(message.createdAt)}
         {!isUser && message.status === "COMPLETED" && message.tokenUsage
           ? ` · ${message.tokenUsage.totalTokens.toLocaleString()} tokens`
           : null}
       </p>
-    </div>
+    </FadeUp>
   );
 });

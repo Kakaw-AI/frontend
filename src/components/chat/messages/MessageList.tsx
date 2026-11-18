@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/components/amicro/skeleton";
 import { MessageCard } from "@/components/chat/MessageCard";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 import { useEffect, useMemo, useRef } from "react";
@@ -56,7 +57,16 @@ export function MessageList({
   if (isLoading) {
     return (
       <section className={sectionClass}>
-        <p className={emptyClass}>Loading conversation…</p>
+        <div role="status" className="mx-auto max-w-3xl space-y-6 py-2">
+          <span className="sr-only">Loading conversation…</span>
+          <Skeleton className="ml-auto h-9 w-2/5 rounded-2xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-11/12" />
+            <Skeleton className="h-4 w-4/5" />
+            <Skeleton className="h-4 w-3/5" />
+          </div>
+          <Skeleton className="h-40 w-full rounded-2xl" />
+        </div>
       </section>
     );
   }
@@ -64,7 +74,9 @@ export function MessageList({
   if (!activeConversation) {
     return (
       <section className={sectionClass}>
-        <p className={emptyClass}>Pick a database and model below, then ask your first question.</p>
+        <p className={emptyClass}>
+          Pick a database and model below, then ask your first question.
+        </p>
       </section>
     );
   }
@@ -76,14 +88,18 @@ export function MessageList({
           <MessageCard
             key={message.id}
             message={message}
-            isLastAssistantMessage={index === lastAssistantIndex && !isComposerLocked}
+            isLastAssistantMessage={
+              index === lastAssistantIndex && !isComposerLocked
+            }
             isBusy={isBusy}
             onSuggestionClick={onSuggestionClick}
             onRetry={onRetryMessage}
           />
         ))}
 
-        {!activeConversation.messages.length ? <p className={emptyClass}>Ask a question to get started.</p> : null}
+        {!activeConversation.messages.length ? (
+          <p className={emptyClass}>Ask a question to get started.</p>
+        ) : null}
 
         <div ref={bottomRef} className="h-px w-full" />
       </div>

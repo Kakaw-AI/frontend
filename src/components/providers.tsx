@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "motion/react";
 import { getQueryClient } from "@/lib/query-client";
 
 // Devtools are a development-only affordance. Loading them dynamically keeps the
@@ -23,7 +24,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      {/* Honour the OS "reduce motion" setting for every motion/Amicro animation. */}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

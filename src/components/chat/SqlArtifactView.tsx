@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ConversationMessage } from "@/lib/queries/conversations";
+import { CopyButton } from "./CopyButton";
 
 export function SqlArtifactView({
   artifact,
@@ -11,6 +12,7 @@ export function SqlArtifactView({
   const [isExpanded, setIsExpanded] = useState(false);
   const payload = artifact.payload as { sql?: string };
   const sql = payload.sql?.trim();
+  const formatted = useFormattedSql(isExpanded ? sql : undefined);
 
   if (!sql) {
     return null;
@@ -28,12 +30,56 @@ export function SqlArtifactView({
       </button>
 
       {isExpanded ? (
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface-container">
-          <pre className="overflow-x-auto px-4 py-3 font-mono text-[13px] leading-relaxed text-on-surface">
-            <code>{sql}</code>
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface-container">
+          <CopyButton
+            text={formatted ?? sql}
+            className="absolute right-1.5 top-1.5"
+          />
+          <pre className="overflow-x-auto py-3 pl-4 pr-11 font-mono text-[13px] leading-relaxed text-on-surface">
+            <code>{formatted ?? sql}</code>
           </pre>
         </div>
       ) : null}
     </div>
   );
+}
+
+/**
+ * Models often return the query on one line. Break it into clauses for reading.
+ * The formatter is loaded only when a SQL block is opened, and SQL that already
+ * has line breaks is left as the model wrote it.
+ */
+function useFormattedSql(sql: string | undefined) {
+  const [formatted, setFormatted] = useState<{
+    source: string;
+    text: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!sql || sql.includes("\n") || formatted?.source === sql) return;
+    let cancelled = false;
+    import("sql-formatter")
+      .then(({ format }) => {
+        // The artifact doesn't say which database it ran on. Postgres first
+        // (it accepts `::` casts), then SQLite; if neither parses, the SQL
+        // stays as written.
+        for (const language of ["postgresql", "sqlite"] as const) {
+          try {
+            const text = format(sql, { language });
+            if (!cancelled) setFormatted({ source: sql, text });
+            return;
+          } catch {
+            // try the next dialect
+          }
+        }
+      })
+      .catch(() => {
+        // Formatter failed to load: keep showing the SQL as written.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [sql, formatted?.source]);
+
+  return formatted && formatted.source === sql ? formatted.text : undefined;
 }

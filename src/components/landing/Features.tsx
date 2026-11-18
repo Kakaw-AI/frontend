@@ -1,3 +1,5 @@
+import { ScrollReveal } from "@/components/amicro/scroll-reveal";
+import { WordReveal } from "@/components/amicro/word-reveal";
 const features = [
   {
     icon: (
@@ -63,36 +65,42 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="scroll-mt-32 bg-surface-container-low py-24">
+    <section
+      id="features"
+      className="scroll-mt-32 bg-surface-container-low py-24"
+    >
       <div className="max-w-7xl mx-auto px-8">
         <div className="mb-16">
           <h2 className="font-headline text-4xl mb-4">
-            Master your data without code
+            <WordReveal text="Master your data without code" />
           </h2>
           <p className="text-on-surface-variant max-w-md">
-            Kakaw brings the know-how of a data analyst and the speed of AI
-            to your data.
+            Kakaw brings the know-how of a data analyst and the speed of AI to
+            your data.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature) => (
-            <div
+          {features.map((feature, i) => (
+            <ScrollReveal
               key={feature.title}
-              className="bg-surface-container-lowest p-10 rounded-2xl flex flex-col gap-6 group hover:-translate-y-1 transition-transform duration-300"
+              delay={i * 0.08}
+              className="h-full"
             >
-              <div className="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-                {feature.icon}
+              <div className="h-full bg-surface-container-lowest p-10 rounded-2xl flex flex-col gap-6 group hover:-translate-y-1 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+                  {feature.icon}
+                </div>
+                <div>
+                  <h3 className="font-headline text-2xl mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed">
+                    {feature.body}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-headline text-2xl mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed">
-                  {feature.body}
-                </p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

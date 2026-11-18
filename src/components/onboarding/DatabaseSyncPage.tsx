@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, LoaderCircle, RefreshCw } from "lucide-react";
+import { TextShimmer } from "@/components/amicro/text-shimmer";
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { formatTimestamp } from "@/components/chat/picker/picker-utils";
 import { onboardingStateQueryOptions } from "@/lib/queries/onboarding";
@@ -15,7 +16,9 @@ export function DatabaseSyncPage() {
   const onboardingStateQuery = useQuery({
     ...onboardingStateQueryOptions(),
     refetchInterval(query) {
-      return query.state.data?.blockingSync?.status === "SYNCING" ? 2000 : false;
+      return query.state.data?.blockingSync?.status === "SYNCING"
+        ? 2000
+        : false;
     },
   });
 
@@ -51,17 +54,25 @@ export function DatabaseSyncPage() {
           : "Kakaw is indexing your tables, columns and sample rows. You'll go to chat as soon as it's done."}
       </p>
 
-      <section className="pod-card mt-8 space-y-4 rounded-lg p-5 md:p-6" aria-live="polite">
+      <section
+        className="pod-card mt-8 space-y-4 rounded-lg p-5 md:p-6"
+        aria-live="polite"
+      >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="truncate font-bold text-on-surface">{blockingSync?.label ?? "Your database"}</p>
+            <p className="truncate font-bold text-on-surface">
+              {blockingSync?.label ?? "Your database"}
+            </p>
             {blockingSync?.syncRequestedAt ? (
               <p className="mt-1 text-xs text-on-surface-variant">
-                Started {formatTimestamp(blockingSync.syncRequestedAt, "just now")}
+                Started{" "}
+                {formatTimestamp(blockingSync.syncRequestedAt, "just now")}
               </p>
             ) : null}
           </div>
-          <DatabaseSourceStatusBadge status={blockingSync?.status ?? "SYNCING"} />
+          <DatabaseSourceStatusBadge
+            status={blockingSync?.status ?? "SYNCING"}
+          />
         </div>
 
         {isFailed ? (
@@ -73,15 +84,21 @@ export function DatabaseSyncPage() {
           ) : null
         ) : (
           <p className="flex items-center gap-2 rounded-2xl bg-surface-container px-4 py-3 text-sm text-on-surface">
-            <LoaderCircle size={16} className="animate-spin motion-reduce:animate-none" aria-hidden />
-            This usually takes under a minute.
+            <LoaderCircle
+              size={16}
+              className="animate-spin motion-reduce:animate-none"
+              aria-hidden
+            />
+            <TextShimmer>This usually takes under a minute.</TextShimmer>
           </p>
         )}
 
         {retryMutation.isError ? (
           <p className="pod-alert" role="alert">
             <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden />
-            {retryMutation.error instanceof Error ? retryMutation.error.message : "Unable to restart indexing."}
+            {retryMutation.error instanceof Error
+              ? retryMutation.error.message
+              : "Unable to restart indexing."}
           </p>
         ) : null}
       </section>
@@ -94,11 +111,17 @@ export function DatabaseSyncPage() {
         {isFailed ? (
           <button
             type="button"
-            onClick={() => blockingSync && retryMutation.mutate(blockingSync.id)}
+            onClick={() =>
+              blockingSync && retryMutation.mutate(blockingSync.id)
+            }
             disabled={retryMutation.isPending}
             className="pod-btn"
           >
-            <RefreshCw size={16} className={retryMutation.isPending ? "animate-spin" : undefined} aria-hidden />
+            <RefreshCw
+              size={16}
+              className={retryMutation.isPending ? "animate-spin" : undefined}
+              aria-hidden
+            />
             {retryMutation.isPending ? "Retrying…" : "Try again"}
           </button>
         ) : null}

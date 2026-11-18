@@ -3,6 +3,8 @@
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { FadeUp } from "@/components/amicro/fade-up";
+import { BlurText } from "@/components/amicro/blur-text";
 
 export default function AuthPage() {
   // Absolute URL built from the live browser origin (this is a client
@@ -33,7 +35,7 @@ export default function AuthPage() {
           <Logo />
         </div>
 
-        <div className="w-full max-w-md">
+        <FadeUp className="w-full max-w-md">
           <header className="mb-12">
             <h1 className="font-headline text-3xl sm:text-4xl text-on-surface mb-3">
               Sign in to Kakaw
@@ -49,11 +51,7 @@ export default function AuthPage() {
               onClick={signInWithGoogle}
               className="flex items-center justify-center gap-3 pod-card py-4 px-6 rounded-[8px] hover:bg-accent transition-colors w-full"
             >
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden>
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   fill="#4285F4"
@@ -95,23 +93,29 @@ export default function AuthPage() {
 
           <p className="mt-10 text-center text-xs text-on-surface-variant font-body">
             By continuing, you agree to our{" "}
-            <Link href="/terms" className="underline underline-offset-2 hover:text-on-surface-variant">
+            <Link
+              href="/terms"
+              className="underline underline-offset-2 hover:text-on-surface-variant"
+            >
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/privacy" className="underline underline-offset-2 hover:text-on-surface-variant">
+            <Link
+              href="/privacy"
+              className="underline underline-offset-2 hover:text-on-surface-variant"
+            >
               Privacy Policy
             </Link>
             .
           </p>
-        </div>
+        </FadeUp>
       </section>
 
       {/* ── Right Side: Brand Showcase ── */}
       <section className="w-full md:w-1/2 min-h-[25rem] md:min-h-dvh flex items-center justify-center bg-primary px-6 sm:px-12 py-16">
         <div className="max-w-md">
           <h2 className="font-headline text-4xl xl:text-5xl text-white leading-[1.15]">
-            <span className="block">Ask your database.</span>
+            <BlurText text="Ask your database." className="block" />
             <span className="pod-mark mt-2 inline-block">Get the answer.</span>
           </h2>
           <p className="mt-6 text-white/80 font-body text-base md:text-lg leading-relaxed">

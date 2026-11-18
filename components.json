@@ -21,5 +21,7 @@
   },
   "menuColor": "default",
   "menuAccent": "subtle",
-  "registries": {}
+  "registries": {
+    "@amicro": "https://raw.githubusercontent.com/Subhan-code/Amicro--Micro-transitions-/fa5f8ffbe39537a8db191806066b8773c47c82e9/public/r/{name}.json"
+  }
 }

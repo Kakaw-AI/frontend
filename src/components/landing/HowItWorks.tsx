@@ -1,3 +1,4 @@
+import { ScrollReveal } from "@/components/amicro/scroll-reveal";
 const steps = [
   {
     number: "01",
@@ -23,7 +24,10 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-mt-32 py-24 max-w-7xl mx-auto px-8">
+    <section
+      id="how-it-works"
+      className="scroll-mt-32 py-24 max-w-7xl mx-auto px-8"
+    >
       <div className="grid lg:grid-cols-2 gap-16 items-start">
         {/* Sticky left panel */}
         <div className="sticky top-32">
@@ -37,19 +41,19 @@ export function HowItWorks() {
         {/* Steps */}
         <div className="space-y-8">
           {steps.map((step) => (
-            <div key={step.number} className="flex gap-6 border-t border-border pt-6">
-              <span className="w-10 shrink-0 font-mono text-sm font-medium text-on-surface-variant">
-                {step.number}
-              </span>
-              <div>
-                <h4 className="font-headline text-2xl mb-2">
-                  {step.title}
-                </h4>
-                <p className="text-on-surface-variant leading-relaxed">
-                  {step.body}
-                </p>
+            <ScrollReveal key={step.number} xOffset={24} yOffset={0} scale={1}>
+              <div className="flex gap-6 border-t border-border pt-6">
+                <span className="w-10 shrink-0 font-mono text-sm font-medium text-on-surface-variant">
+                  {step.number}
+                </span>
+                <div>
+                  <h4 className="font-headline text-2xl mb-2">{step.title}</h4>
+                  <p className="text-on-surface-variant leading-relaxed">
+                    {step.body}
+                  </p>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
