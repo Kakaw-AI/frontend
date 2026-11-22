@@ -1,17 +1,20 @@
 "use client";
 
-import { ChevronRight, Database, LogOut, Plus, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, ChevronRight, Database, LogOut, Plus, Sparkles, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { ProfileDialog } from "@/components/chat/layout/ProfileDialog";
-import { formatConversationTime } from "@/components/chat/chat-formatting";
 import type { ConversationSummary } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
 
 const navItem =
-  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface";
+  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface pointer-coarse:min-h-11";
+
+// A mouse shows a row's delete button on hover; a touch screen cannot hover,
+// so there it is always shown, at a size a finger can hit. The variants are
+// written out in full: Tailwind only generates classes it finds as literals.
 
 export function ChatSidebar({
   user,
@@ -49,18 +52,15 @@ export function ChatSidebar({
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="flex items-center justify-between px-2 pt-0.5">
+      <div className="px-2 pt-0.5">
         <Logo className="text-xl" />
-        <Link
-          href="/chat"
-          onClick={closeSidebar}
-          aria-label="New chat"
-          title="New chat"
-          className="rounded-md p-1.5 text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface"
-        >
-          <Plus size={16} />
-        </Link>
       </div>
+
+      {/* The sidebar's main action, so the one filled button in it. */}
+      <Link href="/chat" onClick={closeSidebar} className="pod-btn w-full py-2.5 pointer-coarse:min-h-11">
+        <Plus size={15} aria-hidden />
+        New chat
+      </Link>
 
       <nav className="space-y-0.5">
         <Link href="/onboarding/database" className={navItem}>
@@ -74,13 +74,14 @@ export function ChatSidebar({
       </nav>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <p className="mb-1 px-2 text-[11px] font-medium text-on-surface-variant">Recent</p>
-
         <div className="space-y-1">
           {groupByDatabase(conversations).map((group) => (
             // Native disclosure: collapses with no state of its own. Open by default.
             <details key={group.id} open className="group/db">
-              <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-md px-2 py-1 text-[12px] font-semibold text-on-surface transition-colors hover:bg-accent/60 [&::-webkit-details-marker]:hidden">
+              <summary
+                title={group.label}
+                className="flex cursor-pointer list-none items-center gap-1.5 rounded-md px-2 py-1 text-[12px] font-semibold text-on-surface transition-colors hover:bg-accent/60 pointer-coarse:min-h-10 [&::-webkit-details-marker]:hidden"
+              >
                 <ChevronRight
                   size={13}
                   className="shrink-0 text-on-surface-variant transition-transform group-open/db:rotate-90"
@@ -93,46 +94,64 @@ export function ChatSidebar({
               </summary>
 
               <div className="mt-px space-y-px pl-3">
-                {group.conversations.map((conversation) => (
-                  <div
-                    key={conversation.id}
-                    className={
-                      activeConversationId === conversation.id
-                        ? "group relative rounded-md bg-accent"
-                        : "group relative rounded-md hover:bg-accent/60"
-                    }
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onConversationClick(conversation.id);
-                        closeSidebar();
-                      }}
-                      className="w-full rounded-md px-2 py-1.5 pr-8 text-left"
+                {group.conversations.map((conversation) => {
+                  const untitled = isPlaceholderTitle(conversation.title);
+                  const runtimeMissing = !conversation.runtime.isAvailableForChat;
+                  return (
+                    <div
+                      key={conversation.id}
+                      className={`group flex items-center rounded-md ${
+                        activeConversationId === conversation.id ? "bg-accent" : "hover:bg-accent/60"
+                      }`}
                     >
-                      <p dir="auto" className="truncate text-[13px] font-medium text-on-surface">
-                        {conversation.title}
-                      </p>
-                      <p className="truncate text-[11px] text-on-surface-variant">
-                        {conversation.runtime.effectiveModel ?? "Unavailable LLM runtime"} ·{" "}
-                        {formatConversationTime(conversation.lastMessageAt)}
-                      </p>
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Delete conversation"
-                      title="Delete conversation"
-                      disabled={deletingConversationId === conversation.id}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onDeleteConversation(conversation.id);
-                      }}
-                      className="absolute right-1 top-1.5 rounded-md p-1.5 text-on-surface-variant opacity-0 transition-opacity hover:bg-secondary-container hover:text-secondary focus-visible:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onConversationClick(conversation.id);
+                          closeSidebar();
+                        }}
+                        className="flex min-w-0 flex-1 items-center gap-2 rounded-md py-1.5 pl-2 pr-1 text-left pointer-coarse:min-h-11"
+                      >
+                        {/* Reads in its own direction but starts on the left edge like every other title. */}
+                        <span
+                          className={`min-w-0 flex-1 truncate text-left text-[13px] [unicode-bidi:plaintext] ${
+                            untitled ? "text-on-surface-variant" : "font-medium text-on-surface"
+                          }`}
+                        >
+                          {untitled ? "New chat" : conversation.title}
+                        </span>
+                        {runtimeMissing ? (
+                          <AlertTriangle
+                            size={12}
+                            className="shrink-0 text-secondary"
+                            aria-label={conversation.runtime.warning ?? "Model unavailable"}
+                          >
+                            <title>{conversation.runtime.warning ?? "Model unavailable"}</title>
+                          </AlertTriangle>
+                        ) : null}
+                        <time
+                          dateTime={conversation.lastMessageAt ?? undefined}
+                          className={`shrink-0 text-[11px] tabular-nums text-on-surface-variant [@media(hover:hover)]:group-hover:hidden [@media(hover:hover)]:group-focus-within:hidden`}
+                        >
+                          {formatRelativeTime(conversation.lastMessageAt)}
+                        </time>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Delete ${untitled ? "this chat" : conversation.title}`}
+                        title="Delete chat"
+                        disabled={deletingConversationId === conversation.id}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteConversation(conversation.id);
+                        }}
+                        className={`mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-secondary-container hover:text-secondary disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:h-11 pointer-coarse:w-10 [@media(hover:hover)]:hidden [@media(hover:hover)]:group-hover:flex [@media(hover:hover)]:group-focus-within:flex`}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </details>
           ))}
@@ -182,7 +201,7 @@ export function ChatSidebar({
               disabled={isSigningOut}
               aria-label={isSigningOut ? "Signing out" : "Log out"}
               title="Log out"
-              className="shrink-0 rounded-md p-1.5 text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex shrink-0 items-center justify-center rounded-md p-1.5 text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:h-11 pointer-coarse:w-11"
             >
               <LogOut size={14} />
             </button>
@@ -200,6 +219,33 @@ export function ChatSidebar({
       ) : null}
     </aside>
   );
+}
+
+/** Titles nobody chose: the client's "New chat" and the backend's fallbacks. */
+function isPlaceholderTitle(title: string) {
+  const trimmed = title.trim();
+  return trimmed === "" || trimmed === "New chat" || trimmed.startsWith("New chat · ") || /^\d{4}-\d{2}-\d{2}T/.test(trimmed);
+}
+
+const weekday = new Intl.DateTimeFormat("en", { weekday: "short" });
+const monthDay = new Intl.DateTimeFormat("en", { month: "short", day: "numeric" });
+const monthDayYear = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" });
+
+/** "now", "4 min", "3 h", "Yesterday", "Mon", "Nov 16": short enough never to be cut. */
+export function formatRelativeTime(iso: string | null, now = Date.now()): string {
+  if (!iso) return "";
+  const then = new Date(iso);
+  const minutes = Math.floor((now - then.getTime()) / 60_000);
+  if (Number.isNaN(minutes)) return "";
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes} min`;
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+  if (then >= startOfToday) return `${Math.floor(minutes / 60)} h`;
+  const days = Math.ceil((startOfToday.getTime() - then.getTime()) / 86_400_000);
+  if (days <= 1) return "Yesterday";
+  if (days < 7) return weekday.format(then);
+  return then.getFullYear() === new Date(now).getFullYear() ? monthDay.format(then) : monthDayYear.format(then);
 }
 
 /** One group per database, in the order its most recent chat appears. */
