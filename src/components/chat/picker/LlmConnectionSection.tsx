@@ -57,6 +57,7 @@ export function LlmConnectionSection({
 
       {isAddConnectionFormOpen ? (
         <AddLlmConnectionForm
+          connections={llmConnections ?? []}
           isCreatingLlmConnection={isCreatingLlmConnection}
           createLlmError={createLlmError}
           onCreateLlmConnection={onCreateLlmConnection}

@@ -51,7 +51,26 @@ export type SaveLlmConnectionInput = {
   displayName?: string;
   apiKey?: string;
   baseUrl?: string;
+  /** Reuse the key saved on this connection; the key itself never comes to the browser. */
+  reuseKeyFromConnectionId?: string;
 };
+
+export type ListProviderModelsInput = Omit<SaveLlmConnectionInput, "defaultModel" | "displayName">;
+
+/** The chat models the provider offers for this key, newest first where known. */
+export async function listProviderModels(input: ListProviderModelsInput, signal?: AbortSignal): Promise<string[]> {
+  const response = await apiFetch("/api/llm-connections/models", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, "Unable to load the model list."));
+  }
+  const data = (await response.json()) as { models?: unknown };
+  return Array.isArray(data.models) ? data.models.filter((model): model is string => typeof model === "string") : [];
+}
 
 export type LlmProviderFamily = "openai" | "google" | "anthropic";
 
