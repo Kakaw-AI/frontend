@@ -3,20 +3,22 @@
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
 import type { DatabaseSource } from "@/lib/queries/database-sources";
-import { AlertCircle, LoaderCircle, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, LoaderCircle, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatTimestamp } from "./picker-utils";
 
+export type SourceActionKind = "resync" | "delete";
+
 export function DatabaseSourceSection({
   databaseSources,
-  deletingSourceId,
+  busySource,
   actionError,
-  onDelete,
+  onAction,
 }: {
   databaseSources: DatabaseSource[] | undefined;
-  deletingSourceId: string | null;
+  busySource: { id: string; action: SourceActionKind } | null;
   actionError: string | null;
-  onDelete: (id: string) => void;
+  onAction: (action: SourceActionKind, id: string) => void;
 }) {
   return (
     <section aria-labelledby="databases-title" className="space-y-3">
@@ -56,16 +58,36 @@ export function DatabaseSourceSection({
                 </p>
                 {source.lastError ? <p className="mt-1 text-xs text-secondary">{source.lastError}</p> : null}
               </div>
-              <button
-                type="button"
-                onClick={() => onDelete(source.id)}
-                disabled={deletingSourceId === source.id}
-                className="pod-btn-danger"
-                aria-label={`Delete ${source.label}`}
-              >
-                {deletingSourceId === source.id ? <LoaderCircle size={12} className="animate-spin" aria-hidden /> : <Trash2 size={12} aria-hidden />}
-                <span className="hidden sm:inline">Delete</span>
-              </button>
+              <div className="flex gap-2">
+                {/* An uploaded SQLite file never changes, so only Postgres can be re-read. */}
+                {source.provider === "postgresql" ? (
+                  <button
+                    type="button"
+                    onClick={() => onAction("resync", source.id)}
+                    disabled={busySource?.id === source.id || source.status === "PENDING" || source.status === "SYNCING"}
+                    className="pod-btn-ghost px-3 py-1.5 text-xs"
+                    aria-label={`Resync ${source.label}`}
+                    title="Read the schema again after tables or columns change"
+                  >
+                    <RefreshCw
+                      size={12}
+                      className={busySource?.id === source.id && busySource.action === "resync" || source.status === "SYNCING" ? "animate-spin motion-reduce:animate-none" : undefined}
+                      aria-hidden
+                    />
+                    <span className="hidden sm:inline">Resync</span>
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => onAction("delete", source.id)}
+                  disabled={busySource?.id === source.id}
+                  className="pod-btn-danger"
+                  aria-label={`Delete ${source.label}`}
+                >
+                  {busySource?.id === source.id && busySource.action === "delete" ? <LoaderCircle size={12} className="animate-spin" aria-hidden /> : <Trash2 size={12} aria-hidden />}
+                  <span className="hidden sm:inline">Delete</span>
+                </button>
+              </div>
             </li>
           ))}
         </ul>

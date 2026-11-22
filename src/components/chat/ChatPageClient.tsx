@@ -17,7 +17,7 @@ import {
   type ConversationDetails,
   type ConversationSummary,
 } from "@/lib/queries/conversations";
-import { deleteDatabaseSource } from "@/lib/queries/database-sources";
+import { deleteDatabaseSource, resyncDatabaseSource } from "@/lib/queries/database-sources";
 import {
   activateLlmConnectionMutationOptions,
   deactivateLlmConnectionMutationOptions,
@@ -28,7 +28,7 @@ import {
 import { applyRetryReset, applyStreamEvent, createOptimisticUserMessage } from "@/components/chat/chat-stream-state";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useChatStore } from "./store/useChatStore";
 import { useDraftCache } from "./hooks/useDraftCache";
@@ -186,6 +186,17 @@ export function ChatPageClient() {
       setComposerError(null);
     }
   }, [activeConversation?.id, activeConversation?.runtime.isAvailableForChat, setComposerError]);
+
+  // A chat is blocked while its database re-indexes; reload chats once indexing ends.
+  const isIndexing = chatOptionsQuery.data?.databaseSources.some((s) => s.status === "PENDING" || s.status === "SYNCING") ?? false;
+  const wasIndexing = useRef(isIndexing);
+  useEffect(() => {
+    if (wasIndexing.current && !isIndexing) {
+      void queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+      if (activeConversationId) void queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(activeConversationId) });
+    }
+    wasIndexing.current = isIndexing;
+  }, [isIndexing, activeConversationId, queryClient]);
 
   async function invalidateConversationCaches(conversationId?: string | null) {
     await Promise.all([
@@ -528,6 +539,10 @@ export function ChatPageClient() {
           await invalidateConversationCaches(activeConversationId);
         }}
         onDeleteDatabaseSource={handleDeleteDatabaseSource}
+        onResyncDatabaseSource={async (id) => {
+          await resyncDatabaseSource(id);
+          await invalidateConversationCaches(activeConversationId);
+        }}
       />
 
       <div className="flex h-dvh overflow-hidden bg-surface font-body text-on-surface">

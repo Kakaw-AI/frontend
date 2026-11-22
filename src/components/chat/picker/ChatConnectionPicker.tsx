@@ -4,7 +4,7 @@ import type { DatabaseSource } from "@/lib/queries/database-sources";
 import type { LlmConnection, SaveLlmConnectionInput } from "@/lib/queries/llm-connections";
 import { AlertCircle, LoaderCircle, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { DatabaseSourceSection } from "./DatabaseSourceSection";
+import { DatabaseSourceSection, type SourceActionKind } from "./DatabaseSourceSection";
 import { LlmConnectionSection } from "./LlmConnectionSection";
 import { type ConnectionActionKind } from "./LlmConnectionCard";
 import { useChatStore } from "../store/useChatStore";
@@ -23,6 +23,7 @@ export function ChatConnectionPicker({
   onDeactivateLlmConnection,
   onDeleteLlmConnection,
   onDeleteDatabaseSource,
+  onResyncDatabaseSource,
 }: {
   databaseSources: DatabaseSource[] | undefined;
   llmConnections: LlmConnection[] | undefined;
@@ -37,6 +38,7 @@ export function ChatConnectionPicker({
   onDeleteLlmConnection: (connectionId: string) => Promise<void>;
   /** Resolves false when the user cancels the confirmation. */
   onDeleteDatabaseSource: (sourceId: string) => Promise<boolean>;
+  onResyncDatabaseSource: (sourceId: string) => Promise<void>;
 }) {
   const isOpen = useChatStore((s) => s.isConnectionPickerOpen);
   const startInAddLlmMode = useChatStore((s) => s.pickerStartsInAddLlmMode);
@@ -46,7 +48,7 @@ export function ChatConnectionPicker({
   const [isAddConnectionFormOpen, setIsAddConnectionFormOpen] = useState(startInAddLlmMode);
   const [connectionActionState, setConnectionActionState] = useState<{ id: string; action: ConnectionActionKind } | null>(null);
   const [connectionActionError, setConnectionActionError] = useState<string | null>(null);
-  const [deletingSourceId, setDeletingSourceId] = useState<string | null>(null);
+  const [busySource, setBusySource] = useState<{ id: string; action: SourceActionKind } | null>(null);
   const [sourceActionError, setSourceActionError] = useState<string | null>(null);
 
   // Native modal: focus trap, Esc to close and the backdrop come for free.
@@ -75,15 +77,15 @@ export function ChatConnectionPicker({
     }
   }
 
-  async function handleDeleteSource(sourceId: string) {
+  async function handleSourceAction(action: SourceActionKind, sourceId: string) {
     setSourceActionError(null);
-    setDeletingSourceId(sourceId);
+    setBusySource({ id: sourceId, action });
     try {
-      await onDeleteDatabaseSource(sourceId);
+      await (action === "delete" ? onDeleteDatabaseSource(sourceId) : onResyncDatabaseSource(sourceId));
     } catch (error) {
-      setSourceActionError(error instanceof Error ? error.message : "Unable to delete this database.");
+      setSourceActionError(error instanceof Error ? error.message : `Unable to ${action} this database.`);
     } finally {
-      setDeletingSourceId(null);
+      setBusySource(null);
     }
   }
 
@@ -124,9 +126,9 @@ export function ChatConnectionPicker({
               <>
                 <DatabaseSourceSection
                   databaseSources={databaseSources}
-                  deletingSourceId={deletingSourceId}
+                  busySource={busySource}
                   actionError={sourceActionError}
-                  onDelete={(id) => void handleDeleteSource(id)}
+                  onAction={(action, id) => void handleSourceAction(action, id)}
                 />
                 <LlmConnectionSection
                   llmConnections={llmConnections}

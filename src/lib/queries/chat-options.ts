@@ -47,5 +47,8 @@ export function chatOptionsQueryOptions() {
     queryKey: chatOptionsQueryKey,
     queryFn: fetchChatOptions,
     retry: false,
+    // Keep badges current while a database is being indexed (first sync or resync).
+    refetchInterval: (query) =>
+      query.state.data?.databaseSources.some((s) => s.status === "PENDING" || s.status === "SYNCING") ? 2000 : false,
   });
 }
