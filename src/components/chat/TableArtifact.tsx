@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   buildCsvContent,
   downloadTextArtifact,
@@ -9,6 +9,25 @@ import {
   isNumericColumn,
   sanitizeDownloadFilename,
 } from "@/components/chat/chat-formatting";
+
+// Identifiers and years read wrong with separators ("2,026", "ID 1,042").
+const RAW_NUMBER_COLUMN = /(^|_)(id|year|yr|code|zip|postcode|phone|number|no)$|^id_|_id_/i;
+const RATE_COLUMN = /(rate|ratio|pct|percent|percentage|share)/i;
+const integerFormat = new Intl.NumberFormat("en", { maximumFractionDigits: 0 });
+const decimalFormat = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
+const percentFormat = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 1 });
+
+/**
+ * How a numeric column's cells are shown. The CSV download keeps the raw
+ * values; only the screen gets separators and percentages.
+ */
+function numberFormatter(column: string, rows: Array<Record<string, unknown>>) {
+  if (RAW_NUMBER_COLUMN.test(column)) return (value: number) => String(value);
+  const values = rows.map((row) => Number(row[column])).filter((value) => Number.isFinite(value));
+  const isRate = RATE_COLUMN.test(column) && values.length > 0 && values.every((value) => value >= 0 && value <= 1);
+  if (isRate) return (value: number) => percentFormat.format(value);
+  return (value: number) => (Number.isInteger(value) ? integerFormat : decimalFormat).format(value);
+}
 
 export const TableArtifact = memo(function TableArtifact({
   columns,
@@ -28,6 +47,29 @@ export const TableArtifact = memo(function TableArtifact({
     () => new Set(columns.filter((col) => isNumericColumn(allRows, col))),
     [columns, allRows],
   );
+  const formatters = useMemo(
+    () => new Map([...numericColumns].map((column) => [column, numberFormatter(column, allRows)])),
+    [numericColumns, allRows],
+  );
+
+  function formatCell(column: string, value: unknown) {
+    const format = formatters.get(column);
+    const number = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
+    return format && Number.isFinite(number) ? format(number) : formatArtifactCellValue(value);
+  }
+
+  // The sideways hint only when the table is wider than its box.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = useState(false);
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+    const measure = () => setOverflows(element.scrollWidth > element.clientWidth + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [columns]);
 
   const sortedRows = useMemo(() => {
     if (!sortColumn) return allRows;
@@ -96,10 +138,12 @@ export const TableArtifact = memo(function TableArtifact({
           Download CSV
         </button>
       </div>
-      <p className="px-4 pt-2 text-xs text-on-surface-variant sm:hidden">
-        Swipe table sideways to see more →
-      </p>
-      <div className="max-h-[34rem] overflow-auto">
+      {overflows ? (
+        <p className="px-4 pt-2 text-xs text-on-surface-variant sm:hidden">
+          Swipe table sideways to see more →
+        </p>
+      ) : null}
+      <div ref={scrollRef} className="max-h-[34rem] overflow-auto">
         <table
           className="w-max min-w-full border-separate border-spacing-0 text-left"
           style={{ fontSize: "12.5px" }}
@@ -136,7 +180,7 @@ export const TableArtifact = memo(function TableArtifact({
                     key={column}
                     className={`max-w-72 min-w-32 border-t border-primary/10 px-4 py-2.5 align-top text-on-surface ${numericColumns.has(column) ? "text-right font-mono tabular-nums" : "whitespace-pre-wrap break-words"}`}
                   >
-                    {formatArtifactCellValue(row[column])}
+                    {formatCell(column, row[column])}
                   </td>
                 ))}
               </tr>

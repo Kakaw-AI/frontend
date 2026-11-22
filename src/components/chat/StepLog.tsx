@@ -1,14 +1,15 @@
 "use client";
 
 import { TextShimmer } from "@/components/amicro/text-shimmer";
-import { buildIdleStepMessage } from "@/components/chat/step-log-state";
+import { buildIdleStepMessage, shouldCollapseCompletedSteps } from "@/components/chat/step-log-state";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function StepLog({ message }: { message: ConversationMessage }) {
   const steps = message.steps ?? [];
-  const collapsed = message.stepsCollapsed ?? false;
+  // Decided from the status as well, so an answer loaded from the server folds too.
+  const collapsed = message.stepsCollapsed || shouldCollapseCompletedSteps(message.status);
   const elapsedMs = message.stepsElapsedMs ?? null;
   const [expanded, setExpanded] = useState(false);
 
@@ -21,7 +22,8 @@ export function StepLog({ message }: { message: ConversationMessage }) {
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-on-surface-variant transition hover:text-on-surface"
+          aria-expanded={expanded}
+          className="-mx-1 flex items-center gap-1.5 rounded-md px-1 py-1 text-xs text-on-surface-variant transition hover:bg-accent/60 hover:text-on-surface"
         >
           <CheckCircle2 size={12} className="text-chart-3" />
           <span>

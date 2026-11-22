@@ -39,6 +39,10 @@ const COLOR_PALETTE = [
   "var(--chart-5, #8a5a00)",
 ];
 
+/** "500k", "1.2M": short enough that tick labels never reach the axis title. */
+const compactNumber = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+const formatTick = (value: d3.NumberValue) => compactNumber.format(Number(value));
+
 function asRows(value: unknown): ChartRow[] {
   return Array.isArray(value)
     ? value.filter((entry): entry is ChartRow => typeof entry === "object" && entry !== null)
@@ -125,7 +129,14 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
         const rect = container.getBoundingClientRect();
         const width = Math.max(rect.width, 320);
         const height = 320;
-        const margin = { top: 24, right: 24, bottom: 56, left: 64 };
+        // Category labels are tilted only when they would not fit side by
+        // side; tilted labels need more room below.
+        const categoryLabels = kind === "pie" || kind === "histogram" || kind === "scatter"
+          ? []
+          : (barPlan?.categories ?? rows.map((row) => formatCell(row[xField])));
+        const slotWidth = (width - 88) / Math.max(categoryLabels.length, 1);
+        const tiltLabels = categoryLabels.some((label) => label.length * 6.5 > slotWidth * 0.9);
+        const margin = { top: 32, right: 24, bottom: tiltLabels ? 64 : kind === "histogram" || kind === "scatter" ? 48 : 32, left: 56 };
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         const svg = d3.select(svgElement);
@@ -137,7 +148,9 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
           .attr("transform", `translate(${margin.left},${margin.top})`);
 
         const appendAxisLabels = () => {
-          if (kind !== "pie" && xField) {
+          // Category names explain themselves and the chart title names the
+          // axis; only a numeric x axis (histogram, scatter) needs its title.
+          if ((kind === "histogram" || kind === "scatter") && xField) {
             svg
               .append("text")
               .attr("x", margin.left + innerWidth / 2)
@@ -149,14 +162,17 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
               .text(xLabel);
           }
 
+          // Above the axis, level: a rotated title beside the ticks collided with them.
           if (kind !== "pie" && yField) {
             svg
               .append("text")
-              .attr("transform", `translate(18, ${margin.top + innerHeight / 2}) rotate(-90)`)
-              .attr("text-anchor", "middle")
+              .attr("x", margin.left - 8)
+              .attr("y", 14)
+              .attr("text-anchor", "start")
               .attr("font-size", 12)
               .attr("font-weight", 600)
               .attr("fill", "currentColor")
+              .attr("opacity", 0.7)
               .text(kind === "histogram" ? "Count" : yLabel);
           }
         };
@@ -224,7 +240,7 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             .call(d3.axisBottom(xScale).ticks(6))
             .style("font-size", "11px");
 
-          g.append("g").call(d3.axisLeft(yScale).ticks(5)).style("font-size", "11px");
+          g.append("g").call(d3.axisLeft(yScale).ticks(5).tickFormat(formatTick)).style("font-size", "11px");
 
           g.selectAll("rect")
             .data(bins)
@@ -256,10 +272,10 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
 
           g.append("g")
             .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).ticks(5))
+            .call(d3.axisBottom(xScale).ticks(5).tickFormat(formatTick))
             .style("font-size", "11px");
 
-          g.append("g").call(d3.axisLeft(yScale).ticks(5)).style("font-size", "11px");
+          g.append("g").call(d3.axisLeft(yScale).ticks(5).tickFormat(formatTick)).style("font-size", "11px");
 
           g.selectAll("circle")
             .data(rows)
@@ -303,15 +319,24 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
           .nice()
           .range([innerHeight, 0]);
 
-        g.append("g")
+        const xAxisLabels = g
+          .append("g")
           .attr("transform", `translate(0,${innerHeight})`)
           .call(d3.axisBottom(xScale))
           .selectAll("text")
-          .attr("transform", "rotate(-30)")
-          .style("text-anchor", "end")
           .style("font-size", "11px");
+        if (tiltLabels) {
+          // Tilted names are cut short so the first one stays inside the chart
+          // on a phone; the full name is the hover title.
+          xAxisLabels
+            .attr("transform", "rotate(-30)")
+            .style("text-anchor", "end")
+            .text((label) => (String(label).length > 10 ? `${String(label).slice(0, 9)}…` : String(label)))
+            .append("title")
+            .text((label) => String(label));
+        }
 
-        g.append("g").call(d3.axisLeft(yScale).ticks(5)).style("font-size", "11px");
+        g.append("g").call(d3.axisLeft(yScale).ticks(5).tickFormat(formatTick)).style("font-size", "11px");
 
         if (kind === "line") {
           const line = d3
@@ -385,6 +410,10 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
               .attr("fill", (d) => colorScale(d.series));
           }
         } else {
+          // One series, one colour: colouring each bar differently implies
+          // categories the data does not have. The top bar is picked out in
+          // pod gold, the brand's one accent; the rest are a lighter cocoa.
+          const topValue = d3.max(barRows, (row) => asNumber(row[yField]) ?? 0) ?? 0;
           g.selectAll("rect")
             .data(barRows)
             .join("rect")
@@ -392,12 +421,9 @@ export const D3ChartArtifact = memo(function D3ChartArtifact({
             .attr("y", (row) => yScale(asNumber(row[yField]) ?? 0))
             .attr("width", xScale.bandwidth())
             .attr("height", (row) => innerHeight - yScale(asNumber(row[yField]) ?? 0))
-            .attr("rx", 8)
-            // One series, one colour: colouring each bar differently implies
-            // categories that the data does not have.
-            .attr("fill", COLOR_PALETTE[0])
-            .attr("stroke", "var(--primary)")
-            .attr("stroke-width", 2);
+            .attr("rx", 6)
+            .attr("fill", (row) => ((asNumber(row[yField]) ?? 0) === topValue && topValue > 0 ? COLOR_PALETTE[1] : COLOR_PALETTE[0]))
+            .attr("fill-opacity", (row) => ((asNumber(row[yField]) ?? 0) === topValue && topValue > 0 ? 1 : 0.72));
         }
         appendAxisLabels();
       } catch (err) {
