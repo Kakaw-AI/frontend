@@ -27,6 +27,8 @@ type SaveDatabaseSourceInput =
       provider: "sqlite";
       file?: File;
       name?: string;
+      /** Upload progress, 0 to 1. */
+      onProgress?: (fraction: number) => void;
     }
   | {
       provider: "postgresql";
@@ -82,7 +84,10 @@ async function registerDatabaseSource(
   return (await response.json()) as DatabaseSourceRecord;
 }
 
-async function uploadSqliteToStorage(file: File): Promise<string> {
+async function uploadSqliteToStorage(
+  file: File,
+  onProgress?: (fraction: number) => void,
+): Promise<string> {
   const contentType = file.type || "application/octet-stream";
 
   // 1) Ask our backend for a short-lived presigned PUT URL.
@@ -106,13 +111,20 @@ async function uploadSqliteToStorage(file: File): Promise<string> {
   };
 
   // 2) Upload the file directly to R2 — it never passes through our server.
-  const uploadResponse = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "content-type": contentType },
-    body: file,
+  // XHR, not fetch: fetch has no upload progress events.
+  const uploaded = await new Promise<boolean>((resolve) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", uploadUrl);
+    xhr.setRequestHeader("content-type", contentType);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress?.(event.loaded / event.total);
+    };
+    xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 300);
+    xhr.onerror = () => resolve(false);
+    xhr.send(file);
   });
 
-  if (!uploadResponse.ok) {
+  if (!uploaded) {
     throw new Error("Failed to upload the database file to storage.");
   }
 
@@ -127,7 +139,8 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
       throw new Error("Upload a SQLite database file before continuing.");
     }
 
-    const objectKey = await uploadSqliteToStorage(input.file);
+    const objectKey = await uploadSqliteToStorage(input.file, input.onProgress);
+    input.onProgress?.(1);
 
     return registerDatabaseSource({
       provider: "sqlite",

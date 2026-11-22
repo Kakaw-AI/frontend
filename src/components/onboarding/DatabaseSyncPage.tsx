@@ -8,40 +8,58 @@ import { AlertCircle, ArrowLeft, LoaderCircle, RefreshCw } from "lucide-react";
 import { TextShimmer } from "@/components/amicro/text-shimmer";
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { formatTimestamp } from "@/components/chat/picker/picker-utils";
+import { chatOptionsQueryOptions } from "@/lib/queries/chat-options";
 import { onboardingStateQueryOptions } from "@/lib/queries/onboarding";
-import { resyncDatabaseSource } from "@/lib/queries/database-sources";
+import { resyncDatabaseSource, type DatabaseSourceStatus } from "@/lib/queries/database-sources";
 
-export function DatabaseSyncPage() {
+const pollWhileIndexing = (status: DatabaseSourceStatus | undefined) =>
+  status === "PENDING" || status === "SYNCING" ? 2000 : false;
+
+/**
+ * Shows indexing progress for one source. With `sourceId` (set right after a
+ * connect or upload) it follows that source even when the user already has
+ * other ready databases; without it, it follows the first-connection blockingSync.
+ */
+export function DatabaseSyncPage({ sourceId }: { sourceId: string | null }) {
   const router = useRouter();
   const onboardingStateQuery = useQuery({
     ...onboardingStateQueryOptions(),
-    refetchInterval(query) {
-      return query.state.data?.blockingSync?.status === "SYNCING"
-        ? 2000
-        : false;
-    },
+    enabled: !sourceId,
+    refetchInterval: (query) => pollWhileIndexing(query.state.data?.blockingSync?.status),
+  });
+  const sourcesQuery = useQuery({
+    ...chatOptionsQueryOptions(),
+    enabled: Boolean(sourceId),
+    refetchInterval: (query) =>
+      pollWhileIndexing(query.state.data?.databaseSources.find((s) => s.id === sourceId)?.status),
   });
 
-  const blockingSync = onboardingStateQuery.data?.blockingSync ?? null;
+  const blockingSync = sourceId
+    ? (sourcesQuery.data?.databaseSources.find((s) => s.id === sourceId) ?? null)
+    : (onboardingStateQuery.data?.blockingSync ?? null);
   const isFailed = blockingSync?.status === "FAILED";
   const retryMutation = useMutation({
     mutationFn: resyncDatabaseSource,
     onSuccess: async () => {
-      await onboardingStateQuery.refetch();
+      await (sourceId ? sourcesQuery.refetch() : onboardingStateQuery.refetch());
     },
   });
 
   useEffect(() => {
-    const data = onboardingStateQuery.data;
-    if (!data) return;
-    if (data.hasDatabaseSource) {
+    // Cached data from before this source existed must not count as "not found".
+    const loaded = sourceId ? sourcesQuery.isFetchedAfterMount : Boolean(onboardingStateQuery.data);
+    if (!loaded) return;
+    const done = sourceId
+      ? blockingSync?.status === "READY"
+      : onboardingStateQuery.data?.hasDatabaseSource;
+    if (done) {
       router.replace("/chat");
       router.refresh();
     } else if (!blockingSync) {
       router.replace("/onboarding/database");
       router.refresh();
     }
-  }, [blockingSync, onboardingStateQuery.data, router]);
+  }, [blockingSync, sourceId, sourcesQuery.isFetchedAfterMount, onboardingStateQuery.data, router]);
 
   return (
     <>

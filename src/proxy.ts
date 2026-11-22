@@ -124,7 +124,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL(destination, request.url));
     }
 
-    if (hasDatabaseSource && isSyncPage) {
+    // With ?sourceId the page is following a newly added source; let it show progress.
+    if (hasDatabaseSource && isSyncPage && !request.nextUrl.searchParams.has("sourceId")) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

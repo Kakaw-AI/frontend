@@ -7,10 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, FileArchive, LoaderCircle, Lock, Upload } from "lucide-react";
 import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
 import { useConnectionDetailsState } from "@/components/onboarding/useConnectionDetailsState";
-import {
-  onboardingStateQueryKey,
-  saveDatabaseSourceMutationOptions,
-} from "@/lib/queries/onboarding";
+import { saveDatabaseSourceMutationOptions } from "@/lib/queries/onboarding";
 
 const SQLITE_EXTENSIONS = [".db", ".sqlite", ".sqlite3"];
 
@@ -20,35 +17,14 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
   const { provider, connString, sqliteFile, name, setConnString, setSqliteFile, setName } =
     useConnectionDetailsState(initialProvider);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const isSqlite = provider === "sqlite";
   const providerLabel = isSqlite ? "SQLite" : "PostgreSQL";
 
   const connectDatabase = useMutation({
     ...saveDatabaseSourceMutationOptions(),
     onSuccess: (source) => {
-      queryClient.setQueryData(onboardingStateQueryKey, {
-        isFirstConnection: false,
-        hasDatabaseSource: source.status === "READY",
-        blockingSync:
-          source.status === "READY"
-            ? null
-            : {
-                id: source.id,
-                label:
-                  source.name?.trim() ||
-                  (source.provider === "sqlite"
-                    ? source.sqliteOriginalFilename?.trim() || "SQLite upload"
-                    : "PostgreSQL connection"),
-                provider: source.provider,
-                status: source.status,
-                lastError: source.lastError,
-                lastTestedAt: source.lastTestedAt,
-                lastSyncedAt: source.lastSyncedAt,
-                syncRequestedAt: source.syncRequestedAt,
-                createdAt: source.createdAt,
-                updatedAt: source.updatedAt,
-              },
-      });
+      void queryClient.invalidateQueries({ queryKey: ["me"] });
       router.replace(source.status === "READY" ? "/chat" : `/onboarding/sync?sourceId=${encodeURIComponent(source.id)}`);
       router.refresh();
     },
@@ -70,9 +46,10 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const trimmedName = name.trim() || undefined;
+    setUploadProgress(0);
     connectDatabase.mutate(
       isSqlite
-        ? { provider: "sqlite", file: sqliteFile ?? undefined, name: trimmedName }
+        ? { provider: "sqlite", file: sqliteFile ?? undefined, name: trimmedName, onProgress: setUploadProgress }
         : { provider, connectionString: connString, name: trimmedName },
     );
   }
@@ -205,7 +182,9 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
             {connectDatabase.isPending ? <LoaderCircle size={16} className="animate-spin" aria-hidden /> : null}
             {connectDatabase.isPending
               ? isSqlite
-                ? "Uploading…"
+                ? uploadProgress < 1
+                  ? `Uploading ${Math.round(uploadProgress * 100)}%…`
+                  : "Checking file…"
                 : "Testing connection…"
               : isSqlite
                 ? "Upload and connect"
