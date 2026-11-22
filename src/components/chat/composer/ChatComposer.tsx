@@ -20,7 +20,7 @@ export function ChatComposer({
   activeConversation: ConversationDetails | undefined;
   /** "new" for on-the-fly chats, conversationId for existing ones */
   chatKey: string;
-  /** Resolved placeholder label for the pending (on-the-fly) state, e.g. "MyDB · gpt-4o" */
+  /** Resolved placeholder label for the pending (on-the-fly) state, e.g. "MyDB · gpt-6.2-sol" */
   pendingLabel: string | null;
   isComposerLocked: boolean;
   isConversationRuntimeAvailable: boolean;

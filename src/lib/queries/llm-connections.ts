@@ -93,12 +93,14 @@ export const LLM_PROVIDER_OPTIONS: Array<{
   label: string;
   defaultModel: string;
 }> = [
-  { value: "openai", label: "OpenAI", defaultModel: "gpt-4o" },
-  { value: "openrouter", label: "OpenRouter", defaultModel: "openai/gpt-4o-mini" },
-  { value: "ollama", label: "Ollama", defaultModel: "llama3.1" },
+  // Each lab's balanced current model (checked 2026-11-22): fast enough for the
+  // several calls a turn makes, strong enough for SQL.
+  { value: "openai", label: "OpenAI", defaultModel: "gpt-6.2-sol" },
+  { value: "openrouter", label: "OpenRouter", defaultModel: "openai/gpt-6.2-sol" },
+  { value: "ollama", label: "Ollama", defaultModel: "gpt-oss:20b" },
   { value: "lm-studio", label: "LM Studio", defaultModel: "local-model" },
-  { value: "google", label: "Google", defaultModel: "gemini-2.5-pro" },
-  { value: "anthropic", label: "Anthropic", defaultModel: "claude-3-7-sonnet-latest" },
+  { value: "google", label: "Google", defaultModel: "gemini-4-hydrogen" },
+  { value: "anthropic", label: "Anthropic", defaultModel: "claude-sonnet-5-5" },
 ];
 
 export function toLlmConnection(
