@@ -118,6 +118,13 @@ export function applyStreamEvent(
     };
   }
 
+  // Belongs to the conversation, not a message. The sidebar picks it up when
+  // the list refetches at the end of the stream.
+  if (type === "title_generated") {
+    const title = typeof data.title === "string" ? data.title.trim() : "";
+    return title ? { ...conversation, title } : conversation;
+  }
+
   const targetIndex = resolveTargetIndex(conversation.messages, data);
 
   if (targetIndex === -1) {
