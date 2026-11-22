@@ -18,8 +18,8 @@ const extendedFeatures = [
         />
       </svg>
     ),
-    title: "Multi-Database Support",
-    body: "Connect Postgres, MySQL, Snowflake, or SQLite. One interface for all your data sources.",
+    title: "PostgreSQL and SQLite",
+    body: "Connect PostgreSQL by URL or upload a SQLite file, and keep each database's chats together. MySQL and Snowflake are coming.",
   },
   {
     icon: (
@@ -58,8 +58,8 @@ const extendedFeatures = [
         />
       </svg>
     ),
-    title: "Export & Share",
-    body: "Download results as CSV, copy charts as images, and share insights with your team instantly.",
+    title: "Export",
+    body: "Download any result as CSV and any chart as an SVG image, ready for a report or a slide.",
   },
   {
     icon: (

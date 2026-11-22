@@ -3,7 +3,7 @@ const steps = [
   {
     number: "01",
     title: "Connect Your Source",
-    body: "Link your Postgres, MySQL, or Snowflake database in seconds with secure, encrypted tunneling.",
+    body: "Paste a PostgreSQL connection URL or upload a SQLite file. Your credentials are stored encrypted.",
   },
   {
     number: "02",
@@ -18,7 +18,7 @@ const steps = [
   {
     number: "04",
     title: "Iterate and Refine",
-    body: "Ask follow-up questions to drill down deeper into the numbers. Save your best insights to a dashboard.",
+    body: "Ask follow-up questions to drill down deeper into the numbers. Every answer shows its table, a chart and the SQL behind it.",
   },
 ];
 

@@ -59,7 +59,7 @@ const features = [
       </svg>
     ),
     title: "Bring Your Own LLM",
-    body: "Connect your own API key from Anthropic, OpenAI, Gemini, Ollama, or LM Studio. You choose the model ",
+    body: "Connect your own key for OpenAI, Anthropic, Google Gemini or OpenRouter, or your own Ollama or LM Studio server. You choose the model and pay your provider directly.",
   },
 ];
 
