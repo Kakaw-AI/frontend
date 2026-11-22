@@ -8,7 +8,7 @@ import {
   getVisibleAssistantContent,
 } from "@/components/chat/chat-formatting";
 import type { ConversationMessage } from "@/lib/queries/conversations";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
 import { memo, useMemo } from "react";
 
 // Memoized because the answer now streams: without this, every token re-renders
@@ -27,6 +27,15 @@ export const MessageCard = memo(function MessageCard({
   onRetry: (messageId: string) => void;
 }) {
   const isUser = message.role === "user";
+  const usedWebSearch = useMemo(
+    () =>
+      message.artifacts.some(
+        (artifact) =>
+          artifact.type === "TEXT" &&
+          (artifact.payload as { kind?: string }).kind === "web_sources",
+      ),
+    [message.artifacts],
+  );
   const displayContent = useMemo(
     () =>
       message.role === "assistant"
@@ -115,12 +124,19 @@ export const MessageCard = memo(function MessageCard({
         </div>
       ) : null}
       <p
-        className={`mt-1 text-[11px] text-on-surface-variant ${isUser ? "px-1 text-right" : ""}`}
+        className={`mt-1 flex flex-wrap items-center gap-x-1 text-[11px] text-on-surface-variant ${isUser ? "justify-end px-1" : ""}`}
       >
-        {formatConversationTime(message.createdAt)}
-        {!isUser && message.status === "COMPLETED" && message.tokenUsage
-          ? ` · ${message.tokenUsage.totalTokens.toLocaleString()} tokens`
-          : null}
+        <span>{formatConversationTime(message.createdAt)}</span>
+        {!isUser && message.status === "COMPLETED" && message.tokenUsage ? (
+          <span>· {message.tokenUsage.totalTokens.toLocaleString()} tokens</span>
+        ) : null}
+        {!isUser && usedWebSearch ? (
+          <span className="kk-web-badge">
+            <span aria-hidden>·</span>
+            <Globe size={11} className="kk-web-badge-icon" aria-hidden />
+            <span className="kk-web-badge-text">Used Web Search</span>
+          </span>
+        ) : null}
       </p>
     </FadeUp>
   );
