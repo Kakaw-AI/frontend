@@ -644,3 +644,11 @@ export function buildCsvContent(
 
   return lines.join("\n");
 }
+
+/** RTL when Arabic letters make up at least 30% of the letters, so an Arabic
+ * answer full of English names stays RTL and an English one quoting a word stays LTR. */
+export function textDirection(text: string): "rtl" | "ltr" {
+  const arabic = text.match(/[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/g)?.length ?? 0;
+  const latin = text.match(/[A-Za-z]/g)?.length ?? 0;
+  return arabic > 0 && arabic >= (arabic + latin) * 0.3 ? "rtl" : "ltr";
+}

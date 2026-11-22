@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { parseMarkdownBlocks } from "@/components/chat/chat-formatting";
+import { parseMarkdownBlocks, textDirection } from "@/components/chat/chat-formatting";
 
 function renderInlineMarkdown(text: string, keyPrefix: string) {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
@@ -13,6 +13,7 @@ function renderInlineMarkdown(text: string, keyPrefix: string) {
       return (
         <code
           key={`${keyPrefix}-code-${index}`}
+          dir="ltr"
           className="rounded bg-surface-container-lowest px-1.5 py-0.5 font-mono text-[0.92em]"
         >
           {part.slice(1, -1)}
@@ -32,9 +33,12 @@ export const MarkdownMessage = memo(function MarkdownMessage({
   // Re-parsing the full markdown of every message on every streamed token was
   // the single most expensive thing in the render path.
   const blocks = useMemo(() => parseMarkdownBlocks(content), [content]);
+  // One direction for the whole message: per-line dir="auto" flipped every
+  // Arabic bullet that happened to start with an English name to LTR.
+  const dir = useMemo(() => textDirection(content), [content]);
 
   return (
-    <div className="space-y-2.5 text-sm leading-6">
+    <div dir={dir} className="space-y-2.5 text-sm leading-6">
       {blocks.map((block, blockIndex) => {
         if (block.type === "heading") {
           const className =
@@ -45,7 +49,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                 : "text-base font-semibold";
 
           return (
-            <p key={`block-${blockIndex}`} dir="auto" className={className}>
+            <p key={`block-${blockIndex}`} className={className}>
               {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
             </p>
           );
@@ -53,9 +57,9 @@ export const MarkdownMessage = memo(function MarkdownMessage({
 
         if (block.type === "unordered-list") {
           return (
-            <ul key={`block-${blockIndex}`} dir="auto" className="list-disc space-y-1.5 ps-5">
+            <ul key={`block-${blockIndex}`} className="list-disc space-y-1.5 ps-5">
               {block.items.map((item, lineIndex) => (
-                <li dir="auto" key={`block-${blockIndex}-item-${lineIndex}`}>
+                <li key={`block-${blockIndex}-item-${lineIndex}`}>
                   {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
                 </li>
               ))}
@@ -65,9 +69,9 @@ export const MarkdownMessage = memo(function MarkdownMessage({
 
         if (block.type === "ordered-list") {
           return (
-            <ol key={`block-${blockIndex}`} dir="auto" className="list-decimal space-y-1.5 ps-5">
+            <ol key={`block-${blockIndex}`} className="list-decimal space-y-1.5 ps-5">
               {block.items.map((item, lineIndex) => (
-                <li dir="auto" key={`block-${blockIndex}-item-${lineIndex}`}>
+                <li key={`block-${blockIndex}-item-${lineIndex}`}>
                   {renderInlineMarkdown(item, `block-${blockIndex}-item-${lineIndex}`)}
                 </li>
               ))}
@@ -79,6 +83,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
           return (
             <div
               key={`block-${blockIndex}`}
+              dir="ltr"
               className="overflow-x-auto rounded-lg border border-border bg-surface-container-lowest px-3 py-2"
             >
               {block.language ? (
@@ -103,7 +108,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                     {block.headers.map((header, headerIndex) => (
                       <th
                         key={`block-${blockIndex}-header-${headerIndex}`}
-                        dir="auto"
+                       
                         className="border-b border-border px-3 py-1.5 font-semibold"
                       >
                         {renderInlineMarkdown(header, `block-${blockIndex}-header-${headerIndex}`)}
@@ -117,7 +122,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
                       {row.map((cell, cellIndex) => (
                         <td
                           key={`block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`}
-                          dir="auto"
+                         
                           className="px-3 py-1.5 align-top"
                         >
                           {renderInlineMarkdown(cell, `block-${blockIndex}-row-${rowIndex}-cell-${cellIndex}`)}
@@ -132,7 +137,7 @@ export const MarkdownMessage = memo(function MarkdownMessage({
         }
 
         return (
-          <p key={`block-${blockIndex}`} dir="auto" className="whitespace-pre-wrap">
+          <p key={`block-${blockIndex}`} className="whitespace-pre-wrap">
             {renderInlineMarkdown(block.text, `block-${blockIndex}`)}
           </p>
         );
