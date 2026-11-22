@@ -1,9 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Database, LoaderCircle, LogOut, RefreshCw, Sparkles, Trash2, X } from "lucide-react";
+import { AlertCircle, LoaderCircle, LogOut, RefreshCw, Trash2, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { accountUsageQueryKey, fetchAccountUsage, type AccountUsage } from "@/lib/queries/account";
 import { useChatStore } from "../store/useChatStore";
@@ -32,23 +31,22 @@ export function ProfileDialog({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isSigningOut = useChatStore((s) => s.isSigningOut);
-  const openAddLlmPicker = useChatStore((s) => s.openAddLlmPicker);
 
-  // Refetched on every open, so the numbers include the chat just finished.
-  const usage = useQuery({
-    queryKey: accountUsageQueryKey,
-    queryFn: fetchAccountUsage,
-    enabled: open,
-    staleTime: 0,
-  });
+  // Loaded with the page, so the window opens with numbers already in it.
+  const usage = useQuery({ queryKey: accountUsageQueryKey, queryFn: fetchAccountUsage });
+  const { refetch } = usage;
 
-  // Native modal: focus trap, Esc and the backdrop come for free.
+  // Native modal: focus trap, Esc and the backdrop come for free. Opening also
+  // refreshes in the background, so the counts include the chat just finished.
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      void refetch();
+    }
     if (!open && dialog.open) dialog.close();
-  }, [open]);
+  }, [open, refetch]);
 
   return (
     <dialog
@@ -112,27 +110,6 @@ export function ProfileDialog({
             ) : (
               <UsageSections usage={usage.data} />
             )}
-
-            <section aria-labelledby="profile-manage" className="space-y-3">
-              <h3 id="profile-manage" className="pod-label">Manage</h3>
-              <div className="flex flex-wrap gap-2">
-                <Link href="/onboarding/database" onClick={onClose} className="pod-btn-ghost">
-                  <Database size={14} aria-hidden />
-                  Databases
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    openAddLlmPicker();
-                  }}
-                  className="pod-btn-ghost"
-                >
-                  <Sparkles size={14} aria-hidden />
-                  Models and API keys
-                </button>
-              </div>
-            </section>
 
             <section aria-labelledby="profile-account" className="space-y-3">
               <h3 id="profile-account" className="pod-label">Account</h3>
