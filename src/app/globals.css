@@ -225,6 +225,11 @@
   @apply inline-flex items-center justify-center gap-2 rounded-[10px] border border-border bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
 }
 
+/* Destructive primary action: the confirm step of a delete. */
+@utility pod-btn-destructive {
+  @apply inline-flex items-center justify-center gap-2 rounded-[10px] border border-secondary bg-secondary px-6 py-3 text-sm font-bold text-on-secondary transition-colors hover:bg-secondary/90 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
+}
+
 /* Destructive small action. */
 @utility pod-btn-danger {
   @apply inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-secondary bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-secondary transition-colors hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-50;

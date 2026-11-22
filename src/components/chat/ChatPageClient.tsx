@@ -18,6 +18,7 @@ import {
   type ConversationSummary,
 } from "@/lib/queries/conversations";
 import { deleteDatabaseSource, resyncDatabaseSource } from "@/lib/queries/database-sources";
+import { confirmDialog } from "@/components/ui/confirm-dialog";
 import {
   activateLlmConnectionMutationOptions,
   deactivateLlmConnectionMutationOptions,
@@ -220,9 +221,12 @@ export function ChatPageClient() {
 
   async function handleDeleteAccount() {
     if (useChatStore.getState().isSigningOut) return;
-    const confirmed = window.confirm(
-      "Delete your account? This removes your conversations, data sources, uploaded files and saved API keys. It can't be undone.",
-    );
+    const confirmed = await confirmDialog({
+      title: "Delete your account?",
+      body: "This removes your chats, databases, uploaded files and saved API keys. It can't be undone.",
+      confirmLabel: "Delete account",
+      destructive: true,
+    });
     if (!confirmed) return;
 
     beginSignOut();
@@ -242,9 +246,12 @@ export function ChatPageClient() {
 
   /** Resolves false when the user cancels; throws when the delete fails. */
   async function handleDeleteDatabaseSource(sourceId: string) {
-    const confirmed = window.confirm(
-      "Delete this database and all its chats? Its schema, stored credentials and uploaded file go too. Your token usage stays in your profile. This can't be undone.",
-    );
+    const confirmed = await confirmDialog({
+      title: "Delete this database and all its chats?",
+      body: "Its schema, stored credentials and uploaded file go too. Your token usage stays in your profile. This can't be undone.",
+      confirmLabel: "Delete database",
+      destructive: true,
+    });
     if (!confirmed) return false;
 
     await deleteDatabaseSource(sourceId);
@@ -288,10 +295,12 @@ export function ChatPageClient() {
 
   async function handleDeleteConversation(conversationId: string) {
     if (deleteConversationMutation.isPending) return;
-    const confirmed =
-      typeof window === "undefined"
-        ? true
-        : window.confirm("Delete this conversation? This can't be undone.");
+    const confirmed = await confirmDialog({
+      title: "Delete this chat?",
+      body: "Its messages, results and charts are removed. This can't be undone.",
+      confirmLabel: "Delete chat",
+      destructive: true,
+    });
     if (!confirmed) return;
 
     try {

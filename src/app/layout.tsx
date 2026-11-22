@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { ConfirmDialogHost } from "@/components/ui/confirm-dialog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteGraph } from "@/lib/schema";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -69,6 +70,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
         <JsonLd data={siteGraph()} />
         <Providers>{children}</Providers>
+        <ConfirmDialogHost />
       </body>
     </html>
   );
