@@ -166,6 +166,22 @@ export function applyStreamEvent(
       };
       return { ...conversation, messages: updatedMessages };
     }
+    case "web_sources": {
+      updatedMessages[targetIndex] = {
+        ...target,
+        artifacts: [
+          ...target.artifacts,
+          {
+            id: `artifact-web-${target.artifacts.length}`,
+            type: "TEXT",
+            // Same shape the backend stores, so a reload renders it the same way.
+            payload: { kind: "web_sources", sources: data.sources },
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      };
+      return { ...conversation, messages: updatedMessages };
+    }
     case "sql_generated": {
       updatedMessages[targetIndex] = {
         ...target,

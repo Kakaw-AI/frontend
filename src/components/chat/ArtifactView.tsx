@@ -59,6 +59,14 @@ export function ArtifactView({
     );
   }
 
+  if (artifact.type === "TEXT") {
+    const payload = artifact.payload as { kind?: string; sources?: unknown };
+    if (payload.kind === "web_sources" && Array.isArray(payload.sources)) {
+      return <WebSources sources={payload.sources} />;
+    }
+    return null;
+  }
+
   if (artifact.type === "CHART") {
     const payload = artifact.payload as {
       chartType?: string;
@@ -80,4 +88,44 @@ export function ArtifactView({
   }
 
   return null;
+}
+
+/** The pages a web-assisted answer cites, numbered to match its [n] markers. */
+function WebSources({ sources }: { sources: unknown[] }) {
+  // Only http(s) links from the agent are rendered; anything else is dropped.
+  const items = sources.flatMap((source) => {
+    const { title, url } = (source ?? {}) as { title?: unknown; url?: unknown };
+    if (typeof url !== "string" || !/^https?:\/\//.test(url)) return [];
+    let host = url;
+    try {
+      host = new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      return [];
+    }
+    return [{ url, host, title: typeof title === "string" && title.trim() ? title.trim() : host }];
+  });
+  if (items.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border border-border bg-surface-container-lowest px-3 py-2.5">
+      <p className="pod-label">Web sources</p>
+      <ol className="mt-1.5 space-y-1">
+        {items.map((item, index) => (
+          <li key={item.url} className="flex min-w-0 items-baseline gap-2 text-sm">
+            <span className="shrink-0 font-mono text-xs text-on-surface-variant">[{index + 1}]</span>
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              dir="auto"
+              className="min-w-0 truncate text-on-surface underline decoration-border underline-offset-2 transition-colors hover:decoration-on-surface"
+            >
+              {item.title}
+            </a>
+            <span className="shrink-0 text-xs text-on-surface-variant">{item.host}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 }
