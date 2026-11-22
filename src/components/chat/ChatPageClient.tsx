@@ -243,7 +243,7 @@ export function ChatPageClient() {
   /** Resolves false when the user cancels; throws when the delete fails. */
   async function handleDeleteDatabaseSource(sourceId: string) {
     const confirmed = window.confirm(
-      "Delete this data source? Its conversations and stored credentials are deleted with it. This can't be undone.",
+      "Delete this database and all its chats? Its schema, stored credentials and uploaded file go too. Your token usage stays in your profile. This can't be undone.",
     );
     if (!confirmed) return false;
 
