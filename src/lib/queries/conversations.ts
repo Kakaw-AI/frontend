@@ -261,6 +261,21 @@ export async function retryConversationMessage(
   await consumeChatStream(response, onEvent);
 }
 
+/**
+ * Stops the reply being written. The open stream then ends with a "stopped"
+ * message_failed event; a reply left streaming by a dead server is marked
+ * stopped directly.
+ */
+export async function stopConversationMessage(conversationId: string, messageId: string) {
+  const response = await apiFetch(
+    `/api/chat/conversations/${conversationId}/messages/${messageId}/stop`,
+    { method: "POST" },
+  );
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, "Unable to stop the response."));
+  }
+}
+
 async function consumeChatStream(
   response: Response,
   onEvent: (event: Record<string, unknown>) => void,

@@ -11,6 +11,7 @@ import {
   createConversationMutationOptions,
   deleteConversationMutationOptions,
   retryConversationMessage,
+  stopConversationMessage,
   streamConversationMessage,
   updateConversationRuntimeMutationOptions,
   type ConversationDetails,
@@ -153,9 +154,11 @@ export function ChatPageClient() {
   const deleteConversationMutation = useMutation(deleteConversationMutationOptions());
 
   const activeConversation = activeConversationQuery.data;
-  const hasStreamingAssistantMessage = Boolean(
-    activeConversation?.messages.some((message) => message.role === "assistant" && message.status === "STREAMING"),
-  );
+  const streamingAssistantMessageId =
+    activeConversation?.messages.find(
+      (message) => message.role === "assistant" && message.status === "STREAMING",
+    )?.id ?? null;
+  const hasStreamingAssistantMessage = Boolean(streamingAssistantMessageId);
   const isConversationRuntimeAvailable = activeConversation?.runtime.isAvailableForChat ?? false;
   const runtimeWarning = activeConversation && !isConversationRuntimeAvailable ? activeConversation.runtime.warning : null;
   const isPendingRuntimeUpdate = updateConversationRuntimeMutation.isPending;
@@ -300,6 +303,18 @@ export function ChatPageClient() {
       );
     } finally {
       await queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+    }
+  }
+
+  // The open stream, if any, ends by itself with a "stopped" event. The refetch
+  // covers a reply left streaming by a server that went away.
+  async function handleStopMessage(conversationId: string, messageId: string) {
+    try {
+      await stopConversationMessage(conversationId, messageId);
+    } catch (error) {
+      setComposerError(error instanceof Error ? error.message : "Unable to stop the response.");
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(conversationId) });
     }
   }
 
@@ -585,6 +600,11 @@ export function ChatPageClient() {
               isPendingRuntimeUpdate={isPendingRuntimeUpdate}
               onDraftChange={setDraft}
               onSendMessage={handleSendMessage}
+              onStop={
+                activeConversationId && streamingAssistantMessageId
+                  ? () => void handleStopMessage(activeConversationId, streamingAssistantMessageId)
+                  : undefined
+              }
             />
            </div>
           </footer>

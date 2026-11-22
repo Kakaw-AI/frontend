@@ -1,6 +1,6 @@
 "use client";
 
-import { Brain, SendHorizontal } from "lucide-react";
+import { Brain, SendHorizontal, Square } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
@@ -15,6 +15,7 @@ export function ChatComposer({
   isPendingRuntimeUpdate,
   onDraftChange,
   onSendMessage,
+  onStop,
 }: {
   activeConversation: ConversationDetails | undefined;
   /** "new" for on-the-fly chats, conversationId for existing ones */
@@ -28,6 +29,8 @@ export function ChatComposer({
   /** Called on every input change so the parent can persist the draft */
   onDraftChange: (text: string) => void;
   onSendMessage: () => void;
+  /** Set while a reply is streaming; turns Send into Stop. */
+  onStop?: () => void;
 }) {
   const input = useChatStore((s) => s.composerInput);
   const setInput = useChatStore((s) => s.setComposerInput);
@@ -130,6 +133,17 @@ export function ChatComposer({
             <span className="hidden sm:inline">Enter to send · Shift+Enter for a new line</span>
           )}
         </p>
+        {onStop ? (
+          <button
+            type="button"
+            onClick={onStop}
+            aria-label="Stop response"
+            title="Stop response"
+            className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-on-primary transition-colors hover:bg-on-surface-variant active:translate-y-px"
+          >
+            <Square size={11} fill="currentColor" />
+          </button>
+        ) : (
         <button
           type="button"
           onClick={handleSend}
@@ -140,6 +154,7 @@ export function ChatComposer({
         >
           <SendHorizontal size={14} />
         </button>
+        )}
       </div>
     </div>
   );
