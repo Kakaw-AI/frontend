@@ -1,16 +1,38 @@
-# Welcome to Kakaw AI Docs
+---
+title: Introduction
+description: Ask your database questions in plain English and get answers as text, tables and charts.
+---
 
-Kakaw AI lets you talk to your database in plain English — no SQL needed. These guides will help you get connected and start asking questions in minutes.
+Kakaw turns a question like *"which products sold best last quarter?"* into read-only SQL, runs it on your database, checks that the result answers the question, and explains it. You see the answer, the table it came from, a chart when one helps, and the SQL itself.
 
-## Guides
+You bring two things: a database and a model. Kakaw does the rest.
 
-- [Getting Started](/docs/getting-started) — Install, connect, and run your first query
-- [Connect a Database](/docs/connect-database) — Postgres, MySQL, Snowflake, and SQLite setup
-- [Set Up Your LLM](/docs/setup-llm) — Add your API key from Anthropic, OpenAI, Gemini, Ollama, or LM Studio
-- [Using the Chat](/docs/using-chat) — Tips for getting the best answers
+<Cards>
+  <Card title="Quickstart" href="/docs/quickstart">
+    From sign-in to your first answer in about five minutes.
+  </Card>
+  <Card title="How it works" href="/docs/how-it-works">
+    What happens between your question and the answer.
+  </Card>
+  <Card title="Connect your data" href="/docs/data/postgres">
+    PostgreSQL by URL, or upload a SQLite file.
+  </Card>
+  <Card title="Choose a model" href="/docs/models/providers">
+    OpenAI-compatible, Google Gemini or Anthropic Claude.
+  </Card>
+  <Card title="Privacy and security" href="/docs/privacy-and-security">
+    What Kakaw stores, what it sends where, and what it never does.
+  </Card>
+  <Card title="Troubleshooting" href="/docs/troubleshooting">
+    When an answer is wrong, slow or stuck.
+  </Card>
+</Cards>
 
-## How Kakaw Works
+## Using these docs with an AI assistant
 
-Kakaw reads your database **schema** (table names, column names, relationships) — never your actual row data. It uses that schema to translate your plain-English questions into SQL, runs the query against your database, and returns the result as text or a chart.
+Every page has a **Copy Markdown** button and an **Open** menu for ChatGPT and Claude. Assistants and agents can read the docs directly:
 
-Your API key goes directly from your browser to the LLM provider. It never passes through Kakaw's servers.
+- `/llms.txt`: an index of every page.
+- `/llms-full.txt`: all pages in one file.
+- Any page with `.md` added, like [`/docs/quickstart.md`](/docs/quickstart.md).
+- Any page URL requested with the header `Accept: text/markdown`.

@@ -1,0 +1,9 @@
+{
+  "title": "Chat",
+  "pages": [
+    "asking-questions",
+    "results",
+    "controls"
+  ],
+  "defaultOpen": true
+}

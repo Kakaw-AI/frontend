@@ -1,0 +1,41 @@
+---
+title: Privacy and security
+description: What Kakaw stores, what it sends where, and the limits on what it can do with your database.
+---
+
+## What Kakaw stores
+
+| What | Kept | Protected by |
+| --- | --- | --- |
+| API keys and database connection URLs | Until you delete the model or database | AES-256-GCM encryption. Only the last four characters of a key are ever shown, and no key is sent back to your browser. |
+| Your schema | Until you delete the database | Tables, columns, keys, indexes, row counts, a few sample rows per table and sample values per column |
+| An uploaded SQLite file | Until you delete the database | Stored whole, so queries can run on it |
+| Your chats | Until you delete the chat | Questions, answers, the SQL, the result rows (up to 200 per answer) and charts |
+| Remembered questions | Until you delete the database | Questions this database answered and the SQL that worked, used to answer similar questions |
+| Run records | Until you delete the chat, its database or your account | The steps, queries and timings of each answer, for debugging |
+
+Kakaw does not copy your tables. It reads your data only by running the queries your questions need.
+
+## What is sent where
+
+- **To your database:** the read-only queries for your questions, and the schema read during sync.
+- **To your model provider:** your question, the conversation so far, your schema and its sample values, and the result rows of each answer, which the model needs to write the answer. Your provider's own privacy terms apply to what it receives.
+- **To the web search engine:** only when Kakaw [searches the web](/docs/web-search), and only search queries built from what you typed or pointed to. Never values from your database you didn't ask about.
+
+## What Kakaw can't do to your database
+
+- **Write.** Every query runs in a read-only transaction (PostgreSQL) or opens the file read-only (SQLite). Before that, any statement that isn't a single `SELECT` is rejected.
+- **Run away.** Each query stops after 30 seconds and returns at most 200 rows.
+- **Show secrets.** Columns named like passwords, secrets, tokens, keys or credentials come back as `[redacted]`.
+
+## Addresses Kakaw won't connect to
+
+Kakaw connects to your database and your model from its servers. To protect its own network, it refuses `localhost`, private and link-local addresses and cloud metadata addresses, and checks again when the connection is made, so an address that changes after the check can't slip through.
+
+## Who can see what
+
+Every database, model, chat and remembered question belongs to one account, and every lookup is limited to the signed-in account. Remembered questions from one database are never used for another.
+
+## Deleting
+
+Deleting a chat, a database or your account deletes what belongs to it. See [Stop, retry and your chats](/docs/chat/controls#delete).

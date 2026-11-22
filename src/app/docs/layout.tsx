@@ -1,22 +1,18 @@
-import { Navbar } from "@/components/landing/Navbar"
-import { Footer } from "@/components/landing/Footer"
-import { DocsSidebar } from "./DocsSidebar"
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { RootProvider } from 'fumadocs-ui/provider/next';
+import type { ReactNode } from 'react';
+import { baseOptions } from '@/lib/layout.shared';
+import { source } from '@/lib/source';
 
-export default function DocsLayout({ children }: { children: React.ReactNode }) {
+// The provider sits here rather than in the root layout, so only the docs get
+// Fumadocs' search dialog and context. The site has one (light) theme, so
+// theme switching is off.
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <Navbar />
-      <div className="pt-24 min-h-screen bg-surface">
-        <div className="max-w-7xl mx-auto px-8 py-16 flex gap-16">
-          <aside className="hidden lg:block w-56 shrink-0">
-            <DocsSidebar />
-          </aside>
-          <main className="flex-1 min-w-0 max-w-2xl">
-            {children}
-          </main>
-        </div>
-      </div>
-      <Footer />
-    </>
-  )
+    <RootProvider theme={{ enabled: false }}>
+      <DocsLayout tree={source.getPageTree()} {...baseOptions()}>
+        {children}
+      </DocsLayout>
+    </RootProvider>
+  );
 }

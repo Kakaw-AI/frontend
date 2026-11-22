@@ -1,0 +1,9 @@
+{
+  "title": "Your data",
+  "pages": [
+    "postgres",
+    "sqlite",
+    "schema-sync"
+  ],
+  "defaultOpen": true
+}

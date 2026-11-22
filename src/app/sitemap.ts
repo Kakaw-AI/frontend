@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL as BASE_URL } from "@/lib/site";
+import { source } from "@/lib/source";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const docSlugs = ["getting-started", "connect-database", "setup-llm", "using-chat"];
-
   return [
     {
       url: BASE_URL,
@@ -17,17 +16,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
-    {
-      url: `${BASE_URL}/docs`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    ...docSlugs.map((slug) => ({
-      url: `${BASE_URL}/docs/${slug}`,
+    ...source.getPages().map((page) => ({
+      url: `${BASE_URL}${page.url}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
-      priority: 0.7,
+      priority: page.url === "/docs" ? 0.8 : 0.7,
     })),
     {
       url: `${BASE_URL}/privacy`,

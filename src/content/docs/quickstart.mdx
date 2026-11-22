@@ -1,0 +1,43 @@
+---
+title: Quickstart
+description: From sign-in to your first answer in about five minutes.
+---
+
+## Before you start
+
+You need:
+
+- **A database.** A PostgreSQL database that accepts connections from the internet, or a SQLite file up to 25 MB.
+- **A model.** An API key from OpenAI, Google (AI Studio), Anthropic or OpenRouter, or a public address for your own Ollama or LM Studio server.
+
+## 1. Sign in
+
+Go to [kakaw.nasr.work/login](/login) and continue with Google or GitHub.
+
+## 2. Connect a database
+
+Kakaw asks for a database first.
+
+- **PostgreSQL:** paste a connection URL. See [PostgreSQL](/docs/data/postgres).
+
+  ```txt
+  postgresql://user:password@host:5432/database
+  ```
+
+- **SQLite:** drop a `.db`, `.sqlite` or `.sqlite3` file. See [SQLite](/docs/data/sqlite).
+
+Kakaw then reads the structure of your database: tables, columns, keys and a few sample rows. This usually takes seconds. See [Schema sync](/docs/data/schema-sync).
+
+## 3. Add a model
+
+On the new-chat screen, open the model picker and choose **Add a model**. Pick the provider, paste your key, and choose a model from the list Kakaw loads from the provider. Kakaw tests the key before saving it. See [Providers and models](/docs/models/providers).
+
+## 4. Ask a question
+
+Type a question about your data and press **Enter**:
+
+- *How many orders did we get each month this year?*
+- *Who are the top 10 customers by revenue?*
+- *Which products have never been ordered?*
+
+You get a short answer, the result table, a chart when the data suits one, and **Show SQL** to see the query that ran. Follow-ups like *"now only for Germany"* build on the previous answer. See [Asking questions](/docs/chat/asking-questions).

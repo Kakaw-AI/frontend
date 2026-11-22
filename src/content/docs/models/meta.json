@@ -1,0 +1,9 @@
+{
+  "title": "Models",
+  "pages": [
+    "providers",
+    "local-models",
+    "thinking"
+  ],
+  "defaultOpen": true
+}

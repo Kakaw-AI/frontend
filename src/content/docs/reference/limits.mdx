@@ -1,0 +1,42 @@
+---
+title: Limits
+description: The sizes, timeouts and rate limits Kakaw works within.
+---
+
+## Data
+
+| Limit | Value |
+| --- | --- |
+| Rows returned per query | 200 |
+| Time per query | 30 seconds |
+| SQLite upload | 25 MB; `.db`, `.sqlite`, `.sqlite3` |
+| Schema sync | Marked failed after 5 minutes |
+
+## Answers
+
+| Limit | Value |
+| --- | --- |
+| One call to a hosted model | 90 seconds |
+| One call to a local model (Ollama, LM Studio) | 10 minutes |
+| One whole answer | 30 minutes |
+| SQL drafts per answer, repairs included | 4, then Kakaw stops and says it couldn't answer |
+| Web search rounds per answer | 3 |
+| Earlier messages the model sees | The last 12, each with up to 5 result rows |
+
+## Rate limits
+
+| Action | Limit |
+| --- | --- |
+| Questions | 20 per minute |
+| Adding a model (each tests the key) | 10 per minute |
+| Loading a provider's model list | 30 per minute |
+
+Over a limit, the request is refused with a message saying so; wait a minute and try again.
+
+## Supported
+
+| | Supported | Not yet |
+| --- | --- | --- |
+| Databases | PostgreSQL, SQLite | MySQL, Snowflake |
+| Model providers | OpenAI, OpenRouter, Ollama, LM Studio, any OpenAI-compatible endpoint, Google Gemini, Anthropic Claude | |
+| Charts | Bar, line, pie, scatter, histogram | |

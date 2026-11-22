@@ -1,3 +1,4 @@
+import { isMarkdownPreferred, rewritePath } from "fumadocs-core/negotiation";
 import { NextRequest, NextResponse } from "next/server";
 import { API_BASE } from "@/lib/api";
 
@@ -59,8 +60,19 @@ async function getOnboardingState(request: NextRequest) {
 
 // Optimistic check — redirects unauthenticated users to /login.
 // Actual authorization must be enforced per-page with the backend session too.
+const { rewrite: rewriteDocsToMarkdown } = rewritePath("/docs{/*path}", "/llms.mdx/docs{/*path}.md");
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Docs are public: no session lookup. An AI agent that asks for Markdown
+  // (Accept: text/markdown) gets the page's Markdown twin at the same URL.
+  if (pathname === "/docs" || pathname.startsWith("/docs/")) {
+    const markdown = isMarkdownPreferred(request) && !/\.(md|txt)$/.test(pathname) && rewriteDocsToMarkdown(pathname);
+    return markdown
+      ? NextResponse.rewrite(new URL(markdown, request.nextUrl), { headers: { Vary: "Accept" } })
+      : NextResponse.next();
+  }
 
   // Both lookups run on every navigation to every app route, and every branch
   // below that reads the onboarding state also needs the session. Issuing them
@@ -121,5 +133,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/chat/:path*", "/dashboard/:path*", "/onboarding/:path*"],
+  matcher: ["/login", "/chat/:path*", "/dashboard/:path*", "/onboarding/:path*", "/docs", "/docs/:path*"],
 };

@@ -1,0 +1,35 @@
+---
+title: Schema sync
+description: How Kakaw learns the structure of your database, and what it keeps.
+---
+
+Before the first question, Kakaw reads the structure of your database. Every answer starts from this.
+
+## What it reads
+
+- Tables and their row counts
+- Columns, their types and whether they can be empty
+- Primary keys, foreign keys and indexes
+- A few sample rows per table and sample values per column
+
+From these Kakaw builds short notes about each table and how the tables relate, which help the model pick the right tables and the exact values stored in a column. It doesn't copy your tables: answers come from queries that run on your database when you ask, and their results are kept with the chat. See [Privacy and security](/docs/privacy-and-security).
+
+## Status
+
+The sync page shows the progress. A database moves through:
+
+| Status | Meaning |
+| --- | --- |
+| Syncing | Kakaw is reading the schema. Usually a few seconds. |
+| Ready | You can ask questions about it. |
+| Failed | The sync stopped. The page shows why and offers **Try again**. |
+
+A sync that runs longer than five minutes is marked failed, so you can retry instead of waiting.
+
+## When your schema changes
+
+Kakaw works from the schema it read. After you add, rename or drop tables or columns, delete the database in Kakaw and connect it again so it reads the new structure. Questions remembered for the old structure are not reused for the new one.
+
+## More than one database
+
+Use **Databases** in the sidebar to connect another. Each chat belongs to one database, and the sidebar groups your chats by database.

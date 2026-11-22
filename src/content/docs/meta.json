@@ -1,0 +1,18 @@
+{
+  "title": "Docs",
+  "pages": [
+    "---Get started---",
+    "index",
+    "quickstart",
+    "how-it-works",
+    "---Guides---",
+    "data",
+    "models",
+    "chat",
+    "web-search",
+    "privacy-and-security",
+    "---Help---",
+    "troubleshooting",
+    "reference"
+  ]
+}

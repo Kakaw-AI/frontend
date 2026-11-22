@@ -1,0 +1,36 @@
+---
+title: Web search
+description: When Kakaw searches the web, how it picks sources, and what it never sends out.
+---
+
+Some questions can't be answered from your database alone: an industry benchmark, a current exchange rate, a company's latest news, the newest release of someone in your catalog. Kakaw searches the web for these and cites what it finds.
+
+## When it searches
+
+Nobody has to switch it on. Kakaw searches when:
+
+- **The question is about the outside world.** *What is the average SaaS churn rate?*
+- **It mixes your data with outside facts.** *Is our churn above the industry average?* Kakaw runs your query and searches, then compares the two.
+- **Your data isn't enough.** The result is older than the question asks (*latest*, *current*, *online*), the result is empty but the answer is likely public, or your rows hold conflicting values that public sources could settle.
+
+## How it searches
+
+1. It writes a search query aimed at where that kind of fact is published: the specialist sites of your data's field rather than general platforms.
+2. It reads the top pages. Pages that are only a cookie, login or age check are skipped; their search title and snippet are used instead.
+3. If what it found doesn't answer the question, it writes a better query and searches again, up to three rounds.
+4. It writes the answer from your data and the pages together, and cites every fact taken from the web as `[1]`, `[2]`.
+
+You can follow each round in the steps above the answer. Answers that used the web show **Used Web Search** next to the token count and a numbered **Web sources** list.
+
+## What it never sends
+
+The search engine is a third party, so Kakaw doesn't let a search carry your data out. A search query may contain only words you typed in the chat, or a name you pointed to (*"her latest video"* right after an answer that named one person). Any search that would add a name, ID, amount or email from your database that you didn't ask about is dropped before it is sent.
+
+Web pages are treated as reference material: instructions written inside a page are ignored.
+
+## Limits
+
+- Searching adds time: each round takes several seconds, and a question can take up to three rounds.
+- Search results change; the same question can find different pages on different days.
+- Some sites can't be read from Kakaw's servers. Their search snippets are used instead, which may be too short to answer.
+- Answers that used the web are not remembered for reuse, so asking again searches again.

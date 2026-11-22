@@ -216,7 +216,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
 
       <p className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant">
         <Lock size={14} aria-hidden />
-        Credentials are encrypted at rest. <Link href={`/docs#${provider}`} target="_blank" rel="noopener noreferrer" className="font-bold text-on-surface underline underline-offset-2">Setup guide</Link>
+        Credentials are encrypted at rest. <Link href={isSqlite ? "/docs/data/sqlite" : "/docs/data/postgres"} target="_blank" rel="noopener noreferrer" className="font-bold text-on-surface underline underline-offset-2">Setup guide</Link>
       </p>
     </>
   );

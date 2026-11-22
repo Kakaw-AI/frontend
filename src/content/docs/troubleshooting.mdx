@@ -1,0 +1,50 @@
+---
+title: Troubleshooting
+description: What to do when an answer is wrong, slow, stuck or fails.
+---
+
+## The answer is wrong
+
+1. Open **Show SQL** and read what was counted, filtered and grouped.
+2. Say what's off in a follow-up: *"count each customer once"*, *"use the order date, not the ship date"*, *"only paid orders"*.
+3. Use the exact names from your data when you know them.
+4. Try **Think** on, or a stronger model. See [Thinking](/docs/models/thinking).
+
+## *The query completed, but no matching rows were found*
+
+The query ran but nothing matched. Check the filters in **Show SQL**: a misspelled value, a date range with no data, or a column holding a different value than you expected. Kakaw already fixes values that differ only in case or spacing.
+
+## It's slow
+
+- Each step shows above the answer, with the time so far. A long *Generating read-only SQL* means the model is slow or reasoning at length: turn **Think** off.
+- [Local models](/docs/models/local-models) can take minutes per answer.
+- A web search adds several seconds per round.
+
+## The answer is stuck
+
+Choose **Stop**, then **Retry**. If the server restarted while it was answering, the answer is marked interrupted and offers **Retry** on its own.
+
+## The answer failed
+
+The error says why. Common ones:
+
+| Error | What to do |
+| --- | --- |
+| The model connection is unavailable or turned off | Turn it back on in **Models**, or switch the chat to another model |
+| The provider rejected the key | The key was revoked or ran out of credit. Add the model again with a new key |
+| Timed out | The model took too long. Retry, turn **Think** off, or use a faster model |
+| *The model returned no summary for this result* | The provider sent back an empty reply, often a content filter. The table and sources are still there |
+
+## The model list doesn't load
+
+The model field turns into a text box with the reason. Usually the key is wrong or lacks permission to list models, or a local server's address isn't reachable from the internet. You can still type the model id.
+
+## The database won't connect or sync
+
+- *Private and local addresses won't work*: Kakaw connects from its servers. Use a public address. See [PostgreSQL](/docs/data/postgres).
+- Wrong password or database name: copy the URL from your provider again.
+- Sync failed: the sync page shows the reason and **Try again**.
+
+## Still stuck
+
+Send the chat link and what you expected to the Kakaw team; each answer keeps a record of its steps that helps find the cause.

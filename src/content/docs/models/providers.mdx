@@ -1,0 +1,50 @@
+---
+title: Providers and models
+description: Connect OpenAI-compatible, Google or Anthropic models, reuse saved keys, and pick a model from the provider's list.
+---
+
+Kakaw uses your own model account: you pay your provider directly, and you choose the model.
+
+## Providers
+
+| Choice | Services | What you need |
+| --- | --- | --- |
+| **OpenAI-compatible** | OpenAI (ChatGPT), OpenRouter, Ollama, LM Studio, or any endpoint that speaks the OpenAI API | An API key; for Ollama and LM Studio a public address instead. See [Local models](/docs/models/local-models). |
+| **Google** | Gemini, through Google AI Studio | An AI Studio API key |
+| **Anthropic** | Claude | An Anthropic API key |
+
+For **OpenAI**, a custom **Base URL** points the connection at any other OpenAI-compatible endpoint.
+
+## Add a model
+
+1. Open the model picker on the new-chat screen and choose **Add a model**, or use **Models** in the sidebar.
+2. Pick the provider. For OpenAI-compatible, pick the service as well.
+3. Paste the API key.
+4. Choose the model. As soon as Kakaw has a key, it loads the models your account can use from the provider and shows them in a list, newest first. Choose **Other model id…** to type one that isn't listed.
+5. Choose **Test and save**. Kakaw checks the key with the provider before saving it.
+
+If the list can't be loaded (a wrong key, or the provider is down), the field becomes a text box and shows why. You can still type the model id.
+
+### Suggested defaults
+
+When the list includes it, Kakaw preselects a balanced model for each provider: fast enough for the several calls a question takes, strong enough to write good SQL.
+
+| Provider | Default |
+| --- | --- |
+| OpenAI | `gpt-6.2-sol` |
+| OpenRouter | `openai/gpt-6.2-sol` |
+| Google | `gemini-4-hydrogen` |
+| Anthropic | `claude-sonnet-5-5` |
+| Ollama | `gpt-oss:20b` |
+
+## Reuse a saved key
+
+When you add another model from a provider you already use, the key field offers **Saved key from …** with the connection's name and the last four characters of its key. Pick it to reuse that key, or choose **Enter a new key**. The key itself never comes back to your browser: Kakaw copies it on the server.
+
+## One chat, one model
+
+Each chat uses the model it started with. You can switch the model of a chat from the selector above the message box; the next answer uses the new one.
+
+## Turn a model off or remove it
+
+From **Models**, turn a connection off to hide it from the picker, or delete it. Deleting removes the stored key.

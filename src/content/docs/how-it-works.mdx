@@ -1,0 +1,34 @@
+---
+title: How it works
+description: What happens between your question and the answer.
+---
+
+Every question goes through the same steps. You can watch them as they happen: each step appears above the answer while Kakaw works.
+
+## 1. Understand the question
+
+A follow-up like *"what about 2025?"* is rewritten into a complete question using the conversation, so *"what about 2025?"* after a question about orders becomes *"how many orders were there in 2025?"*. A greeting gets a reply without touching the database.
+
+## 2. Write the SQL
+
+The model writes one read-only `SELECT` statement. It sees your schema (tables, columns, keys, sample values) and, when there are any, questions this database has answered correctly before together with the SQL that worked.
+
+If the question can be read more than one way (*"best customers"* by revenue or by number of orders?), Kakaw asks which you mean instead of guessing, with the choices as buttons.
+
+## 3. Run and repair
+
+The query runs read-only, with a 30-second limit and up to 200 rows. If it fails, the error goes back to the model and it writes a corrected query. A filter that names a value your data doesn't hold, such as `'cancelled'` for `'Cancelled'`, is fixed without another model call.
+
+## 4. Review the result
+
+A second, quick model call checks that the result answers the question: the right table, filters, time range and grouping. A clear mistake sends the query back for one more rewrite.
+
+The review also decides whether the data is enough on its own. When the question needs facts from outside your database, or newer than it, Kakaw [searches the web](/docs/web-search) as well.
+
+## 5. Answer
+
+The model writes a short summary of the result. At the same time Kakaw plans a chart when the data suits one, and suggests follow-up questions. The table, the chart and the SQL appear with the answer.
+
+## What Kakaw remembers
+
+When an answer is completed, the question and the SQL that answered it are kept for that database. The next similar question starts from that SQL, which makes answers faster and more consistent. This memory belongs to one database of one user, and it stops applying when the database's structure changes.

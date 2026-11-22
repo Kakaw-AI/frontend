@@ -1,0 +1,42 @@
+---
+title: PostgreSQL
+description: Connect a PostgreSQL database with its connection URL.
+---
+
+## What you need
+
+A connection URL:
+
+```txt
+postgresql://user:password@host:5432/database
+```
+
+Copy it from your provider's dashboard: Supabase, Neon, Railway, RDS and similar all show one. Add any options your provider requires at the end, such as `?sslmode=require`.
+
+The database must accept connections from the internet. Kakaw connects from its servers, so `localhost`, `127.0.0.1` and private network addresses (`10.x`, `192.168.x`, `172.16–31.x`) are refused.
+
+## Use a read-only user
+
+Kakaw only ever runs read-only queries: each one runs in a read-only transaction, so it cannot change your data even if the SQL tried to. A read-only database user is still the safest choice, and a read replica keeps the questions off your production load.
+
+```sql
+CREATE ROLE kakaw_reader LOGIN PASSWORD 'choose-a-password';
+GRANT CONNECT ON DATABASE your_db TO kakaw_reader;
+GRANT USAGE ON SCHEMA public TO kakaw_reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO kakaw_reader;
+```
+
+Only grant the tables you want Kakaw to answer about. It cannot see what the user cannot read.
+
+## Connect
+
+1. Choose **PostgreSQL** and paste the URL.
+2. Give it a name if you like, such as *Analytics replica*.
+3. Choose **Test and connect**. Kakaw connects, then reads the schema. See [Schema sync](/docs/data/schema-sync).
+
+The URL is stored encrypted. See [Privacy and security](/docs/privacy-and-security).
+
+## Not supported yet
+
+MySQL and Snowflake appear in the picker as *Coming soon*. Only PostgreSQL and SQLite work today.

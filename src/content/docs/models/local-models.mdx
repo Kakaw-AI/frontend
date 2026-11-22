@@ -1,0 +1,35 @@
+---
+title: Local models
+description: Use your own Ollama or LM Studio server.
+---
+
+Kakaw can use a model you run yourself with Ollama or LM Studio, through their OpenAI-compatible API.
+
+## The address must be public
+
+Kakaw calls your model from its own servers, not from your browser. `localhost`, `127.0.0.1` and private network addresses are refused. Expose the server through a tunnel or a reverse proxy with HTTPS, and use that address with `/v1` at the end:
+
+```txt
+https://ollama.example.com/v1
+https://lmstudio.example.com/v1
+```
+
+An API key is optional. Add one if your proxy checks it.
+
+## Pick the model
+
+Once the address is set, Kakaw lists the models the server has, so you can pick one. With LM Studio, load the model first so it appears.
+
+## Speed
+
+Local models are often much slower than hosted ones. Kakaw gives each call to a local model up to 10 minutes, against 90 seconds for hosted models, and the steps above the answer show where it is. A single question makes several model calls, so a slow model can take several minutes per answer.
+
+To speed it up:
+
+- Turn **Think** off. See [Thinking](/docs/models/thinking).
+- Use a smaller model, or a machine with a GPU.
+- Ask simpler questions; clear, specific questions need fewer repairs.
+
+## Quality
+
+Writing correct SQL across many tables is hard for small models. If answers are often wrong, try a larger model or a hosted one for the same database and compare.
