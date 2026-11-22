@@ -17,7 +17,7 @@ Nobody has to switch it on. Kakaw searches when:
 
 1. It writes a short search query, about one subject, aimed at where that kind of fact is published: the specialist sites of your data's field rather than general platforms. A search that comes back empty is retried once.
 2. It reads the top pages. Pages that are only a cookie, login or age check are skipped; their search title and snippet are used instead.
-3. If what it found doesn't answer the question, it writes better queries and searches again, up to three rounds. A question about several people or items gets one query per subject still missing, searched side by side.
+3. If what it found doesn't answer the question, it writes better queries and searches again, up to 20 rounds. It stops as soon as the sources answer the question, or after three rounds in a row that find nothing. A question about several people or items gets one query per subject still missing, searched side by side.
 4. It writes the answer from your data and the pages together, and cites every fact taken from the web as `[1]`, `[2]`.
 
 You can follow each round in the steps above the answer. Answers that used the web show **Used Web Search** next to the token count and a numbered **Web sources** list.
@@ -30,7 +30,7 @@ Web pages are treated as reference material: instructions written inside a page 
 
 ## Limits
 
-- Searching adds time: each round takes several seconds, and a question can take up to three rounds.
+- Searching adds time: each round takes several seconds, and a hard question can take many rounds.
 - Search results change; the same question can find different pages on different days.
 - Some sites can't be read from Kakaw's servers. Their search snippets are used instead, which may be too short to answer.
 - Answers that used the web are not remembered for reuse, so asking again searches again.
