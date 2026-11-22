@@ -395,12 +395,3 @@ export function updateConversationRuntimeMutationOptions() {
     }) => updateConversationRuntime(conversationId, input),
   });
 }
-
-export function describeConversationRuntime(conversation: ConversationSummary) {
-  // databaseSource.label is already resolved (includes the connection name).
-  const sourceLabel = conversation.databaseSource.label;
-
-  return `${sourceLabel} · ${
-    conversation.runtime.effectiveModel ?? "Unavailable LLM runtime"
-  }`;
-}

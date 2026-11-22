@@ -1,11 +1,11 @@
 "use client";
 
-import { Database, LogOut, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ChevronRight, Database, LogOut, Plus, Sparkles, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { formatConversationTime } from "@/components/chat/chat-formatting";
-import { describeConversationRuntime, type ConversationSummary } from "@/lib/queries/conversations";
+import type { ConversationSummary } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
 
 const navItem =
@@ -73,43 +73,65 @@ export function ChatSidebar({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <p className="mb-1 px-2 text-[11px] font-medium text-on-surface-variant">Recent</p>
 
-        <div className="space-y-px">
-          {conversations?.map((conversation) => (
-            <div
-              key={conversation.id}
-              className={
-                activeConversationId === conversation.id
-                  ? "group relative rounded-md bg-accent"
-                  : "group relative rounded-md hover:bg-accent/60"
-              }
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  onConversationClick(conversation.id);
-                  closeSidebar();
-                }}
-                className="w-full rounded-md px-2 py-1.5 pr-8 text-left"
-              >
-                <p className="truncate text-[13px] font-medium text-on-surface">{conversation.title}</p>
-                <p className="truncate text-[11px] text-on-surface-variant">
-                  {describeConversationRuntime(conversation)} · {formatConversationTime(conversation.lastMessageAt)}
-                </p>
-              </button>
-              <button
-                type="button"
-                aria-label="Delete conversation"
-                title="Delete conversation"
-                disabled={deletingConversationId === conversation.id}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDeleteConversation(conversation.id);
-                }}
-                className="absolute right-1 top-1.5 rounded-md p-1.5 text-on-surface-variant opacity-0 transition-opacity hover:bg-secondary-container hover:text-secondary focus-visible:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Trash2 size={13} />
-              </button>
-            </div>
+        <div className="space-y-1">
+          {groupByDatabase(conversations).map((group) => (
+            // Native disclosure: collapses with no state of its own. Open by default.
+            <details key={group.id} open className="group/db">
+              <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-md px-2 py-1 text-[12px] font-semibold text-on-surface transition-colors hover:bg-accent/60 [&::-webkit-details-marker]:hidden">
+                <ChevronRight
+                  size={13}
+                  className="shrink-0 text-on-surface-variant transition-transform group-open/db:rotate-90"
+                />
+                <Database size={12} className="shrink-0 text-on-surface-variant" />
+                <span className="truncate">{group.label}</span>
+                <span className="ml-auto shrink-0 font-mono text-[10px] font-medium text-on-surface-variant">
+                  {group.conversations.length}
+                </span>
+              </summary>
+
+              <div className="mt-px space-y-px pl-3">
+                {group.conversations.map((conversation) => (
+                  <div
+                    key={conversation.id}
+                    className={
+                      activeConversationId === conversation.id
+                        ? "group relative rounded-md bg-accent"
+                        : "group relative rounded-md hover:bg-accent/60"
+                    }
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onConversationClick(conversation.id);
+                        closeSidebar();
+                      }}
+                      className="w-full rounded-md px-2 py-1.5 pr-8 text-left"
+                    >
+                      <p dir="auto" className="truncate text-[13px] font-medium text-on-surface">
+                        {conversation.title}
+                      </p>
+                      <p className="truncate text-[11px] text-on-surface-variant">
+                        {conversation.runtime.effectiveModel ?? "Unavailable LLM runtime"} ·{" "}
+                        {formatConversationTime(conversation.lastMessageAt)}
+                      </p>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Delete conversation"
+                      title="Delete conversation"
+                      disabled={deletingConversationId === conversation.id}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onDeleteConversation(conversation.id);
+                      }}
+                      className="absolute right-1 top-1.5 rounded-md p-1.5 text-on-surface-variant opacity-0 transition-opacity hover:bg-secondary-container hover:text-secondary focus-visible:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </details>
           ))}
 
           {!conversations?.length ? (
@@ -167,6 +189,21 @@ export function ChatSidebar({
       ) : null}
     </aside>
   );
+}
+
+/** One group per database, in the order its most recent chat appears. */
+function groupByDatabase(conversations: ConversationSummary[] | undefined) {
+  const groups = new Map<string, { id: string; label: string; conversations: ConversationSummary[] }>();
+  for (const conversation of conversations ?? []) {
+    const id = conversation.databaseSourceId;
+    let group = groups.get(id);
+    if (!group) {
+      group = { id, label: conversation.databaseSource.label, conversations: [] };
+      groups.set(id, group);
+    }
+    group.conversations.push(conversation);
+  }
+  return [...groups.values()];
 }
 
 function getInitials(name?: string | null, email?: string | null): string {
