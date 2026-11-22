@@ -1,5 +1,36 @@
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
+
+/* Arabic. The Latin faces have no Arabic letters, and next/font puts an Arial
+   fallback behind each of them (also with adjustFontFallback off in this build),
+   so Arabic came out in Arial's thin, serif-like Naskh. This family covers only
+   Arabic code points and goes first in every stack: Arabic letters use it,
+   everything else falls straight through to the Latin face. Files: the Arabic
+   subset of IBM Plex Sans Arabic (SIL OFL), the family of the mono labels. */
+@font-face {
+  font-family: "Kakaw Arabic";
+  src: url("/fonts/IBMPlexSansArabic-arabic-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Kakaw Arabic";
+  src: url("/fonts/IBMPlexSansArabic-arabic-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Kakaw Arabic";
+  src: url("/fonts/IBMPlexSansArabic-arabic-700.woff2") format("woff2");
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFF;
+}
 /* Docs (Fumadocs). The shadcn preset reads --background, --primary, --border
    and the rest below, so the docs wear the Kakaw palette. */
 @import "fumadocs-ui/css/shadcn.css";
@@ -9,8 +40,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-body-src), var(--font-arabic), system-ui, sans-serif;
-  --font-mono: var(--font-mono-src), var(--font-arabic), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: "Kakaw Arabic", var(--font-body-src), system-ui, sans-serif;
+  --font-mono: "Kakaw Arabic", var(--font-mono-src), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-heading: var(--font-headline);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -49,9 +80,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   /* Font families via next/font CSS vars */
-  --font-headline: var(--font-display), var(--font-arabic), system-ui, sans-serif;
-  --font-body: var(--font-body-src), var(--font-arabic), system-ui, sans-serif;
-  --font-label: var(--font-body-src), var(--font-arabic), system-ui, sans-serif;
+  --font-headline: "Kakaw Arabic", var(--font-display), system-ui, sans-serif;
+  --font-body: "Kakaw Arabic", var(--font-body-src), system-ui, sans-serif;
+  --font-label: "Kakaw Arabic", var(--font-body-src), system-ui, sans-serif;
 }
 
 /* Kakaw brand (D:/Coding/Kakaw-AI/brand): cream, cocoa and one pod-gold accent.
