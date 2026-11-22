@@ -3,3 +3,13 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+## Docs are part of every change
+
+Kakaw's user docs (`frontend/src/content/docs`, served at `/docs` and to AI agents as Markdown) and the architecture notes (org `.github` repo, `docs/`) must match the code. After any code change, before you finish or commit, follow the `docs-sync` skill (`.claude/skills/docs-sync/SKILL.md`):
+
+- Check the pages that `docs-map.json` lists for the paths you changed, and search the docs for anything you renamed or re-valued.
+- Update what is now wrong or missing, or decide that nothing a reader sees changed.
+- Add `Docs: updated <pages>` or `Docs: none, <reason>` to the commit message.
+
+A Stop hook (`scripts/docs-check.mjs --hook`) sends you back once when documented code changed without a docs edit. CI warns on every commit that touches documented code without a `Docs:` line.

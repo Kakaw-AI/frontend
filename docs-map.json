@@ -1,0 +1,31 @@
+{
+  "$comment": "Which docs pages describe which code. Used by scripts/docs-check.mjs and the docs-sync skill. Add a rule when you add a feature a reader can see.",
+  "docsRepo": ".",
+  "docsPath": "src/content/docs",
+  "rules": [
+    {
+      "paths": ["src/components/onboarding/**", "src/app/onboarding/**"],
+      "docs": ["quickstart.mdx", "data/postgres.mdx", "data/sqlite.mdx", "data/schema-sync.mdx"]
+    },
+    {
+      "paths": ["src/components/chat/picker/**", "src/lib/queries/llm-connections.ts", "src/components/chat/LlmProviderLogo.tsx"],
+      "docs": ["models/providers.mdx", "models/local-models.mdx"]
+    },
+    {
+      "paths": ["src/components/chat/composer/**"],
+      "docs": ["chat/asking-questions.mdx", "chat/controls.mdx", "models/thinking.mdx"]
+    },
+    {
+      "paths": ["src/components/chat/MessageCard.tsx", "src/components/chat/ArtifactView.tsx", "src/components/chat/TableArtifact.tsx", "src/components/chat/D3ChartArtifact.tsx", "src/components/chat/SqlArtifactView.tsx", "src/components/chat/MarkdownMessage.tsx"],
+      "docs": ["chat/results.mdx", "web-search.mdx"]
+    },
+    {
+      "paths": ["src/components/chat/layout/**", "src/components/chat/ChatPageClient.tsx", "src/components/chat/chat-stream-state.ts"],
+      "docs": ["chat/controls.mdx", "chat/asking-questions.mdx"]
+    },
+    {
+      "paths": ["src/app/llms.txt/**", "src/app/privacy/**", "src/app/terms/**"],
+      "docs": ["privacy-and-security.mdx", "index.mdx"]
+    }
+  ]
+}
