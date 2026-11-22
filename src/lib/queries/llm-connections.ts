@@ -53,48 +53,52 @@ export type SaveLlmConnectionInput = {
   baseUrl?: string;
 };
 
-export const LLM_PROVIDER_OPTIONS: Array<{
-  value: LlmProvider;
+export type LlmProviderFamily = "openai" | "google" | "anthropic";
+
+/** OpenRouter, Ollama and LM Studio all speak the OpenAI API. */
+export function providerFamily(provider: LlmProvider): LlmProviderFamily {
+  return provider === "google" || provider === "anthropic" ? provider : "openai";
+}
+
+/** The three choices in the "add a model" picker. */
+export const LLM_PROVIDER_FAMILIES: Array<{
+  value: LlmProviderFamily;
   label: string;
   helper: string;
-  defaultModel: string;
 }> = [
   {
     value: "openai",
-    label: "OpenAI",
-    helper: "Bring your OpenAI API key and default model. Supports any OpenAI-compatible endpoint via custom base URL.",
-    defaultModel: "gpt-4o",
-  },
-  {
-    value: "anthropic",
-    label: "Anthropic",
-    helper: "Bring your Anthropic API key and Claude model.",
-    defaultModel: "claude-3-7-sonnet-latest",
-  },
-  {
-    value: "openrouter",
-    label: "OpenRouter",
-    helper: "Use your OpenRouter key with any model slug you prefer.",
-    defaultModel: "openai/gpt-4o-mini",
+    label: "OpenAI-compatible",
+    helper: "ChatGPT, OpenRouter, Ollama, LM Studio, or any endpoint that speaks the OpenAI API.",
   },
   {
     value: "google",
     label: "Google",
-    helper: "Connect Gemini through your Google AI Studio key.",
-    defaultModel: "gemini-2.5-pro",
+    helper: "Gemini through your Google AI Studio key.",
   },
   {
-    value: "ollama",
-    label: "Ollama",
-    helper: "Connect to a local or remote Ollama instance.",
-    defaultModel: "llama3.1",
+    value: "anthropic",
+    label: "Anthropic",
+    helper: "Claude through your Anthropic API key.",
   },
-  {
-    value: "lm-studio",
-    label: "LM Studio",
-    helper: "Connect to a local or remote LM Studio instance.",
-    defaultModel: "local-model",
-  },
+];
+
+/**
+ * Each stored provider. The agent treats them differently (Ollama and LM Studio
+ * get local-model timeouts, OpenRouter its own base URL), so the picker still
+ * records which OpenAI-compatible service it is.
+ */
+export const LLM_PROVIDER_OPTIONS: Array<{
+  value: LlmProvider;
+  label: string;
+  defaultModel: string;
+}> = [
+  { value: "openai", label: "OpenAI", defaultModel: "gpt-4o" },
+  { value: "openrouter", label: "OpenRouter", defaultModel: "openai/gpt-4o-mini" },
+  { value: "ollama", label: "Ollama", defaultModel: "llama3.1" },
+  { value: "lm-studio", label: "LM Studio", defaultModel: "local-model" },
+  { value: "google", label: "Google", defaultModel: "gemini-2.5-pro" },
+  { value: "anthropic", label: "Anthropic", defaultModel: "claude-3-7-sonnet-latest" },
 ];
 
 export function toLlmConnection(

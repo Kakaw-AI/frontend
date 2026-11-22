@@ -1,7 +1,13 @@
 "use client";
 
 import { LlmProviderLogo } from "@/components/chat/LlmProviderLogo";
-import { LLM_PROVIDER_OPTIONS, type LlmProvider, type SaveLlmConnectionInput } from "@/lib/queries/llm-connections";
+import {
+  LLM_PROVIDER_FAMILIES,
+  LLM_PROVIDER_OPTIONS,
+  providerFamily,
+  type LlmProvider,
+  type SaveLlmConnectionInput,
+} from "@/lib/queries/llm-connections";
 import { AlertCircle, LoaderCircle, Plus } from "lucide-react";
 import { useId, useState } from "react";
 
@@ -29,6 +35,15 @@ export function AddLlmConnectionForm({
   const [baseUrl, setBaseUrl] = useState("");
 
   const providerOption = LLM_PROVIDER_OPTIONS.find((o) => o.value === provider) ?? LLM_PROVIDER_OPTIONS[0];
+  const family = providerFamily(provider);
+  const openAiServices = LLM_PROVIDER_OPTIONS.filter((o) => providerFamily(o.value) === "openai");
+
+  function choose(next: LlmProvider) {
+    setProvider(next);
+    setDefaultModel(LLM_PROVIDER_OPTIONS.find((o) => o.value === next)?.defaultModel ?? "");
+    setApiKey("");
+    setBaseUrl("");
+  }
   const needsKey = !KEYLESS.includes(provider);
   const baseUrlPlaceholder = BASE_URL_PLACEHOLDERS[provider];
 
@@ -54,23 +69,19 @@ export function AddLlmConnectionForm({
     <form onSubmit={handleSubmit} className="pod-card space-y-5 rounded-2xl p-4">
       <fieldset>
         <legend className="text-sm font-bold text-on-surface">Provider</legend>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
-          {LLM_PROVIDER_OPTIONS.map((option) => (
+        <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          {LLM_PROVIDER_FAMILIES.map((option) => (
             <label
               key={option.value}
-              className="flex cursor-pointer items-start gap-3 rounded-2xl border border-primary/20 p-3 transition-colors hover:border-border has-[:checked]:border-border has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-3 transition-colors hover:bg-accent/60 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
             >
               <input
                 type="radio"
                 name={`${id}-provider`}
                 value={option.value}
-                checked={provider === option.value}
-                onChange={() => {
-                  setProvider(option.value);
-                  setDefaultModel(option.defaultModel);
-                  setApiKey("");
-                  setBaseUrl("");
-                }}
+                checked={family === option.value}
+                // A family starts on its first service: OpenAI for the OpenAI-compatible tile.
+                onChange={() => choose(option.value)}
                 className="sr-only"
               />
               <LlmProviderLogo provider={option.value} className="h-8 w-8 shrink-0" />
@@ -82,6 +93,30 @@ export function AddLlmConnectionForm({
           ))}
         </div>
       </fieldset>
+
+      {family === "openai" ? (
+        <fieldset>
+          <legend className="text-sm font-bold text-on-surface">Service</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {openAiServices.map((option) => (
+              <label
+                key={option.value}
+                className="cursor-pointer rounded-[10px] border border-border px-3 py-1.5 text-sm font-medium text-on-surface transition-colors hover:bg-accent/60 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+              >
+                <input
+                  type="radio"
+                  name={`${id}-service`}
+                  value={option.value}
+                  checked={provider === option.value}
+                  onChange={() => choose(option.value)}
+                  className="sr-only"
+                />
+                {option.value === "openai" ? "OpenAI (ChatGPT)" : option.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
