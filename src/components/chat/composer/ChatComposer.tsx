@@ -102,7 +102,7 @@ export function ChatComposer({
         }}
         disabled={!isEnabled || isComposerLocked}
         aria-label="Message"
-        className="w-full resize-none border-none bg-transparent px-3.5 pt-3 pb-1 text-sm leading-6 placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
+        className="w-full resize-none border-none bg-transparent px-3.5 pt-3 pb-1 text-base leading-6 sm:text-sm placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
         style={{ minHeight: "36px", maxHeight: "200px", overflowY: "auto" }}
         placeholder={placeholder}
       />

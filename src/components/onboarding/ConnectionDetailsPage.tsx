@@ -162,7 +162,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
               autoCapitalize="none"
               spellCheck={false}
               aria-describedby="connection-string-help"
-              className="pod-input mt-2 resize-y font-mono text-sm"
+              className="pod-input mt-2 resize-y font-mono text-base sm:text-sm"
             />
             <p id="connection-string-help" className="mt-2 text-xs text-on-surface-variant">
               Copy it from your provider&apos;s dashboard. The database must accept connections from the internet;
