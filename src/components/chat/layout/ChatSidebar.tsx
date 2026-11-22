@@ -3,7 +3,9 @@
 import { ChevronRight, Database, LogOut, Plus, Sparkles, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Logo } from "@/components/Logo";
+import { ProfileDialog } from "@/components/chat/layout/ProfileDialog";
 import { formatConversationTime } from "@/components/chat/chat-formatting";
 import type { ConversationSummary } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
@@ -37,6 +39,7 @@ export function ChatSidebar({
   const isSigningOut = useChatStore((s) => s.isSigningOut);
   const isSidebarOpen = useChatStore((s) => s.isSidebarOpen);
   const closeSidebar = useChatStore((s) => s.closeSidebar);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
     // Mobile: off-canvas drawer toggled by the header hamburger. Desktop (lg+):
@@ -141,50 +144,58 @@ export function ChatSidebar({
       </div>
 
       {user ? (
-        <div className="space-y-1 border-t border-border pt-3">
-          <div className="flex items-center gap-2 px-1">
-            {user.image ? (
-              // GitHub/Google avatar hosts are whitelisted in next.config images.
-              <Image
-                src={user.image}
-                alt={user.name ?? "User avatar"}
-                width={28}
-                height={28}
-                className="h-7 w-7 shrink-0 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-on-surface">
-                {getInitials(user.name, user.email)}
+        <div className="border-t border-border pt-3">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setIsProfileOpen(true)}
+              aria-label="Open profile"
+              title="Profile and usage"
+              className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-1 py-1 text-left transition-colors hover:bg-accent/60"
+            >
+              {user.image ? (
+                // GitHub/Google avatar hosts are whitelisted in next.config images.
+                <Image
+                  src={user.image}
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-on-surface">
+                  {getInitials(user.name, user.email)}
+                </div>
+              )}
+              <div className="min-w-0 leading-tight">
+                {user.name ? (
+                  <p className="truncate text-[13px] font-medium text-on-surface">{user.name}</p>
+                ) : null}
+                {user.email ? (
+                  <p className="truncate text-[11px] text-on-surface-variant">{user.email}</p>
+                ) : null}
               </div>
-            )}
-            <div className="min-w-0 leading-tight">
-              {user.name ? (
-                <p className="truncate text-[13px] font-medium text-on-surface">{user.name}</p>
-              ) : null}
-              {user.email ? (
-                <p className="truncate text-[11px] text-on-surface-variant">{user.email}</p>
-              ) : null}
-            </div>
+            </button>
             <button
               type="button"
               onClick={onLogout}
               disabled={isSigningOut}
               aria-label={isSigningOut ? "Signing out" : "Log out"}
               title="Log out"
-              className="ml-auto shrink-0 rounded-md p-1.5 text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 rounded-md p-1.5 text-on-surface-variant transition-colors hover:bg-accent/60 hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-50"
             >
               <LogOut size={14} />
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={onDeleteAccount}
-            disabled={isSigningOut}
-            className="w-full px-1 text-left text-[11px] text-on-surface-variant underline-offset-2 transition-colors hover:text-secondary hover:underline disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Delete account
-          </button>
+          <ProfileDialog
+            open={isProfileOpen}
+            user={user}
+            initials={getInitials(user.name, user.email)}
+            onClose={() => setIsProfileOpen(false)}
+            onLogout={onLogout}
+            onDeleteAccount={onDeleteAccount}
+          />
         </div>
       ) : null}
     </aside>
