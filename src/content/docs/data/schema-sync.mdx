@@ -11,8 +11,9 @@ Before the first question, Kakaw reads the structure of your database. Every ans
 - Columns, their types and whether they can be empty
 - Primary keys, foreign keys and indexes
 - A few sample rows per table and sample values per column
+- Every value of a short text column, such as category names, statuses or countries: up to 50 distinct values of 60 characters or less, in tables of up to 200,000 rows. Columns whose name suggests a secret (password, token, key and similar) are skipped.
 
-From these Kakaw builds short notes about each table and how the tables relate, which help the model pick the right tables and the exact values stored in a column. It doesn't copy your tables: answers come from queries that run on your database when you ask, and their results are kept with the chat. See [Privacy and security](/docs/privacy-and-security).
+From these Kakaw builds short notes about each table and how the tables relate, which help the model pick the right tables and the exact values stored in a column. When you name a value, such as *"Home Decor"*, the model can match it to the stored value instead of guessing. It doesn't copy your tables: answers come from queries that run on your database when you ask, and their results are kept with the chat. See [Privacy and security](/docs/privacy-and-security).
 
 ## Status
 

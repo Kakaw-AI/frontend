@@ -8,7 +8,7 @@ description: What Kakaw stores, what it sends where, and the limits on what it c
 | What | Kept | Protected by |
 | --- | --- | --- |
 | API keys and database connection URLs | Until you delete the model or database | AES-256-GCM encryption. Only the last four characters of a key are ever shown, and no key is sent back to your browser. |
-| Your schema | Until you delete the database | Tables, columns, keys, indexes, row counts, a few sample rows per table and sample values per column |
+| Your schema | Until you delete the database | Tables, columns, keys, indexes, row counts, a few sample rows per table, sample values per column, and every value of short text columns such as categories or statuses (up to 50 per column; secret-named columns are skipped) |
 | An uploaded SQLite file | Until you delete the database | Stored whole, so queries can run on it |
 | Your chats | Until you delete the chat | Questions, answers, the SQL, the result rows (up to 200 per answer) and charts |
 | Remembered questions | Until you delete the database | Questions this database answered and the SQL that worked, used to answer similar questions |
