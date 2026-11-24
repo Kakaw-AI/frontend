@@ -652,3 +652,28 @@ export function textDirection(text: string): "rtl" | "ltr" {
   const latin = text.match(/[A-Za-z]/g)?.length ?? 0;
   return arabic > 0 && arabic >= (arabic + latin) * 0.3 ? "rtl" : "ltr";
 }
+
+export type InlineToken =
+  | { type: "text" | "strong" | "em" | "code"; text: string }
+  | { type: "link"; text: string; href: string };
+
+// Order matters: code first so asterisks inside it stay literal, bold before
+// italic, and italic needs a non-space just inside each asterisk so "5 * 3"
+// stays plain. Links are http(s) only.
+const INLINE = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|\*(?!\s)[^*\n]+?(?<!\s)\*)/g;
+
+/** Splits one line of model text into the inline Markdown the chat renders. */
+export function parseInlineMarkdown(text: string): InlineToken[] {
+  // split() with one capture group puts the matches at the odd indexes.
+  return text.split(INLINE).flatMap((part, i): InlineToken[] => {
+    if (!part) return [];
+    if (i % 2 === 0) return [{ type: "text", text: part }];
+    if (part.startsWith("`")) return [{ type: "code", text: part.slice(1, -1) }];
+    if (part.startsWith("**")) return [{ type: "strong", text: part.slice(2, -2) }];
+    if (part.startsWith("[")) {
+      const [, label, href] = /^\[([^\]]+)\]\((.+)\)$/.exec(part)!;
+      return [{ type: "link", text: label, href }];
+    }
+    return [{ type: "em", text: part.slice(1, -1) }];
+  });
+}

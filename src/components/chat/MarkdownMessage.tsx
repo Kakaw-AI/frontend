@@ -1,27 +1,39 @@
 import { memo, useMemo } from "react";
-import { parseMarkdownBlocks, textDirection } from "@/components/chat/chat-formatting";
+import { parseInlineMarkdown, parseMarkdownBlocks, textDirection } from "@/components/chat/chat-formatting";
 
 function renderInlineMarkdown(text: string, keyPrefix: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-
-  return parts.filter(Boolean).map((part, index) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={`${keyPrefix}-strong-${index}`}>{part.slice(2, -2)}</strong>;
+  return parseInlineMarkdown(text).map((token, index) => {
+    const key = `${keyPrefix}-${index}`;
+    switch (token.type) {
+      case "strong":
+        return <strong key={key}>{token.text}</strong>;
+      case "em":
+        return <em key={key}>{token.text}</em>;
+      case "code":
+        return (
+          <code
+            key={key}
+            dir="ltr"
+            className="rounded bg-surface-container-lowest px-1.5 py-0.5 font-mono text-[0.92em]"
+          >
+            {token.text}
+          </code>
+        );
+      case "link":
+        return (
+          <a
+            key={key}
+            href={token.href}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="underline underline-offset-2 break-words"
+          >
+            {token.text}
+          </a>
+        );
+      default:
+        return <span key={key}>{token.text}</span>;
     }
-
-    if (part.startsWith("`") && part.endsWith("`")) {
-      return (
-        <code
-          key={`${keyPrefix}-code-${index}`}
-          dir="ltr"
-          className="rounded bg-surface-container-lowest px-1.5 py-0.5 font-mono text-[0.92em]"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-
-    return <span key={`${keyPrefix}-text-${index}`}>{part}</span>;
   });
 }
 
