@@ -17,12 +17,15 @@ export const MessageCard = memo(function MessageCard({
   message,
   isLastAssistantMessage,
   isBusy,
+  collapsedTableIds = "",
   onSuggestionClick,
   onRetry,
 }: {
   message: ConversationMessage;
   isLastAssistantMessage: boolean;
   isBusy: boolean;
+  /** Comma-separated ids of tables that repeat an earlier answer's rows. */
+  collapsedTableIds?: string;
   onSuggestionClick: (text: string) => void;
   onRetry: (messageId: string) => void;
 }) {
@@ -102,7 +105,11 @@ export const MessageCard = memo(function MessageCard({
           </div>
         ) : null}
         {visibleArtifacts.map((artifact) => (
-          <ArtifactView key={artifact.id} artifact={artifact} />
+          <ArtifactView
+            key={artifact.id}
+            artifact={artifact}
+            collapsed={collapsedTableIds.split(",").includes(artifact.id)}
+          />
         ))}
       </div>
 

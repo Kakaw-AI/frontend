@@ -23,8 +23,11 @@ const D3ChartArtifact = dynamic(
 
 export function ArtifactView({
   artifact,
+  collapsed = false,
 }: {
   artifact: ConversationMessage["artifacts"][number];
+  /** A table that repeats an earlier answer's rows starts folded. */
+  collapsed?: boolean;
 }) {
   if (artifact.type === "SQL") {
     return <SqlArtifactView artifact={artifact} />;
@@ -39,7 +42,7 @@ export function ArtifactView({
     const columns = payload.columns ?? [];
     const allRows = payload.rows ?? [];
 
-    return <TableArtifact columns={columns} allRows={allRows} rowCount={payload.rowCount} />;
+    return <TableArtifact columns={columns} allRows={allRows} rowCount={payload.rowCount} startCollapsed={collapsed} />;
   }
 
   if (artifact.type === "ERROR") {

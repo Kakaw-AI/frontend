@@ -677,3 +677,33 @@ export function parseInlineMarkdown(text: string): InlineToken[] {
     return [{ type: "em", text: part.slice(1, -1) }];
   });
 }
+
+/** A table's values in column order, so a renamed column still matches. */
+function tableSignature(payload: unknown): string | null {
+  const { columns, rows } = (payload ?? {}) as { columns?: string[]; rows?: Array<Record<string, unknown>> };
+  if (!columns?.length || !rows?.length) return null;
+  return JSON.stringify(rows.map((row) => columns.map((column) => row[column] ?? null)));
+}
+
+/**
+ * Per assistant message, the ids of its tables that start collapsed: a chart
+ * answer ("show that as a bar chart") whose table holds the same rows as a
+ * table an earlier answer already showed. The chart is the new part.
+ */
+export function repeatedChartTableIds(messages: ConversationMessage[]): Map<string, string> {
+  const seen = new Set<string>();
+  const result = new Map<string, string>();
+  for (const message of messages) {
+    if (message.role !== "assistant") continue;
+    const tables = message.artifacts.filter((artifact) => artifact.type === "TABLE");
+    if (message.artifacts.some((artifact) => artifact.type === "CHART")) {
+      const ids = tables.filter((table) => seen.has(tableSignature(table.payload) ?? "")).map((table) => table.id);
+      if (ids.length) result.set(message.id, ids.join(","));
+    }
+    for (const table of tables) {
+      const signature = tableSignature(table.payload);
+      if (signature) seen.add(signature);
+    }
+  }
+  return result;
+}

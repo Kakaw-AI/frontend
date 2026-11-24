@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/amicro/skeleton";
 import { MessageCard } from "@/components/chat/MessageCard";
+import { repeatedChartTableIds } from "@/components/chat/chat-formatting";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 import { useEffect, useMemo, useRef } from "react";
 
@@ -54,6 +55,9 @@ export function MessageList({
     return -1;
   }, [messages]);
 
+  // A plain string per message keeps MessageCard's memo intact.
+  const collapsedTables = useMemo(() => repeatedChartTableIds(messages ?? []), [messages]);
+
   if (isLoading) {
     return (
       <section className={sectionClass}>
@@ -92,6 +96,7 @@ export function MessageList({
               index === lastAssistantIndex && !isComposerLocked
             }
             isBusy={isBusy}
+            collapsedTableIds={collapsedTables.get(message.id) ?? ""}
             onSuggestionClick={onSuggestionClick}
             onRetry={onRetryMessage}
           />

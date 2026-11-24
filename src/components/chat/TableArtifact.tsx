@@ -33,11 +33,15 @@ export const TableArtifact = memo(function TableArtifact({
   columns,
   allRows,
   rowCount,
+  startCollapsed = false,
 }: {
   columns: string[];
   allRows: Array<Record<string, unknown>>;
   rowCount?: number;
+  /** Folded behind "Show table" because an earlier answer already showed these rows. */
+  startCollapsed?: boolean;
 }) {
+  const [open, setOpen] = useState(!startCollapsed);
   const PAGE_SIZE = 100;
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -69,7 +73,8 @@ export const TableArtifact = memo(function TableArtifact({
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     return () => observer.disconnect();
-  }, [columns]);
+    // The table is only in the DOM while open, so measure again on opening.
+  }, [columns, open]);
 
   const sortedRows = useMemo(() => {
     if (!sortColumn) return allRows;
@@ -120,84 +125,100 @@ export const TableArtifact = memo(function TableArtifact({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface-container-lowest">
-      <div className="flex items-center justify-between gap-3 border-b-2 border-border px-4 py-3">
+      <div className={`flex items-center justify-between gap-3 px-4 py-3 ${open ? "border-b-2 border-border" : ""}`}>
         <div>
           <p className="text-sm font-bold text-on-surface">
             Result{typeof totalRows === "number" ? ` · ${totalRows} rows` : ""}
           </p>
           <p className="mt-0.5 text-xs text-on-surface-variant">
-            Showing {showingRowsLabel} rows
+            {open ? `Showing ${showingRowsLabel} rows` : "Same rows as the table above"}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleDownloadCsv}
-          disabled={columns.length === 0}
-          className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-45"
-        >
-          Download CSV
-        </button>
-      </div>
-      {overflows ? (
-        <p className="px-4 pt-2 text-xs text-on-surface-variant sm:hidden">
-          Swipe table sideways to see more →
-        </p>
-      ) : null}
-      <div ref={scrollRef} className="max-h-[34rem] overflow-auto">
-        <table
-          className="w-max min-w-full border-separate border-spacing-0 text-left"
-          style={{ fontSize: "12.5px" }}
-        >
-          <thead className="sticky top-0 z-10 bg-surface-container">
-            <tr>
-              {columns.map((column) => {
-                const isActive = sortColumn === column;
-
-                return (
-                  <th
-                    key={column}
-                    onClick={() => handleSort(column)}
-                    className={`cursor-pointer select-none whitespace-nowrap px-4 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-on-surface-variant transition-colors hover:text-on-surface ${numericColumns.has(column) ? "text-right" : "text-left"}`}
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      {humanizeDataLabel(column)}
-                      <span
-                        className={`text-[10px] ${isActive ? "text-secondary" : ""}`}
-                      >
-                        {isActive ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}
-                      </span>
-                    </span>
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {visibleRows.map((row, index) => (
-              <tr key={index} className="hover:bg-surface">
-                {columns.map((column) => (
-                  <td
-                    key={column}
-                    className={`max-w-72 min-w-32 border-t border-primary/10 px-4 py-2.5 align-top text-on-surface ${numericColumns.has(column) ? "text-right font-mono tabular-nums" : "whitespace-pre-wrap break-words"}`}
-                  >
-                    {formatCell(column, row[column])}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {visibleCount < sortedRows.length ? (
-        <div className="border-t-2 border-border px-4 py-3 text-center">
+        <div className="flex shrink-0 items-center gap-2">
+          {startCollapsed ? (
+            <button
+              type="button"
+              onClick={() => setOpen((value) => !value)}
+              aria-expanded={open}
+              className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+            >
+              {open ? "Hide table" : "Show table"}
+            </button>
+          ) : null}
           <button
             type="button"
-            onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="rounded-[8px] border border-border px-4 py-1.5 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+            onClick={handleDownloadCsv}
+            disabled={columns.length === 0}
+            className="rounded-[8px] border border-border px-3 py-1 text-xs font-bold text-on-surface transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-45"
           >
-            Load more
+            Download CSV
           </button>
         </div>
+      </div>
+      {open ? (
+        <>
+          {overflows ? (
+            <p className="px-4 pt-2 text-xs text-on-surface-variant sm:hidden">
+              Swipe table sideways to see more →
+            </p>
+          ) : null}
+          <div ref={scrollRef} className="max-h-[34rem] overflow-auto">
+            <table
+              className="w-max min-w-full border-separate border-spacing-0 text-left"
+              style={{ fontSize: "12.5px" }}
+            >
+              <thead className="sticky top-0 z-10 bg-surface-container">
+                <tr>
+                  {columns.map((column) => {
+                    const isActive = sortColumn === column;
+
+                    return (
+                      <th
+                        key={column}
+                        onClick={() => handleSort(column)}
+                        className={`cursor-pointer select-none whitespace-nowrap px-4 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-on-surface-variant transition-colors hover:text-on-surface ${numericColumns.has(column) ? "text-right" : "text-left"}`}
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          {humanizeDataLabel(column)}
+                          <span
+                            className={`text-[10px] ${isActive ? "text-secondary" : ""}`}
+                          >
+                            {isActive ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}
+                          </span>
+                        </span>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {visibleRows.map((row, index) => (
+                  <tr key={index} className="hover:bg-surface">
+                    {columns.map((column) => (
+                      <td
+                        key={column}
+                        className={`max-w-72 min-w-32 border-t border-primary/10 px-4 py-2.5 align-top text-on-surface ${numericColumns.has(column) ? "text-right font-mono tabular-nums" : "whitespace-pre-wrap break-words"}`}
+                      >
+                        {formatCell(column, row[column])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {visibleCount < sortedRows.length ? (
+            <div className="border-t-2 border-border px-4 py-3 text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                className="rounded-[8px] border border-border px-4 py-1.5 text-xs font-bold text-on-surface transition-colors hover:bg-accent"
+              >
+                Load more
+              </button>
+            </div>
+          ) : null}
+        </>
       ) : null}
     </div>
   );
