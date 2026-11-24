@@ -54,6 +54,10 @@ export function resolveDatabaseSourceLabel(source: DatabaseConnectionResponse) {
     return "PostgreSQL connection";
   }
 
+  if (source.provider === "mongodb") {
+    return "MongoDB connection";
+  }
+
   return `${toTitleCase(source.provider)} connection`;
 }
 

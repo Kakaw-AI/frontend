@@ -2,7 +2,7 @@
 
 import { createStore, useStore } from "@/lib/state/create-store";
 
-const SUPPORTED_DATABASES = ["postgresql", "sqlite"] as const;
+const SUPPORTED_DATABASES = ["postgresql", "mongodb", "sqlite"] as const;
 
 export type SupportedDatabase = (typeof SUPPORTED_DATABASES)[number];
 

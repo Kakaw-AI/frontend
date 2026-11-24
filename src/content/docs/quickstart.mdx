@@ -7,7 +7,7 @@ description: From sign-in to your first answer in about five minutes.
 
 You need:
 
-- **A database.** A PostgreSQL database that accepts connections from the internet, or a SQLite file up to 25 MB.
+- **A database.** A PostgreSQL or MongoDB database that accepts connections from the internet, or a SQLite file up to 25 MB.
 - **A model.** An API key from OpenAI, Google (AI Studio), Anthropic or OpenRouter, or a public address for your own Ollama or LM Studio server.
 
 ## 1. Sign in
@@ -22,6 +22,12 @@ Kakaw asks for a database first.
 
   ```txt
   postgresql://user:password@host:5432/database
+  ```
+
+- **MongoDB:** paste a connection string that names the database. See [MongoDB](/docs/data/mongodb).
+
+  ```txt
+  mongodb+srv://user:password@cluster0.example.mongodb.net/database
   ```
 
 - **SQLite:** drop a `.db`, `.sqlite` or `.sqlite3` file. See [SQLite](/docs/data/sqlite).

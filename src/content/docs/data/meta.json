@@ -2,6 +2,7 @@
   "title": "Your data",
   "pages": [
     "postgres",
+    "mongodb",
     "sqlite",
     "schema-sync"
   ],

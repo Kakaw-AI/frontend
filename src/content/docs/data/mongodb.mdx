@@ -1,0 +1,57 @@
+---
+title: MongoDB
+description: Connect a MongoDB database with its connection string.
+---
+
+## What you need
+
+A connection string that names the database:
+
+```txt
+mongodb+srv://user:password@cluster0.example.mongodb.net/shop
+```
+
+In MongoDB Atlas, choose **Connect**, then **Drivers**, and copy the string. Add the database name after the host, as `/shop` above: Kakaw reads one database per connection. Standard `mongodb://host1:27017,host2:27017/shop?replicaSet=rs0` strings work too.
+
+The database must accept connections from the internet. In Atlas, add Kakaw to the project's **Network Access** list, or allow access from anywhere. `localhost` and private network addresses are refused.
+
+Sign in with a username and password. These connection options are accepted: `authSource`, `authMechanism` (SCRAM only), `replicaSet`, `tls`, `ssl`, `retryWrites`, `retryReads`, `readPreference`, `appName`, `w`, `directConnection`, `loadBalanced`, `compressors`, `connectTimeoutMS` and `readConcernLevel`. Any other option, such as certificate files, AWS or OIDC sign-in, or a proxy, is refused.
+
+## Use a read-only user
+
+MongoDB has no read-only transaction, so Kakaw protects your data in its own code: it only ever runs aggregation queries, and it refuses any query that writes (`$out`, `$merge`) or runs JavaScript (`$where`, `$function`, `$accumulator`). A user with only the `read` role makes that certain:
+
+```js
+db.getSiblingDB("shop").createUser({
+  user: "kakaw_reader",
+  pwd: "choose-a-password",
+  roles: [{ role: "read", db: "shop" }],
+});
+```
+
+In Atlas, create the user under **Database Access** with the built-in role **Only read any database**, or a custom role with `read` on one database.
+
+## How Kakaw reads documents
+
+MongoDB collections have no fixed columns, so Kakaw works them out from up to 100 sampled documents per collection:
+
+- Each collection becomes a table, and each field a column with its most common type.
+- Fields of nested documents become dot paths, such as `address.city`.
+- A field missing from some documents can be empty.
+- Arrays stay one column. Kakaw can still unwind them to count or group their items.
+- A collection keeps at most 100 fields. Rarely used fields in very wide documents may not be seen.
+
+Kakaw writes SQL, and translates it to a MongoDB aggregation pipeline before it runs. The query you see under an answer is that SQL.
+
+## Connect
+
+1. Choose **MongoDB** and paste the connection string.
+2. Give it a name if you like, such as *Atlas production*.
+3. Choose **Test and connect**. Kakaw connects, then reads the collections. See [Schema sync](/docs/data/schema-sync).
+
+The connection string is stored encrypted. See [Privacy and security](/docs/privacy-and-security).
+
+## Limits
+
+- Kakaw shows up to 200 rows of a result. For MongoDB, the row count is the rows shown, not the full total.
+- Some SQL has no MongoDB translation, such as `IN (SELECT ...)`. Kakaw rewrites the query when that happens.

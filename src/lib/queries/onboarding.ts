@@ -11,7 +11,7 @@ type OnboardingState = {
   blockingSync?: {
     id: string;
     label: string;
-    provider: "postgresql" | "sqlite";
+    provider: "postgresql" | "mongodb" | "sqlite";
     status: "PENDING" | "SYNCING" | "READY" | "FAILED";
     lastError: string | null;
     lastTestedAt: string | null;
@@ -31,7 +31,7 @@ type SaveDatabaseSourceInput =
       onProgress?: (fraction: number) => void;
     }
   | {
-      provider: "postgresql";
+      provider: "postgresql" | "mongodb";
       connectionString: string;
       name?: string;
     };
@@ -52,7 +52,7 @@ async function fetchOnboardingState(): Promise<OnboardingState> {
 
 type DatabaseSourceRecord = {
   id: string;
-  provider: "postgresql" | "sqlite";
+  provider: "postgresql" | "mongodb" | "sqlite";
   name: string | null;
   status: "PENDING" | "SYNCING" | "READY" | "FAILED";
   sqliteOriginalFilename: string | null;
@@ -156,7 +156,7 @@ async function saveDatabaseSource(input: SaveDatabaseSourceInput) {
   }
 
   return registerDatabaseSource({
-    provider: "postgresql",
+    provider: input.provider,
     connectionString,
     name,
   });

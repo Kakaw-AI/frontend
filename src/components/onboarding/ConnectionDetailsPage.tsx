@@ -11,6 +11,20 @@ import { saveDatabaseSourceMutationOptions } from "@/lib/queries/onboarding";
 
 const SQLITE_EXTENSIONS = [".db", ".sqlite", ".sqlite3"];
 
+const PROVIDER_COPY = {
+  postgresql: {
+    label: "PostgreSQL",
+    placeholder: "postgresql://user:password@host:5432/database",
+    guide: "/docs/data/postgres",
+  },
+  mongodb: {
+    label: "MongoDB",
+    placeholder: "mongodb+srv://user:password@cluster0.example.mongodb.net/database",
+    guide: "/docs/data/mongodb",
+  },
+  sqlite: { label: "SQLite", placeholder: "", guide: "/docs/data/sqlite" },
+} as const;
+
 export function ConnectionDetailsPage({ initialProvider }: { initialProvider: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -19,7 +33,8 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const isSqlite = provider === "sqlite";
-  const providerLabel = isSqlite ? "SQLite" : "PostgreSQL";
+  const copy = PROVIDER_COPY[provider];
+  const providerLabel = copy.label;
 
   const connectDatabase = useMutation({
     ...saveDatabaseSourceMutationOptions(),
@@ -133,7 +148,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
               required
               value={connString}
               onChange={(event) => edit(setConnString)(event.target.value)}
-              placeholder="postgresql://user:password@host:5432/database"
+              placeholder={copy.placeholder}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="none"
@@ -195,7 +210,7 @@ export function ConnectionDetailsPage({ initialProvider }: { initialProvider: st
 
       <p className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant">
         <Lock size={14} aria-hidden />
-        Credentials are encrypted at rest. <Link href={isSqlite ? "/docs/data/sqlite" : "/docs/data/postgres"} target="_blank" rel="noopener noreferrer" className="font-bold text-on-surface underline underline-offset-2">Setup guide</Link>
+        Credentials are encrypted at rest. <Link href={copy.guide} target="_blank" rel="noopener noreferrer" className="font-bold text-on-surface underline underline-offset-2">Setup guide</Link>
       </p>
     </>
   );

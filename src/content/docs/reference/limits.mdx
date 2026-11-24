@@ -11,6 +11,7 @@ description: The sizes, timeouts and rate limits Kakaw works within.
 | Time per query | 30 seconds |
 | SQLite upload | 25 MB; `.db`, `.sqlite`, `.sqlite3` |
 | Schema sync | Marked failed after 5 minutes |
+| MongoDB schema | 100 sampled documents and at most 100 fields per collection |
 
 ## Answers
 
@@ -37,6 +38,6 @@ Over a limit, the request is refused with a message saying so; wait a minute and
 
 | | Supported | Not yet |
 | --- | --- | --- |
-| Databases | PostgreSQL, SQLite | MySQL, Snowflake |
+| Databases | PostgreSQL, MongoDB, SQLite | MySQL, BigQuery, Snowflake |
 | Model providers | OpenAI, OpenRouter, Ollama, LM Studio, any OpenAI-compatible endpoint, Google Gemini, Anthropic Claude | |
 | Charts | Bar, line, pie, scatter, histogram | |

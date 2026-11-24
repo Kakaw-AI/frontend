@@ -10,16 +10,20 @@ const SUPPORTED = [
     description: "Paste a connection URL. Kakaw tests it before saving.",
   },
   {
+    id: "mongodb",
+    label: "MongoDB",
+    description: "Paste a mongodb+srv:// URL that names the database.",
+  },
+  {
     id: "sqlite",
     label: "SQLite",
     description: "Upload a .db, .sqlite or .sqlite3 file.",
   },
 ] as const;
 
-const COMING_SOON = ["mysql", "mongodb", "bigquery", "snowflake"] as const;
+const COMING_SOON = ["mysql", "bigquery", "snowflake"] as const;
 const COMING_SOON_LABELS: Record<(typeof COMING_SOON)[number], string> = {
   mysql: "MySQL",
-  mongodb: "MongoDB",
   bigquery: "BigQuery",
   snowflake: "Snowflake",
 };

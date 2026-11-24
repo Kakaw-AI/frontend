@@ -59,8 +59,8 @@ export function DatabaseSourceSection({
                 {source.lastError ? <p className="mt-1 text-xs text-secondary">{source.lastError}</p> : null}
               </div>
               <div className="flex gap-2">
-                {/* An uploaded SQLite file never changes, so only Postgres can be re-read. */}
-                {source.provider === "postgresql" ? (
+                {/* An uploaded SQLite file never changes, so only live databases can be re-read. */}
+                {source.provider !== "sqlite" ? (
                   <button
                     type="button"
                     onClick={() => onAction("resync", source.id)}
