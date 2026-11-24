@@ -19,7 +19,26 @@ When you ask to chart an answer you already have (*"show that as a bar chart"*) 
 
 ## The chart
 
-Kakaw draws a chart when the result suits one, such as a value over time or a comparison across categories, and always when you ask for one (*"as a bar chart"*, *"chart that"*). Supported types are bar, horizontal bar, line, donut (pie), scatter, bubble, combo, heatmap and histogram. When you name a type (*"as a heatmap"*, *"bubble chart"*), Kakaw draws that type whenever the data fits it; a pie needs 8 or fewer slices.
+Kakaw draws a chart when the result suits one, such as a value over time or a comparison across categories, and always when you ask for one (*"as a bar chart"*, *"chart that"*).
+
+### Supported chart types
+
+| Type | Good for | The result needs | Ask with |
+| --- | --- | --- | --- |
+| Bar | Comparing a few categories | A text column and a measure. The top 12 bars; the rest are added up as *Other categories*. | *"bar chart"*, *"column chart"*, *"as bars"* |
+| Grouped or stacked bar | Categories split by a second text column | Two text columns and a measure. The top 12 categories and top 6 series; the rest are added up as *Other*. | *"bar chart by channel"*, add *"stacked"* to stack them |
+| Horizontal bar | Rankings and long names | A text column and a measure. Up to 25 bars, largest first. | *"horizontal bar chart"* |
+| Line | A value over time | A date or period column and a measure. With a second text column, one line each, up to 6. | *"line chart"*, *"as a line"* |
+| Donut (pie) | Shares of a whole | 8 or fewer rows, none negative. | *"pie chart"*, *"donut chart"*, *"as a pie"* |
+| Combo | Two measures for the same categories | A category column and two measures. Bars for the first, a line for the second, each on its own axis. Up to 24 rows. | *"combo chart"* |
+| Scatter | How two measures relate | Two measures. Up to 100 points, with a dashed trend line. | *"scatter plot"* |
+| Bubble | Three measures at once | Three measures: two on the axes, the third as bubble size. | *"bubble chart"* |
+| Heatmap | Two categories crossed, such as country by product | Two text columns and a measure. Up to 30 columns and 25 rows; deeper colour is a higher value. | *"heatmap"* |
+| Histogram | How one measure is spread | One measure, grouped into about 20 ranges. Up to 100 values. | *"histogram"* |
+
+When you name a type, Kakaw draws that type whenever the result has what the table lists. If it doesn't, for example a pie of 23 categories, Kakaw picks the closest type that fits.
+
+### When you don't name a type
 
 Without a named type, Kakaw picks one from the shape of the table:
 

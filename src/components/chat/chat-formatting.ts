@@ -242,7 +242,8 @@ type BarChartRenderPlanInput = {
 };
 
 const DEFAULT_BAR_CATEGORY_CAP = 12;
-const DEFAULT_BAR_SERIES_CAP = 5;
+// Matches the agent's GROUPED_SERIES_LIMIT and the line chart's series cap.
+const DEFAULT_BAR_SERIES_CAP = 6;
 const OTHER_CATEGORY_LABEL = "Other categories";
 const OTHER_SERIES_LABEL = "Other series";
 
