@@ -113,7 +113,9 @@ function pieSlices(rows: ChartRow[], xField: string, yField: string) {
 }
 
 function frame(svg: Svg, width: number, height: number, margin: { top: number; right: number; bottom: number; left: number }) {
-  svg.attr("width", width).attr("height", height);
+  // viewBox lets the drawing scale down when the card is narrower than 320px
+  // (phones); without it the edges and the x-axis labels were cut off.
+  svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
   const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`) as G;
   return { g, innerWidth: width - margin.left - margin.right, innerHeight: height - margin.top - margin.bottom };
 }
@@ -204,7 +206,7 @@ type DrawInput = {
 
 function drawPie({ svg, width, rows, xField, yField, yLabel }: DrawInput) {
   const height = 300;
-  svg.attr("width", width).attr("height", height);
+  svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
   const slices = pieSlices(rows, xField, yField);
   const total = d3.sum(slices, (slice) => slice.value);
   const radius = Math.min(width, height) / 2 - 12;
