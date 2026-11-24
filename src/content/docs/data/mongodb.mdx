@@ -15,7 +15,7 @@ In MongoDB Atlas, choose **Connect**, then **Drivers**, and copy the string. Add
 
 The database must accept connections from the internet. In Atlas, add Kakaw to the project's **Network Access** list, or allow access from anywhere. `localhost` and private network addresses are refused.
 
-Sign in with a username and password. These connection options are accepted: `authSource`, `authMechanism` (SCRAM only), `replicaSet`, `tls`, `ssl`, `retryWrites`, `retryReads`, `readPreference`, `appName`, `w`, `directConnection`, `loadBalanced`, `compressors`, `connectTimeoutMS` and `readConcernLevel`. Any other option, such as certificate files, AWS or OIDC sign-in, or a proxy, is refused.
+Sign in with a username and password. These connection options are accepted: `authSource`, `authMechanism` (SCRAM only), `replicaSet`, `tls`, `ssl`, `retryWrites`, `retryReads`, `readPreference`, `appName`, `w`, `directConnection`, `loadBalanced`, `compressors`, `connectTimeoutMS` and `readConcernLevel`, plus pool and timeout options such as `maxPoolSize` and `socketTimeoutMS`, which Kakaw replaces with its own settings. Any other option, such as certificate files, AWS or OIDC sign-in, or a proxy, is refused.
 
 ## Use a read-only user
 
