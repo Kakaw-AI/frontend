@@ -17,7 +17,17 @@ If a query would return more than 200 rows, the table shows the first 200. Ask a
 
 ## The chart
 
-Kakaw draws a chart when the result suits one, such as a value over time or a comparison across categories, and always when you ask for one (*"as a bar chart"*, *"chart that"*). Bar, line, pie, scatter and histogram charts are supported. When you name a type, Kakaw draws that type whenever the data fits it; a pie needs 8 or fewer slices. Without one, a value over time gets a line and a comparison across categories gets bars. Use **Download SVG** to save the chart as an image, or **Download CSV** for its data.
+Kakaw draws a chart when the result suits one, such as a value over time or a comparison across categories, and always when you ask for one (*"as a bar chart"*, *"chart that"*). Supported types are bar, horizontal bar, line, donut (pie), scatter, bubble, combo, heatmap and histogram. When you name a type (*"as a heatmap"*, *"bubble chart"*), Kakaw draws that type whenever the data fits it; a pie needs 8 or fewer slices.
+
+Without a named type, Kakaw picks one from the shape of the table:
+
+- A value over time gets a line with a shaded area. With a second text column, such as a channel, each value of that column gets its own line (up to 6).
+- Two measures per row, such as revenue and order count, get a combo chart: bars for the first and a line for the second, each on its own axis.
+- Three or more measures per row, with at least 4 rows, get a bubble chart: two measures on the axes, the third as bubble size, the top rows labelled, and a dashed trend line.
+- Two text columns and a measure get grouped bars when there are at most 12 categories and 6 series, and a heatmap when there are more.
+- One measure per category gets ranked horizontal bars when there are more than 6 rows or long names, and columns otherwise. A question about share or percentage with 8 or fewer rows gets a donut.
+
+Columns named like ids (`customer_id`) are never charted as measures, and whole-number year, quarter, month or week columns are used as the time axis. Hover over a bar, point or cell to see its exact values. Use **Download SVG** to save the chart as an image, or **Download CSV** for its data.
 
 When you ask for a chart the data can't support, Kakaw says why and shows what it can.
 
