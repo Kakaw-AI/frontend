@@ -12,6 +12,7 @@ import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/docs/mdx';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbSchema, techArticleSchema } from '@/lib/schema';
+import { pageMetadata } from '@/lib/seo';
 import { source } from '@/lib/source';
 
 const GITHUB_CONTENT = 'https://github.com/Kakaw-AI/frontend/blob/master/src/content/docs';
@@ -63,11 +64,11 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
+  const meta = pageMetadata({ title: page.data.title, description: page.data.description ?? '', path: page.url });
   return {
-    title: page.data.title,
-    description: page.data.description,
+    ...meta,
     alternates: {
-      canonical: page.url,
+      ...meta.alternates,
       // Agents reading the HTML find the Markdown here.
       types: { 'text/markdown': markdownUrl(page.url) },
     },

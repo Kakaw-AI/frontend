@@ -1,13 +1,14 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo"
 import { Navbar } from "@/components/landing/Navbar"
 import { CONTACT_EMAIL } from "@/lib/site"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description:
     "Read Kakaw AI's Terms of Service. Plain language where possible, real legal language where required.",
-  alternates: { canonical: "/terms" },
-}
+  path: "/terms",
+})
 import { Footer } from "@/components/landing/Footer"
 
 const sections = [

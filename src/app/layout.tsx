@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bricolage_Grotesque, Figtree, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ConfirmDialogHost } from "@/components/ui/confirm-dialog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteGraph } from "@/lib/schema";
+import { SITE_DESCRIPTION } from "@/lib/seo";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 // Arabic is drawn by the "Kakaw Arabic" face in globals.css, first in every
@@ -24,25 +26,14 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kakaw AI — Talk to Your Database Like You Talk to a Friend",
+    default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Kakaw AI helps non-technical users get insights from their databases in seconds. No SQL knowledge needed.",
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    title: "Kakaw AI — Talk to Your Database Like You Talk to a Friend",
-    description:
-      "Kakaw AI helps non-technical users get insights from their databases in seconds. No SQL knowledge needed.",
-    url: SITE_URL,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kakaw AI — Talk to Your Database Like You Talk to a Friend",
-    description:
-      "Kakaw AI helps non-technical users get insights from their databases in seconds. No SQL knowledge needed.",
-  },
+  description: SITE_DESCRIPTION,
+  // Pages set their own share title and URL through pageMetadata(); this is
+  // only the fallback for routes that don't (the signed-in app).
+  openGraph: { type: "website", siteName: SITE_NAME },
+  twitter: { card: "summary_large_image" },
   icons: {
     icon: [
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
@@ -71,6 +62,8 @@ export default function RootLayout({
         <JsonLd data={siteGraph()} />
         <Providers>{children}</Providers>
         <ConfirmDialogHost />
+        {/* Field Core Web Vitals (LCP, INP, CLS) from real visits. */}
+        <SpeedInsights />
       </body>
     </html>
   );

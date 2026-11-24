@@ -20,6 +20,10 @@ Full docs as one file: ${SITE_URL}/llms-full.txt
 
 ## Key pages
 - [Home](${SITE_URL}/): Product overview and pricing
+- [PostgreSQL](${SITE_URL}/postgresql): Ask a PostgreSQL database in plain English
+- [SQLite](${SITE_URL}/sqlite): Ask questions about an uploaded SQLite file
+- [Local models](${SITE_URL}/local-models): Use your own Ollama or LM Studio server
+- [Examples](${SITE_URL}/examples): Real questions with Kakaw's answers, tables, charts and SQL
 - [Sign in](${SITE_URL}/login): Google or GitHub sign-in
 - [Privacy Policy](${SITE_URL}/privacy)
 - [Terms of Service](${SITE_URL}/terms)

@@ -1,7 +1,5 @@
+import { SITE_DESCRIPTION as DESCRIPTION } from "./seo";
 import { SITE_NAME, SITE_URL } from "./site";
-
-const DESCRIPTION =
-  "Kakaw AI lets non-technical teams query any database using plain English. No SQL needed — connect your database, ask questions, get answers instantly.";
 
 /** Organization + WebSite, rendered site-wide in the root layout. */
 export function siteGraph(): Record<string, unknown>[] {
@@ -38,6 +36,21 @@ export function softwareApplicationSchema(): Record<string, unknown> {
       price: "0",
       priceCurrency: "USD",
     },
+  };
+}
+
+/** The product film embedded on the homepage. */
+export function videoObjectSchema(): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: "Kakaw AI in 35 seconds",
+    description:
+      "Connect a PostgreSQL or SQLite database, ask a question in plain English, see the read-only SQL Kakaw writes, and get the answer as a table and a bar chart.",
+    thumbnailUrl: `${SITE_URL}/video/kakaw-demo-poster.jpg`,
+    contentUrl: `${SITE_URL}/video/kakaw-demo.mp4`,
+    uploadDate: "2026-11-24",
+    duration: "PT35S",
   };
 }
 

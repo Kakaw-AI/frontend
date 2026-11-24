@@ -1,13 +1,14 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo"
 import { Navbar } from "@/components/landing/Navbar"
 import { CONTACT_EMAIL } from "@/lib/site"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description:
     "Kakaw AI is built on a simple principle: your data is yours. Read exactly what we collect, why, and how we protect it.",
-  alternates: { canonical: "/privacy" },
-}
+  path: "/privacy",
+})
 import { Footer } from "@/components/landing/Footer"
 
 const sections = [

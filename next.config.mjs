@@ -33,6 +33,13 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // The same site is also served on *.vercel.app (production alias and
+        // previews). Only the custom domain may be indexed.
+        source: '/:path*',
+        missing: [{ type: 'host', value: 'kakaw.nasr.work' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      },
     ]
   },
   async rewrites() {
