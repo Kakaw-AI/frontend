@@ -10,7 +10,7 @@ const INTRO = `# Kakaw AI
 
 > Kakaw AI lets people ask questions about their own database in plain English and get answers as text, tables and charts. It writes read-only SQL, runs it, checks the result and explains it. You bring your own model: an OpenAI-compatible endpoint (OpenAI, OpenRouter, Ollama, LM Studio), Google Gemini or Anthropic Claude.
 
-- Databases: PostgreSQL and MongoDB (connection URL) and SQLite (file upload, up to 25 MB). MySQL, BigQuery and Snowflake are not supported yet.
+- Databases: PostgreSQL and MongoDB by connection URL, and SQLite by file upload (up to 25 MB). MySQL, BigQuery and Snowflake are not supported yet.
 - Queries are read-only and limited to 200 rows and 30 seconds.
 - API keys and connection strings are stored encrypted (AES-256-GCM) on Kakaw's servers; only the last four characters of a key are ever shown.
 - For a PostgreSQL or MongoDB database, Kakaw stores the schema plus a few sample rows and values. An uploaded SQLite file is stored whole, so queries can run on it. Query results are sent to the model provider you chose to write the answer, and saved with the chat.

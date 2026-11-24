@@ -5,7 +5,7 @@
   "rules": [
     {
       "paths": ["src/components/onboarding/**", "src/app/onboarding/**"],
-      "docs": ["quickstart.mdx", "data/postgres.mdx", "data/sqlite.mdx", "data/schema-sync.mdx"]
+      "docs": ["quickstart.mdx", "data/postgres.mdx", "data/mongodb.mdx", "data/sqlite.mdx", "data/schema-sync.mdx"]
     },
     {
       "paths": ["src/components/chat/picker/**", "src/lib/queries/llm-connections.ts", "src/components/chat/LlmProviderLogo.tsx"],

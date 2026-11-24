@@ -22,7 +22,8 @@ const PROVIDER_COPY = {
     placeholder: "mongodb+srv://user:password@cluster0.example.mongodb.net/database",
     guide: "/docs/data/mongodb",
   },
-  sqlite: { label: "SQLite", placeholder: "", guide: "/docs/data/sqlite" },
+  // No placeholder: SQLite shows a file drop zone instead of the URL field.
+  sqlite: { label: "SQLite", placeholder: undefined, guide: "/docs/data/sqlite" },
 } as const;
 
 export function ConnectionDetailsPage({ initialProvider }: { initialProvider: string }) {

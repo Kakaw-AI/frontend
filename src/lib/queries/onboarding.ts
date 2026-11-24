@@ -1,6 +1,7 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { readApiErrorResponse } from "@/lib/api-error";
+import type { SupportedDatabase } from "@/lib/stores/onboarding-store";
 
 type OnboardingState = {
   isFirstConnection?: boolean;
@@ -11,7 +12,7 @@ type OnboardingState = {
   blockingSync?: {
     id: string;
     label: string;
-    provider: "postgresql" | "mongodb" | "sqlite";
+    provider: SupportedDatabase;
     status: "PENDING" | "SYNCING" | "READY" | "FAILED";
     lastError: string | null;
     lastTestedAt: string | null;
@@ -31,7 +32,7 @@ type SaveDatabaseSourceInput =
       onProgress?: (fraction: number) => void;
     }
   | {
-      provider: "postgresql" | "mongodb";
+      provider: Exclude<SupportedDatabase, "sqlite">;
       connectionString: string;
       name?: string;
     };
@@ -52,7 +53,7 @@ async function fetchOnboardingState(): Promise<OnboardingState> {
 
 type DatabaseSourceRecord = {
   id: string;
-  provider: "postgresql" | "mongodb" | "sqlite";
+  provider: SupportedDatabase;
   name: string | null;
   status: "PENDING" | "SYNCING" | "READY" | "FAILED";
   sqliteOriginalFilename: string | null;
