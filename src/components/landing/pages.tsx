@@ -29,7 +29,7 @@ export type LandingPage = {
 const code = "block overflow-x-auto rounded-lg bg-surface-container p-4 font-mono text-sm text-on-surface";
 const a = "underline underline-offset-4 decoration-primary/40 hover:decoration-primary";
 
-export const LANDING: Record<"postgresql" | "sqlite" | "localModels", LandingPage> = {
+export const LANDING: Record<"postgresql" | "mongodb" | "sqlite" | "localModels", LandingPage> = {
   postgresql: {
     path: "/postgresql",
     eyebrow: "PostgreSQL",
@@ -40,10 +40,10 @@ export const LANDING: Record<"postgresql" | "sqlite" | "localModels", LandingPag
     intro:
       "Paste a connection URL, let Kakaw read the schema, then type your question. Kakaw writes one read-only SELECT, runs it, checks that the result answers the question, and replies with a short summary, the table and a chart. The SQL is one click away.",
     image: {
-      src: "/screens/connect-database.jpg",
-      width: 1504,
-      height: 960,
-      alt: "Kakaw's database picker: PostgreSQL by connection URL or SQLite by file upload",
+      src: "/screens/connect-database.png",
+      width: 1536,
+      height: 1346,
+      alt: "Kakaw's database picker: PostgreSQL or MongoDB by connection URL, or SQLite by file upload",
     },
     blocks: [
       {
@@ -110,6 +110,85 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
     cta: { label: "Connect PostgreSQL", href: "/login" },
     docs: { label: "PostgreSQL setup guide", href: "/docs/data/postgres" },
   },
+  mongodb: {
+    path: "/mongodb",
+    eyebrow: "MongoDB",
+    title: "Ask Your MongoDB Database in Plain English",
+    description:
+      "Connect MongoDB with its connection string and ask questions in plain English. Kakaw writes SQL, translates it to a read-only aggregation pipeline and answers with a table and a chart.",
+    h1: "Ask your MongoDB database in plain English",
+    intro:
+      "Paste a connection string that names the database, let Kakaw read your collections, then ask. Kakaw writes the query as SQL, translates it to an aggregation pipeline, runs it and answers with a short summary, the table and a chart.",
+    image: {
+      src: "/screens/connect-database.png",
+      width: 1536,
+      height: 1346,
+      alt: "Kakaw's database picker with the MongoDB option: paste a mongodb+srv:// URL that names the database",
+    },
+    blocks: [
+      {
+        heading: "Atlas or your own cluster",
+        body: (
+          <>
+            <p>
+              In MongoDB Atlas, choose Connect, then Drivers, and copy the string. Add the database name after the host:
+              Kakaw reads one database per connection. Standard <code className="font-mono">mongodb://</code> strings
+              with several hosts work too.
+            </p>
+            <code className={code}>mongodb+srv://user:password@cluster0.example.mongodb.net/shop</code>
+            <p>
+              The database must accept connections from the internet, so add Kakaw to the project&apos;s Network Access
+              list in Atlas. <code className="font-mono">localhost</code> and private network addresses are refused.
+            </p>
+          </>
+        ),
+      },
+      {
+        heading: "Collections become tables",
+        body: (
+          <p>
+            Collections have no fixed columns, so Kakaw works them out from up to 100 sampled documents each. Every
+            field becomes a column with its most common type, nested fields become dot paths such as{" "}
+            <code className="font-mono">address.city</code>, and arrays can still be unwound to count or group their
+            items. The SQL you see under an answer is what Kakaw translated into the pipeline.
+          </p>
+        ),
+      },
+      {
+        heading: "Read-only in Kakaw's own code",
+        body: (
+          <>
+            <p>
+              MongoDB has no read-only transaction, so Kakaw only ever runs aggregation queries and refuses any stage
+              that writes (<code className="font-mono">$out</code>, <code className="font-mono">$merge</code>) or runs
+              JavaScript. A user with only the <code className="font-mono">read</code> role makes that certain:
+            </p>
+            <code className={`${code} whitespace-pre`}>{`db.getSiblingDB("shop").createUser({
+  user: "kakaw_reader",
+  pwd: "choose-a-password",
+  roles: [{ role: "read", db: "shop" }],
+});`}</code>
+          </>
+        ),
+      },
+      {
+        heading: "What is stored and sent",
+        body: (
+          <p>
+            The connection string is stored encrypted. Kakaw keeps the inferred schema and a few sample values, not a
+            copy of your collections. To write the answer, your question, the schema and the result rows go to the
+            model provider you chose. The full list is in{" "}
+            <Link className={a} href="/docs/privacy-and-security">
+              Privacy and security
+            </Link>
+            .
+          </p>
+        ),
+      },
+    ],
+    cta: { label: "Connect MongoDB", href: "/login" },
+    docs: { label: "MongoDB setup guide", href: "/docs/data/mongodb" },
+  },
   sqlite: {
     path: "/sqlite",
     eyebrow: "SQLite",
@@ -120,9 +199,9 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
     intro:
       "Drop a SQLite file, wait a moment while Kakaw reads its schema, and ask. You get a short answer, the result table, a chart when the data suits one, and the SQL that produced it.",
     image: {
-      src: "/screens/connect-database.jpg",
-      width: 1504,
-      height: 960,
+      src: "/screens/connect-database.png",
+      width: 1536,
+      height: 1346,
       alt: "Kakaw's database picker with the SQLite option: upload a .db, .sqlite or .sqlite3 file",
     },
     blocks: [
@@ -174,7 +253,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
     eyebrow: "Local models",
     title: "Ask Your Database With Your Own Ollama or LM Studio Model",
     description:
-      "Point Kakaw at your own Ollama or LM Studio server and ask your PostgreSQL or SQLite database questions with a model you run. Questions and results go to your server, not to an AI company.",
+      "Point Kakaw at your own Ollama or LM Studio server and ask your database questions with a model you run. Questions and results go to your server, not to an AI company.",
     h1: "Ask your database with a model you run yourself",
     intro:
       "Kakaw works with Ollama and LM Studio through their OpenAI-compatible API. Your questions, schema and results go to your own server instead of a hosted AI provider, and you pay nothing per question.",

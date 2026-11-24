@@ -10,6 +10,7 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
   ],
   Use: [
     { label: "PostgreSQL", href: "/postgresql" },
+    { label: "MongoDB", href: "/mongodb" },
     { label: "SQLite", href: "/sqlite" },
     { label: "Local models", href: "/local-models" },
     { label: "GitHub", href: "https://github.com/Kakaw-AI" }

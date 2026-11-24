@@ -5,7 +5,7 @@ import { softwareApplicationSchema, videoObjectSchema } from "@/lib/schema";
 import { pageMetadata, SITE_DESCRIPTION } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Kakaw AI: Ask Your PostgreSQL or SQLite Database in Plain English",
+  title: "Kakaw AI: Ask PostgreSQL, MongoDB or SQLite in Plain English",
   description: SITE_DESCRIPTION,
   path: "/",
   absoluteTitle: true,

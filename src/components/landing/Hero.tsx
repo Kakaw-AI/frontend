@@ -28,7 +28,7 @@ export function Hero() {
 
         <FadeUp delay={0.15}>
           <p className="text-on-surface-variant text-lg md:text-xl max-w-xl leading-relaxed">
-            Type a question about your PostgreSQL or SQLite database in plain
+            Type a question about your PostgreSQL, MongoDB or SQLite database in plain
             words. Kakaw writes the SQL, runs it read-only, and shows you the
             result as a table or a chart.
           </p>

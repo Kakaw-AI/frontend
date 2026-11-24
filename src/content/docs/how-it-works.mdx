@@ -19,6 +19,8 @@ If the question can be read more than one way (*"best customers"* by revenue or 
 
 The query runs read-only, with a 30-second limit and up to 200 rows. If it fails, the error goes back to the model and it writes a corrected query. A filter that names a value your data doesn't hold, such as `'cancelled'` for `'Cancelled'`, is fixed without another model call.
 
+A query that joins lists can repeat itself: every URL of a person once per tag, or the person's name and details on every row of their list. When the rows repeat like that, the model rewrites the query once so each thing appears once. Whatever still repeats after that is cleaned up before you see it: exact copies are removed, and a value that is the same on every row, such as the person's name, is shown on the first row only.
+
 ## 4. Review the result
 
 A second, quick model call checks that the result answers the question: the right table, filters, time range and grouping. A clear mistake sends the query back for one more rewrite.

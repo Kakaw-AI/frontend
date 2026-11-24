@@ -8,8 +8,9 @@ const faqs: { q: string; a: React.ReactNode }[] = [
     q: "Can Kakaw change or delete my data?",
     a: (
       <>
-        No. Every PostgreSQL query runs in a read-only transaction and SQLite files are opened read-only. Anything that
-        isn&apos;t a single SELECT is rejected first, and each query stops after 30 seconds and 200 rows. See{" "}
+        No. Every PostgreSQL query runs in a read-only transaction and SQLite files are opened read-only; anything
+        that isn&apos;t a single SELECT is rejected first. MongoDB only gets aggregation queries, and any stage that
+        writes or runs JavaScript is refused. Each query stops after 30 seconds and 200 rows. See{" "}
         <Link href="/docs/privacy-and-security">Privacy and security</Link>.
       </>
     ),
@@ -18,8 +19,8 @@ const faqs: { q: string; a: React.ReactNode }[] = [
     q: "Which databases does it work with?",
     a: (
       <>
-        <Link href="/postgresql">PostgreSQL</Link>, connected by URL, and <Link href="/sqlite">SQLite</Link> files up to
-        25 MB. MySQL and Snowflake are not supported yet.
+        <Link href="/postgresql">PostgreSQL</Link> and <Link href="/mongodb">MongoDB</Link>, connected by URL, and{" "}
+        <Link href="/sqlite">SQLite</Link> files up to 25 MB. MySQL, BigQuery and Snowflake are not supported yet.
       </>
     ),
   },

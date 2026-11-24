@@ -3,7 +3,7 @@ import { SITE_NAME } from "./site";
 
 /** The product in one sentence: used for the homepage, structured data and pages without their own. */
 export const SITE_DESCRIPTION =
-  "Ask your PostgreSQL or SQLite database questions in plain English. Kakaw writes read-only SQL, runs it and answers with text, a table and a chart. Free, with your own AI model.";
+  "Ask your PostgreSQL, MongoDB or SQLite database questions in plain English. Kakaw writes a read-only query, runs it and answers with text, a table and a chart. Free, with your own AI model.";
 
 // app/opengraph-image.tsx. A page that sets openGraph loses the file-based
 // image of the root segment, so it is named here explicitly.
