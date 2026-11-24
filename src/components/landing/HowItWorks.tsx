@@ -28,10 +28,10 @@ export function HowItWorks() {
       id="how-it-works"
       className="scroll-mt-32 py-24 max-w-7xl mx-auto px-8"
     >
-      <div className="grid lg:grid-cols-2 gap-16 items-start">
-        {/* Sticky left panel */}
-        <div className="sticky top-32">
-          <h2 className="font-headline text-5xl mb-6 leading-tight">
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+        {/* Left panel: sticky beside the steps on wide screens, a plain heading above them on phones */}
+        <div className="lg:sticky lg:top-32">
+          <h2 className="font-headline text-4xl sm:text-5xl mb-6 leading-tight">
             From Database to
             <br />
             Insight in 4 Steps
