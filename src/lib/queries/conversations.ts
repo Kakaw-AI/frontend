@@ -262,6 +262,25 @@ export async function retryConversationMessage(
 }
 
 /**
+ * Re-attaches to a reply the server is still writing: replays every event so
+ * far, then the live ones. False when the server is not writing it any more;
+ * the stored conversation then has its final state.
+ */
+export async function followConversationMessage(
+  conversationId: string,
+  messageId: string,
+  onEvent: (event: Record<string, unknown>) => void,
+) {
+  const response = await apiFetch(
+    `/api/chat/conversations/${conversationId}/messages/${messageId}/stream`,
+    { cache: "no-store" },
+  );
+  if (response.status === 204) return false;
+  await consumeChatStream(response, onEvent);
+  return true;
+}
+
+/**
  * Stops the reply being written. The open stream then ends with a "stopped"
  * message_failed event; a reply left streaming by a dead server is marked
  * stopped directly.

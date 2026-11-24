@@ -10,6 +10,7 @@ import {
   conversationsQueryOptions,
   createConversationMutationOptions,
   deleteConversationMutationOptions,
+  followConversationMessage,
   retryConversationMessage,
   stopConversationMessage,
   streamConversationMessage,
@@ -199,6 +200,60 @@ export function ChatPageClient() {
     wasIndexing.current = isIndexing;
   }, [isIndexing, activeConversationId, queryClient]);
 
+  // Replies this tab has re-attached to once. A reply the server no longer
+  // runs is then left to the polling above instead of being re-attached to on
+  // every render.
+  const followedReplyIds = useRef(new Set<string>());
+
+  /**
+   * Keeps a running reply on screen after its stream broke (tab in the
+   * background, phone locked, network drop) or when the chat opens mid-reply:
+   * re-attaches to the server's copy and rebuilds the message from its whole
+   * event log, so the user lands on the step it is on now. The caller holds
+   * the sending lock.
+   */
+  async function followReply(conversationId: string, messageId: string) {
+    followedReplyIds.current.add(messageId);
+    for (let attempt = 1; attempt <= 5; attempt += 1) {
+      await waitUntilVisible();
+      let replaying = false;
+      try {
+        await followConversationMessage(conversationId, messageId, (event) => {
+          queryClient.setQueryData<ConversationDetails | undefined>(
+            conversationDetailsQueryKey(conversationId),
+            (current) => applyStreamEvent(replaying ? current : applyRetryReset(current, messageId), event),
+          );
+          replaying = true;
+        });
+        return;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+      }
+    }
+  }
+
+  /** The assistant message still streaming in this conversation's cache, if any. */
+  function runningReplyId(conversationId: string) {
+    return queryClient
+      .getQueryData<ConversationDetails>(conversationDetailsQueryKey(conversationId))
+      ?.messages.find((message) => message.role === "assistant" && message.status === "STREAMING")?.id ?? null;
+  }
+
+  // Opened mid-reply (reload, another tab, back from a broken stream): pick the
+  // live steps back up instead of showing an empty "thinking" line.
+  useEffect(() => {
+    if (!activeConversationId || !streamingAssistantMessageId || isStreamingHere) return;
+    if (followedReplyIds.current.has(streamingAssistantMessageId)) return;
+    const conversationId = activeConversationId;
+    startSending(conversationId);
+    void followReply(conversationId, streamingAssistantMessageId).finally(() => {
+      stopSending(conversationId);
+      void queryClient.invalidateQueries({ queryKey: conversationDetailsQueryKey(conversationId) });
+      void queryClient.invalidateQueries({ queryKey: conversationsQueryKey });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeConversationId, streamingAssistantMessageId, isStreamingHere]);
+
   async function invalidateConversationCaches(conversationId?: string | null) {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: chatOptionsQueryKey }),
@@ -351,18 +406,25 @@ export function ChatPageClient() {
       (current) => applyRetryReset(current, messageId),
     );
 
+    let started = false;
     try {
       await retryConversationMessage(activeConversationId, messageId, (event) => {
+        started = true;
         queryClient.setQueryData<ConversationDetails | undefined>(
           conversationDetailsQueryKey(activeConversationId),
           (current) => applyStreamEvent(current, event),
         );
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to retry the message.";
-      setComposerError(message);
-      markStreamingMessageFailed(activeConversationId, message, messageId);
+      // The reply may still be running on the server; a dropped connection is not a failed answer.
+      if (started && runningReplyId(conversationId) === messageId) {
+        await followReply(conversationId, messageId);
+      } else {
+        const message =
+          error instanceof Error ? error.message : "Unable to retry the message.";
+        setComposerError(message);
+        markStreamingMessageFailed(activeConversationId, message, messageId);
+      }
     } finally {
       stopSending(conversationId);
       await Promise.all([
@@ -452,9 +514,14 @@ export function ChatPageClient() {
           );
         }, useChatStore.getState().thinkingEnabled);
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unable to stream chat response.";
-        setComposerError(message);
-        markStreamingMessageFailed(newConversationId, message);
+        const replyId = runningReplyId(newConversationId);
+        if (replyId) {
+          await followReply(newConversationId, replyId);
+        } else {
+          const message = error instanceof Error ? error.message : "Unable to stream chat response.";
+          setComposerError(message);
+          markStreamingMessageFailed(newConversationId, message);
+        }
       } finally {
         stopSending(newConversationId);
         await Promise.all([
@@ -507,9 +574,15 @@ export function ChatPageClient() {
       }, useChatStore.getState().thinkingEnabled);
       clearDraft(); // clear saved draft for this conversation after successful send
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to stream chat response.";
-      setComposerError(message);
-      markStreamingMessageFailed(activeConversationId, message);
+      const replyId = runningReplyId(conversationId);
+      if (replyId) {
+        clearDraft();
+        await followReply(conversationId, replyId);
+      } else {
+        const message = error instanceof Error ? error.message : "Unable to stream chat response.";
+        setComposerError(message);
+        markStreamingMessageFailed(activeConversationId, message);
+      }
     } finally {
       stopSending(conversationId);
       await Promise.all([
@@ -644,4 +717,17 @@ function pickReady<T extends { id: string }>(ready: T[], ...preferredIds: (strin
     if (match) return match;
   }
   return ready[0] ?? null;
+}
+
+/** Resolves once the page is on screen; a hidden tab's requests get cut again. */
+function waitUntilVisible() {
+  if (document.visibilityState === "visible") return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    const onChange = () => {
+      if (document.visibilityState !== "visible") return;
+      document.removeEventListener("visibilitychange", onChange);
+      resolve();
+    };
+    document.addEventListener("visibilitychange", onChange);
+  });
 }

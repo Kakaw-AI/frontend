@@ -124,3 +124,32 @@ describe("applyRetryReset", () => {
     });
   });
 });
+
+describe("re-attaching to a running reply", () => {
+  it("rebuilds the message from the replayed log without doubling steps or text", () => {
+    const halfShown = conversation([
+      message({ id: "a1", status: "STREAMING", content: "Hel", steps: [{ seq: 0, text: "Reading schema", done: false }] }),
+    ]);
+    const log = [
+      { type: "message_started", data: { messageId: "a1" } },
+      { type: "agent_step", data: { text: "Reading schema" } },
+      { type: "agent_step", data: { text: "Writing SQL" } },
+      { type: "message_delta", data: { delta: "Hel" } },
+      { type: "message_delta", data: { delta: "lo" } },
+    ];
+
+    const rebuilt = log.reduce(
+      (current, event) => applyStreamEvent(current, event),
+      applyRetryReset(halfShown, "a1"),
+    );
+
+    expect(rebuilt?.messages[0]).toMatchObject({
+      status: "STREAMING",
+      content: "Hello",
+      steps: [
+        { seq: 0, text: "Reading schema", done: true },
+        { seq: 1, text: "Writing SQL", done: false },
+      ],
+    });
+  });
+});
