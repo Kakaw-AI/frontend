@@ -12,7 +12,11 @@ export function SqlArtifactView({
   const [isExpanded, setIsExpanded] = useState(false);
   const payload = artifact.payload as { sql?: string };
   const sql = payload.sql?.trim();
-  const formatted = useFormattedSql(isExpanded ? sql : undefined);
+  // MongoDB sources run a JSON aggregation pipeline, not SQL.
+  const pipeline = sql ? prettyJson(sql) : null;
+  const formatted = useFormattedSql(isExpanded && !pipeline ? sql : undefined);
+  const label = pipeline ? "query" : "SQL";
+  const shown = pipeline ?? formatted ?? sql;
 
   if (!sql) {
     return null;
@@ -26,22 +30,31 @@ export function SqlArtifactView({
         aria-expanded={isExpanded}
         className="rounded-[8px] border border-primary/20 px-3 py-1 font-mono text-xs font-medium text-on-surface-variant transition-colors hover:border-border hover:text-on-surface"
       >
-        {isExpanded ? "Hide SQL" : "Show SQL"}
+        {isExpanded ? `Hide ${label}` : `Show ${label}`}
       </button>
 
       {isExpanded ? (
         <div className="relative overflow-hidden rounded-2xl border border-border bg-surface-container">
           <CopyButton
-            text={formatted ?? sql}
+            text={shown ?? ""}
             className="absolute right-1.5 top-1.5"
           />
           <pre className="overflow-x-auto py-3 pl-4 pr-11 font-mono text-[13px] leading-relaxed text-on-surface">
-            <code>{formatted ?? sql}</code>
+            <code>{shown}</code>
           </pre>
         </div>
       ) : null}
     </div>
   );
+}
+
+function prettyJson(text: string): string | null {
+  if (!text.startsWith("{")) return null;
+  try {
+    return JSON.stringify(JSON.parse(text), null, 2);
+  } catch {
+    return null;
+  }
 }
 
 /**

@@ -25,7 +25,7 @@ Kakaw does not copy your tables. It reads your data only by running the queries 
 
 ## What Kakaw can't do to your database
 
-- **Write.** Every query runs in a read-only transaction (PostgreSQL), opens the file read-only (SQLite), or runs as an aggregation that is refused if it contains a stage that writes or runs JavaScript (MongoDB; connect with a read-only user too). Before that, any statement that isn't a single `SELECT` is rejected.
+- **Write.** Every query runs in a read-only transaction (PostgreSQL), opens the file read-only (SQLite), or runs as an aggregation that is refused if it contains a stage that writes or runs JavaScript (MongoDB; connect with a read-only user too). Before that, any SQL statement that isn't a single `SELECT` is rejected.
 - **Run away.** Each query stops after 30 seconds and returns at most 200 rows.
 - **Show secrets.** Columns named like passwords, secrets, tokens, keys or credentials come back as `[redacted]`.
 

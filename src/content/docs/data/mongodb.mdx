@@ -41,7 +41,7 @@ MongoDB collections have no fixed columns, so Kakaw works them out from up to 10
 - Arrays stay one column. Kakaw can still unwind them to count or group their items.
 - A collection keeps at most 100 fields. Rarely used fields in very wide documents may not be seen.
 
-Kakaw writes SQL, and translates it to a MongoDB aggregation pipeline before it runs. The query you see under an answer is that SQL.
+Kakaw writes native MongoDB aggregation queries, the same `aggregate` pipelines you would write in the shell. **Show query** under an answer shows the collection and pipeline as JSON.
 
 ## Connect
 
@@ -54,4 +54,4 @@ The connection string is stored encrypted. See [Privacy and security](/docs/priv
 ## Limits
 
 - Kakaw shows up to 200 rows of a result. For MongoDB, the row count is the rows shown, not the full total.
-- Some SQL has no MongoDB translation, such as `IN (SELECT ...)`. Kakaw rewrites the query when that happens.
+- Text values are case-sensitive in MongoDB. When a filter finds nothing because of case, such as `shipped` for `Shipped`, Kakaw switches to the stored value and runs the query again.
