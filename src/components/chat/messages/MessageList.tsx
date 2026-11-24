@@ -96,6 +96,7 @@ export function MessageList({
               index === lastAssistantIndex && !isComposerLocked
             }
             isBusy={isBusy}
+            provider={activeConversation.databaseSource.provider}
             collapsedTableIds={collapsedTables.get(message.id) ?? ""}
             onSuggestionClick={onSuggestionClick}
             onRetry={onRetryMessage}

@@ -1,19 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { CopyButton } from "./CopyButton";
 
 export function SqlArtifactView({
   artifact,
+  provider,
 }: {
   artifact: ConversationMessage["artifacts"][number];
+  provider: DatabaseProvider;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const payload = artifact.payload as { sql?: string };
   const sql = payload.sql?.trim();
-  // MongoDB sources run a JSON aggregation pipeline, not SQL.
-  const pipeline = sql ? prettyJson(sql) : null;
+  // MongoDB sources run a JSON aggregation pipeline, not SQL. Older answers
+  // on the same source were SQL, so those still show as SQL.
+  const pipeline = sql && provider === "mongodb" ? prettyJson(sql) : null;
   const formatted = useFormattedSql(isExpanded && !pipeline ? sql : undefined);
   const label = pipeline ? "query" : "SQL";
   const shown = pipeline ?? formatted ?? sql;

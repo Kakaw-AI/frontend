@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { SqlArtifactView } from "@/components/chat/SqlArtifactView";
 import { TableArtifact } from "@/components/chat/TableArtifact";
+import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 import { normalizeApiErrorPayload } from "@/lib/api-error";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 
@@ -23,14 +24,16 @@ const D3ChartArtifact = dynamic(
 
 export function ArtifactView({
   artifact,
+  provider,
   collapsed = false,
 }: {
   artifact: ConversationMessage["artifacts"][number];
+  provider: DatabaseProvider;
   /** A table that repeats an earlier answer's rows starts folded. */
   collapsed?: boolean;
 }) {
   if (artifact.type === "SQL") {
-    return <SqlArtifactView artifact={artifact} />;
+    return <SqlArtifactView artifact={artifact} provider={provider} />;
   }
 
   if (artifact.type === "TABLE") {

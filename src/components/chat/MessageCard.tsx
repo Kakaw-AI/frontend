@@ -7,6 +7,7 @@ import {
   getVisibleArtifacts,
   getVisibleAssistantContent,
 } from "@/components/chat/chat-formatting";
+import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
 import { memo, useMemo } from "react";
@@ -17,6 +18,7 @@ export const MessageCard = memo(function MessageCard({
   message,
   isLastAssistantMessage,
   isBusy,
+  provider,
   collapsedTableIds = "",
   onSuggestionClick,
   onRetry,
@@ -24,6 +26,8 @@ export const MessageCard = memo(function MessageCard({
   message: ConversationMessage;
   isLastAssistantMessage: boolean;
   isBusy: boolean;
+  /** The database the conversation runs on: decides how a query is shown. */
+  provider: DatabaseProvider;
   /** Comma-separated ids of tables that repeat an earlier answer's rows. */
   collapsedTableIds?: string;
   onSuggestionClick: (text: string) => void;
@@ -108,6 +112,7 @@ export const MessageCard = memo(function MessageCard({
           <ArtifactView
             key={artifact.id}
             artifact={artifact}
+            provider={provider}
             collapsed={collapsedTableIds.split(",").includes(artifact.id)}
           />
         ))}
