@@ -18,8 +18,8 @@ const extendedFeatures = [
         />
       </svg>
     ),
-    title: "PostgreSQL and SQLite",
-    body: "Connect PostgreSQL by URL or upload a SQLite file, and keep each database's chats together. MySQL and Snowflake are coming.",
+    title: "PostgreSQL, MongoDB and SQLite",
+    body: "Connect PostgreSQL or MongoDB by URL, or upload a SQLite file, and keep each database's chats together. MySQL, BigQuery and Snowflake are not supported yet.",
   },
   {
     icon: (
@@ -38,8 +38,8 @@ const extendedFeatures = [
         />
       </svg>
     ),
-    title: "Transparent SQL",
-    body: "See the exact SQL query generated behind every answer. No black box — full auditability.",
+    title: "Transparent queries",
+    body: "See the exact SQL or MongoDB pipeline behind every answer, and copy it to run it yourself.",
   },
   {
     icon: (
@@ -99,7 +99,7 @@ const extendedFeatures = [
       </svg>
     ),
     title: "Schema-Aware AI",
-    body: "Kakaw automatically maps your table relationships and business logic — no configuration required.",
+    body: "Kakaw reads the structure of your database on its own. There is nothing to configure.",
   },
   {
     icon: (

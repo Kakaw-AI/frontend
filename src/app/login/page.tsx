@@ -119,7 +119,7 @@ export default function AuthPage() {
             <span className="pod-mark mt-2 inline-block">Get the answer.</span>
           </h2>
           <p className="mt-6 text-white/80 font-body text-base md:text-lg leading-relaxed">
-            Type a question in plain words. Kakaw writes the SQL, runs it, and
+            Type a question in plain words. Kakaw writes the query, runs it, and
             shows you the result as a table or a chart.
           </p>
         </div>

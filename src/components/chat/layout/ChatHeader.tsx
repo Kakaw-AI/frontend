@@ -3,6 +3,8 @@
 import { Menu } from "lucide-react";
 import { formatConversationTitle } from "@/components/chat/chat-formatting";
 import { useChatStore } from "@/components/chat/store/useChatStore";
+import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
+import { databaseTerms } from "@/lib/database-terms";
 import type { ConversationDetails } from "@/lib/queries/conversations";
 
 export function ChatHeader({ activeConversation }: { activeConversation: ConversationDetails | undefined }) {
@@ -22,8 +24,10 @@ export function ChatHeader({ activeConversation }: { activeConversation: Convers
         {activeConversation ? formatConversationTitle(activeConversation.title) : "New chat"}
       </h2>
       {activeConversation ? (
-        <span className="hidden min-w-0 shrink-0 truncate text-xs text-on-surface-variant sm:inline">
-          {activeConversation.databaseSource.label}
+        <span className="flex shrink-0 items-center gap-1.5 text-xs text-on-surface-variant">
+          <DatabaseLogo provider={activeConversation.databaseSource.provider} className="h-4 w-4 shrink-0" />
+          {databaseTerms(activeConversation.databaseSource.provider).name}
+          <span className="hidden max-w-48 truncate sm:inline">· {activeConversation.databaseSource.label}</span>
         </span>
       ) : null}
     </header>

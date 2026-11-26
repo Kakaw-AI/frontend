@@ -46,7 +46,7 @@ export function videoObjectSchema(): Record<string, unknown> {
     "@type": "VideoObject",
     name: "Kakaw AI in 35 seconds",
     description:
-      "Connect a PostgreSQL or SQLite database, ask a question in plain English, see the read-only SQL Kakaw writes, and get the answer as a table and a bar chart.",
+      "Connect a database, ask a question in plain English, see the read-only query Kakaw writes, and get the answer as a table and a bar chart.",
     thumbnailUrl: `${SITE_URL}/video/kakaw-demo-poster.jpg`,
     contentUrl: `${SITE_URL}/video/kakaw-demo.mp4`,
     uploadDate: "2026-11-24",

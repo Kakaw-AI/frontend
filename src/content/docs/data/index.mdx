@@ -1,0 +1,16 @@
+---
+title: Supported databases
+description: PostgreSQL, MongoDB and SQLite, what type each one is and how Kakaw queries it.
+---
+
+| Database | Type | How you connect | What Kakaw writes | What keeps it read-only |
+| --- | --- | --- | --- | --- |
+| [PostgreSQL](/docs/data/postgres) | Relational (SQL), on a server | Connection URL | SQL | A read-only transaction |
+| [MongoDB](/docs/data/mongodb) | Document (NoSQL), on a server | Connection string that names the database | Aggregation pipeline | Kakaw's own checks; add a read-only user |
+| [SQLite](/docs/data/sqlite) | Relational (SQL), one file | File upload, up to 25 MB | SQL | The file is opened read-only |
+
+Every other page says *query* for whichever of the two Kakaw writes. Where a page says *table*, *column* and *row*, read *collection*, *field* and *document* for MongoDB.
+
+MySQL, BigQuery and Snowflake are not supported yet.
+
+[Schema sync](/docs/data/schema-sync) explains what Kakaw reads before the first question.

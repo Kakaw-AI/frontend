@@ -7,7 +7,7 @@ export const SITE_DESCRIPTION =
 
 // app/opengraph-image.tsx. A page that sets openGraph loses the file-based
 // image of the root segment, so it is named here explicitly.
-const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "Kakaw AI" };
+const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "Kakaw AI: Ask your database. Get the answer." };
 
 /**
  * Title, description, canonical and share tags for one public page.

@@ -3,22 +3,22 @@ const steps = [
   {
     number: "01",
     title: "Connect Your Source",
-    body: "Paste a PostgreSQL connection URL or upload a SQLite file. Your credentials are stored encrypted.",
+    body: "Paste a PostgreSQL or MongoDB connection URL, or upload a SQLite file. Connection strings are stored encrypted.",
   },
   {
     number: "02",
     title: "AI Schema Mapping",
-    body: "Kakaw automatically learns your table relationships and business logic, indexing it for human language.",
+    body: "Kakaw reads your tables or collections, their columns or fields and a few sample values, so you can use your own words.",
   },
   {
     number: "03",
     title: "Start the Dialogue",
-    body: "Type any question in plain English. No need to remember table names or join conditions.",
+    body: "Type any question in plain English. No need to remember table or field names.",
   },
   {
     number: "04",
     title: "Iterate and Refine",
-    body: "Ask follow-up questions to drill down deeper into the numbers. Every answer shows its table, a chart and the SQL behind it.",
+    body: "Ask follow-up questions to drill down deeper into the numbers. Every answer shows its table, a chart and the query behind it.",
   },
 ];
 

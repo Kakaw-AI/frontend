@@ -1,6 +1,8 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
+import { databaseTerms } from "@/lib/database-terms";
 import type { DatabaseSource } from "@/lib/queries/database-sources";
 import type { LlmConnection } from "@/lib/queries/llm-connections";
 import { AlertTriangle } from "lucide-react";
@@ -33,14 +35,17 @@ export function NewChatRuntimeSelect({
           value={sourceId ?? ""}
           onValueChange={(id: string | null) => onChange({ databaseSourceId: id, llmConnectionId: modelId })}
         >
-          <SelectTrigger aria-label="Database" className="w-full text-[13px] sm:w-52">
+          <SelectTrigger aria-label="Database" className="w-full text-[13px] sm:w-64">
             <SelectValue placeholder="Choose a database">
-              {(id: string | null) => sources.find((s) => s.id === id)?.label ?? "Choose a database"}
+              {(id: string | null) => {
+                const source = sources.find((s) => s.id === id);
+                return source ? <SourceOption source={source} /> : "Choose a database";
+              }}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {sources.map((s) => (
-              <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+              <SelectItem key={s.id} value={s.id}><SourceOption source={s} /></SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -75,5 +80,16 @@ export function NewChatRuntimeSelect({
         </span>
       ) : null}
     </div>
+  );
+}
+
+/** Logo, name and database type, so two sources with similar names stay apart. */
+function SourceOption({ source }: { source: DatabaseSource }) {
+  return (
+    <span className="flex min-w-0 items-center gap-1.5">
+      <DatabaseLogo provider={source.provider} className="h-4 w-4 shrink-0" />
+      <span className="truncate">{source.label}</span>
+      <span className="shrink-0 text-on-surface-variant">{databaseTerms(source.provider).name}</span>
+    </span>
   );
 }

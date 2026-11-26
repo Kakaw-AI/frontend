@@ -10,9 +10,12 @@ description: What Kakaw stores, what it sends where, and the limits on what it c
 | API keys and database connection URLs | Until you delete the model or database | AES-256-GCM encryption. Only the last four characters of a key are ever shown, and no key is sent back to your browser. |
 | Your schema | Until you delete the database | Tables, columns, keys, indexes, row counts, a few sample rows per table, sample values per column, and every value of short text columns such as categories or statuses (up to 50 per column; secret-named columns are skipped) |
 | An uploaded SQLite file | Until you delete the database | Stored whole, so queries can run on it |
-| Your chats | Until you delete the chat | Questions, answers, the SQL, the result rows (up to 200 per answer) and charts |
-| Remembered questions | Until you delete the database | Questions this database answered and the SQL that worked, used to answer similar questions |
+| Your chats | Until you delete the chat | Questions, answers, the queries, the result rows (up to 200 per answer) and charts |
+| Remembered questions | Until you delete the database | Questions this database answered and the query that worked, used to answer similar questions |
 | Run records | Until you delete the chat, its database or your account | The steps, queries and timings of each answer, for debugging |
+| Your account and sessions | Until you delete your account | Name, email, picture and sign-in tokens from Google or GitHub, and the IP address and browser of each sign-in |
+| Server logs | Not removed when you delete something in the app | Your account id and up to the first 2,000 characters of each part of a model prompt and reply, which can include questions, schema and result values |
+| Database backups | Not removed when you delete something in the app | A copy of the application database |
 | Token usage | Until you delete your account | The model and token counts of each answer, for the totals in your profile. No questions, answers or queries. |
 
 Kakaw does not copy your tables. It reads your data only by running the queries your questions need.

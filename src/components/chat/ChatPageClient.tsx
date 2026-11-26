@@ -303,7 +303,7 @@ export function ChatPageClient() {
   async function handleDeleteDatabaseSource(sourceId: string) {
     const confirmed = await confirmDialog({
       title: "Delete this database and all its chats?",
-      body: "Its schema, stored credentials and uploaded file go too. Your token usage stays in your profile. This can't be undone.",
+      body: "Its stored structure, credentials and any uploaded file go too. Your token usage stays in your profile. This can't be undone.",
       confirmLabel: "Delete database",
       destructive: true,
     });

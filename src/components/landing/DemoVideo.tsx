@@ -7,7 +7,7 @@ export function DemoVideo() {
         See it answer in 35 seconds
       </h2>
       <p className="text-on-surface-variant mb-8 max-w-2xl">
-        Connect a database, ask in plain English, read the SQL Kakaw writes, then get the answer as a table and a
+        Connect a database, ask in plain English, read the query Kakaw writes, then get the answer as a table and a
         chart.
       </p>
       <video

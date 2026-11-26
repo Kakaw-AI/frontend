@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
+import { DatabaseLogo, type DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
+import { databaseTerms } from "@/lib/database-terms";
 import { ProfileDialog } from "@/components/chat/layout/ProfileDialog";
 import type { ConversationSummary } from "@/lib/queries/conversations";
 import { useChatStore } from "../store/useChatStore";
@@ -79,15 +81,18 @@ export function ChatSidebar({
             // Native disclosure: collapses with no state of its own. Open by default.
             <details key={group.id} open className="group/db">
               <summary
-                title={group.label}
+                title={`${group.label} · ${databaseTerms(group.provider).name}`}
                 className="flex cursor-pointer list-none items-center gap-1.5 rounded-md px-2 py-1 text-[12px] font-semibold text-on-surface transition-colors hover:bg-accent/60 pointer-coarse:min-h-10 [&::-webkit-details-marker]:hidden"
               >
                 <ChevronRight
                   size={13}
                   className="shrink-0 text-on-surface-variant transition-transform group-open/db:rotate-90"
                 />
-                <Database size={12} className="shrink-0 text-on-surface-variant" />
+                <DatabaseLogo provider={group.provider} className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">{group.label}</span>
+                <span className="shrink-0 text-[10px] font-medium text-on-surface-variant">
+                  {databaseTerms(group.provider).name}
+                </span>
                 <span className="ml-auto shrink-0 font-mono text-[10px] font-medium text-on-surface-variant">
                   {group.conversations.length}
                 </span>
@@ -250,12 +255,12 @@ export function formatRelativeTime(iso: string | null, now = Date.now()): string
 
 /** One group per database, in the order its most recent chat appears. */
 function groupByDatabase(conversations: ConversationSummary[] | undefined) {
-  const groups = new Map<string, { id: string; label: string; conversations: ConversationSummary[] }>();
+  const groups = new Map<string, { id: string; label: string; provider: DatabaseProvider; conversations: ConversationSummary[] }>();
   for (const conversation of conversations ?? []) {
     const id = conversation.databaseSourceId;
     let group = groups.get(id);
     if (!group) {
-      group = { id, label: conversation.databaseSource.label, conversations: [] };
+      group = { id, label: conversation.databaseSource.label, provider: conversation.databaseSource.provider, conversations: [] };
       groups.set(id, group);
     }
     group.conversations.push(conversation);

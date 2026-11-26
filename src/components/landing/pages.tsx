@@ -115,10 +115,10 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
     eyebrow: "MongoDB",
     title: "Ask Your MongoDB Database in Plain English",
     description:
-      "Connect MongoDB with its connection string and ask questions in plain English. Kakaw writes SQL, translates it to a read-only aggregation pipeline and answers with a table and a chart.",
+      "Connect MongoDB with its connection string and ask questions in plain English. Kakaw writes a read-only aggregation pipeline and answers with a table and a chart.",
     h1: "Ask your MongoDB database in plain English",
     intro:
-      "Paste a connection string that names the database, let Kakaw read your collections, then ask. Kakaw writes the query as SQL, translates it to an aggregation pipeline, runs it and answers with a short summary, the table and a chart.",
+      "Paste a connection string that names the database, let Kakaw read your collections, then ask. Kakaw writes a native aggregation pipeline, runs it and answers with a short summary, the table and a chart. The pipeline is one click away.",
     image: {
       src: "/screens/connect-database.png",
       width: 1536,
@@ -144,13 +144,13 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
         ),
       },
       {
-        heading: "Collections become tables",
+        heading: "It reads your collections first",
         body: (
           <p>
-            Collections have no fixed columns, so Kakaw works them out from up to 100 sampled documents each. Every
-            field becomes a column with its most common type, nested fields become dot paths such as{" "}
-            <code className="font-mono">address.city</code>, and arrays can still be unwound to count or group their
-            items. The SQL you see under an answer is what Kakaw translated into the pipeline.
+            Collections have no fixed fields, so Kakaw works them out from up to 100 sampled documents each, with the
+            most common type of each field. Nested fields become dot paths such as{" "}
+            <code className="font-mono">address.city</code>, and arrays can be unwound to count or group their items.{" "}
+            <strong>Show query</strong> under an answer shows the collection and pipeline that ran, as JSON.
           </p>
         ),
       },

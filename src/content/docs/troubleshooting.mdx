@@ -5,18 +5,18 @@ description: What to do when an answer is wrong, slow, stuck or fails.
 
 ## The answer is wrong
 
-1. Open **Show SQL** and read what was counted, filtered and grouped.
+1. Open **Show SQL** (**Show query** for MongoDB) and read what was counted, filtered and grouped.
 2. Say what's off in a follow-up: *"count each customer once"*, *"use the order date, not the ship date"*, *"only paid orders"*.
 3. Use the exact names from your data when you know them.
 4. Try **Think** on, or a stronger model. See [Thinking](/docs/models/thinking).
 
 ## *The query completed, but no matching rows were found*
 
-The query ran but nothing matched. Check the filters in **Show SQL**: a misspelled value, a date range with no data, or a column holding a different value than you expected. Kakaw already fixes values that differ only in case or spacing.
+The query ran but nothing matched. Check the filters in **Show SQL** or **Show query**: a misspelled value, a date range with no data, or a column holding a different value than you expected. Kakaw already fixes values that differ only in case or spacing.
 
 ## It's slow
 
-- Each step shows above the answer while it runs; afterwards the folded line (*5 steps · 8.4s*) opens the list with its timing. A long *Generating read-only SQL* means the model is slow or reasoning at length: turn **Think** off.
+- Each step shows above the answer while it runs; afterwards the folded line (*5 steps · 8.4s*) opens the list with its timing. A long *Writing a read-only query* means the model is slow or reasoning at length: turn **Think** off.
 - [Local models](/docs/models/local-models) can take minutes per answer.
 - A web search adds several seconds per round.
 
@@ -43,8 +43,8 @@ The model field turns into a text box with the reason. Usually the key is wrong 
 
 ## The database won't connect or sync
 
-- *Private and local addresses won't work*: Kakaw connects from its servers. Use a public address. See [PostgreSQL](/docs/data/postgres).
-- Wrong password or database name: copy the URL from your provider again.
+- *Private and local addresses won't work*: Kakaw connects from its servers. Use a public address. See [PostgreSQL](/docs/data/postgres) or [MongoDB](/docs/data/mongodb).
+- Wrong password or database name: copy the URL from your provider again. A MongoDB string must name the database, and Atlas must allow Kakaw under **Network Access**.
 - Sync failed: the sync page shows the reason and **Try again**.
 
 ## Still stuck

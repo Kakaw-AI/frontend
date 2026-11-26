@@ -2,6 +2,7 @@
 
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { DatabaseLogo } from "@/components/onboarding/DatabaseLogo";
+import { databaseTerms } from "@/lib/database-terms";
 import type { DatabaseSource } from "@/lib/queries/database-sources";
 import { AlertCircle, LoaderCircle, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -54,7 +55,7 @@ export function DatabaseSourceSection({
                   <DatabaseSourceStatusBadge status={source.status} />
                 </div>
                 <p className="mt-0.5 text-xs text-on-surface-variant">
-                  {source.provider} · checked {formatTimestamp(source.lastTestedAt, "recently")}
+                  {databaseTerms(source.provider).name} · checked {formatTimestamp(source.lastTestedAt, "recently")}
                 </p>
                 {source.lastError ? <p className="mt-1 text-xs text-secondary">{source.lastError}</p> : null}
               </div>
@@ -67,7 +68,7 @@ export function DatabaseSourceSection({
                     disabled={busySource?.id === source.id || source.status === "PENDING" || source.status === "SYNCING"}
                     className="pod-btn-ghost px-3 py-1.5 text-xs"
                     aria-label={`Resync ${source.label}`}
-                    title="Read the schema again after tables or columns change"
+                    title={`Read the schema again after ${databaseTerms(source.provider).tables} or ${databaseTerms(source.provider).columns} change`}
                   >
                     <RefreshCw
                       size={12}

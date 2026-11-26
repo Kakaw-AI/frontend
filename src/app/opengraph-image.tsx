@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-export const alt = "Kakaw AI — Talk to Your Database Like You Talk to a Friend";
+export const alt = "Kakaw AI: Ask your database. Get the answer.";
 
 export const size = {
   width: 1200,

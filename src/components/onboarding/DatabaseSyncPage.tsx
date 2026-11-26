@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, LoaderCircle, RefreshCw } from "lucide-react";
 import { TextShimmer } from "@/components/amicro/text-shimmer";
+import { databaseTerms } from "@/lib/database-terms";
 import { DatabaseSourceStatusBadge } from "@/components/chat/DatabaseSourceStatusBadge";
 import { formatTimestamp } from "@/components/chat/picker/picker-utils";
 import { chatOptionsQueryOptions } from "@/lib/queries/chat-options";
@@ -38,6 +39,7 @@ export function DatabaseSyncPage({ sourceId }: { sourceId: string | null }) {
     ? (sourcesQuery.data?.databaseSources.find((s) => s.id === sourceId) ?? null)
     : (onboardingStateQuery.data?.blockingSync ?? null);
   const isFailed = blockingSync?.status === "FAILED";
+  const terms = databaseTerms(blockingSync?.provider ?? "postgresql");
   const retryMutation = useMutation({
     mutationFn: resyncDatabaseSource,
     onSuccess: async () => {
@@ -69,7 +71,7 @@ export function DatabaseSyncPage({ sourceId }: { sourceId: string | null }) {
       <p className="mt-3 text-on-surface-variant">
         {isFailed
           ? "The connection works, but Kakaw couldn't finish reading the schema."
-          : "Kakaw is indexing your tables, columns and sample rows. You'll go to chat as soon as it's done."}
+          : `Kakaw is indexing your ${terms.tables}, ${terms.columns} and sample ${terms.rows}. You'll go to chat as soon as it's done.`}
       </p>
 
       <section

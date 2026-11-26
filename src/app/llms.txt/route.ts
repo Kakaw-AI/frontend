@@ -8,7 +8,7 @@ export const revalidate = false;
 
 const INTRO = `# Kakaw AI
 
-> Kakaw AI lets people ask questions about their own database in plain English and get answers as text, tables and charts. It writes read-only SQL, runs it, checks the result and explains it. You bring your own model: an OpenAI-compatible endpoint (OpenAI, OpenRouter, Ollama, LM Studio), Google Gemini or Anthropic Claude.
+> Kakaw AI lets people ask questions about their own database in plain English and get answers as text, tables and charts. It writes a read-only query (SQL for PostgreSQL and SQLite, an aggregation pipeline for MongoDB), runs it, checks the result and explains it. You bring your own model: an OpenAI-compatible endpoint (OpenAI, OpenRouter, Ollama, LM Studio), Google Gemini or Anthropic Claude.
 
 - Databases: PostgreSQL and MongoDB by connection URL, and SQLite by file upload (up to 25 MB). MySQL, BigQuery and Snowflake are not supported yet.
 - Queries are read-only and limited to 200 rows and 30 seconds.

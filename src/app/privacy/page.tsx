@@ -6,54 +6,55 @@ import { CONTACT_EMAIL } from "@/lib/site"
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description:
-    "Kakaw AI is built on a simple principle: your data is yours. Read exactly what we collect, why, and how we protect it.",
+    "What Kakaw AI stores, what it sends to your model provider and others, and how to delete it.",
   path: "/privacy",
 })
 import { Footer } from "@/components/landing/Footer"
 
+// Every statement here must match the code and docs/privacy-and-security.mdx.
 const sections = [
   {
     title: "Overview",
-    content: `Kakaw AI is a Bring-Your-Own-Key (BYOK) application. We do not host LLM models or store your database content. Kakaw reads only your database schema (table names, column names, relationships) to generate SQL queries — never your actual row data. Your API keys are transmitted directly from your browser to your chosen LLM provider and are never sent to or stored on Kakaw's servers.`,
+    content: `Kakaw AI lets you ask your own database questions with your own AI model. To do that it stores your connection details, your database's structure with a few sample values, and your chats. It sends the model provider you chose what that model needs to answer, including query results. It does not copy your database, except a SQLite file you upload.`,
   },
   {
-    title: "What We Collect",
-    content: `We collect the minimum necessary to provide the service:
+    title: "What We Store",
+    content: `• Account: you sign in with Google or GitHub. We store your name, email address, profile picture and the sign-in tokens they return. Kakaw has no passwords of its own.
+• Sessions: the IP address and browser of each sign-in.
+• Connections: database connection strings and model API keys, encrypted with AES-256-GCM on our servers.
+• Database structure: table or collection names, columns or fields, keys, indexes, row counts, a few sample rows, sample values, and the values of short text columns such as categories or statuses.
+• Uploaded SQLite files: stored whole, so queries can run on them.
+• Chats: your questions, the answers, the queries, up to 200 result rows per answer, charts and web sources.
+• Working records: the steps and queries of each answer, questions answered before with the query that worked, and token counts.`,
+  },
+  {
+    title: "Logs and Backups",
+    content: `Our server logs record each call to your model: your account id and up to the first 2,000 characters of each part of the prompt and of the reply. These can include your questions, parts of your database structure and values from query results. We use them to find faults.
 
-• Account information: your email address and a hashed password, stored via Better Auth for authentication purposes.
-• Usage metadata: which features you use, when you log in, and general usage patterns. This data is used to improve the product and is never sold to third parties.
-• Database connection metadata: your connection parameters (host, port, database name, username) are stored encrypted so you don't need to re-enter them. Passwords are encrypted at rest.`,
+The application database is backed up. Deleting something in the app removes it from the live database; it does not immediately remove it from logs or backups.`,
   },
   {
-    title: "What We Don't Collect",
-    content: `• Your database rows or any data contained in your database tables.
-• Your API keys. These are held in your browser session only and sent directly to the LLM provider.
-• The content of your LLM conversations beyond what is necessary to maintain conversation context in your active session.
-• Any information from your database beyond the schema structure required to generate SQL queries.`,
-  },
-  {
-    title: "Data Storage",
-    content: `Authentication data (email, hashed password, session tokens) is stored locally via Better Auth using SQLite. Session data is stored in secure HTTP-only cookies. We do not use third-party analytics services that store personal data. No personal data is transferred to third parties for marketing purposes.`,
-  },
-  {
-    title: "Third-Party LLM Providers",
-    content: `When you use Kakaw, your questions and schema context are sent to the LLM provider you configured (Anthropic, OpenAI, Google, or a local model via Ollama/LM Studio). The handling of that data is governed by the privacy policy of your chosen provider. We recommend reviewing their policies:
+    title: "Who Receives Data",
+    content: `• Your model provider (for example OpenAI, Anthropic, Google or OpenRouter, or your own Ollama or LM Studio server): your question, the conversation so far, your database structure with sample values, and query results. Our servers make these calls, also to a model you run yourself. The provider's own privacy terms apply.
+• Web search: when an answer needs facts outside your database, Kakaw sends search queries to a search service we run, which passes them to public search engines.
+• Hosting and storage: Vercel serves the website and measures page speed, Cloudflare carries traffic to our servers and stores uploaded files, and Backblaze holds database backups.
+• Sign-in: Google or GitHub, whichever you choose.
 
-• Anthropic: anthropic.com/privacy
-• OpenAI: openai.com/privacy
-• Google: policies.google.com/privacy
-
-Local models (Ollama, LM Studio) process data entirely on your machine — no data leaves your device.`,
+We do not sell your data or share it for advertising.`,
+  },
+  {
+    title: "In Your Browser",
+    content: `A session cookie keeps you signed in, and text you have typed but not sent is kept in your browser's local storage.`,
   },
   {
     title: "Your Rights",
-    content: `You can delete a data source, or your whole account, at any time from inside the app. Deleting a data source removes its saved connection details, its uploaded file and the conversations that used it. Deleting your account permanently removes your profile, sessions, conversations, data sources and saved API keys. You can also ask us to do this for you by contacting us.`,
+    content: `You can delete a chat, a database or your whole account at any time from inside the app. Deleting a database removes its connection details, uploaded file, stored structure and chats; token counts stay in your profile. Deleting your account removes your profile, sessions, chats, databases and saved API keys. You can also ask us to do this for you by contacting us.`,
   },
   {
     title: "Contact",
     content: `Questions about this privacy policy? Reach us at ${CONTACT_EMAIL}.
 
-Last updated: April 2026`,
+Last updated: November 2026`,
   },
 ]
 
@@ -70,7 +71,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="text-on-surface-variant mb-16 text-lg">
-            We built Kakaw on a simple principle: your data is yours. Here&apos;s exactly what we collect and why.
+            What Kakaw stores, what it sends elsewhere, and how to delete it.
           </p>
 
           <div className="space-y-12">
