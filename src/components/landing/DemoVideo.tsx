@@ -1,14 +1,14 @@
-// The 35-second product film, served from /public. No autoplay: it has sound,
-// and preload="none" keeps its 7 MB off the first page load.
+// The 43-second product film, served from /public. No autoplay: it has sound,
+// and preload="none" keeps its 4.5 MB off the first page load.
 export function DemoVideo() {
   return (
     <section id="demo" aria-labelledby="demo-title" className="max-w-5xl mx-auto px-5 sm:px-8 py-12 md:py-16">
       <h2 id="demo-title" className="font-headline text-3xl sm:text-4xl text-on-surface mb-3">
-        See it answer in 35 seconds
+        See it answer in 43 seconds
       </h2>
       <p className="text-on-surface-variant mb-8 max-w-2xl">
-        Connect a database, ask in plain English, read the query Kakaw writes, then get the answer as a table and a
-        chart.
+        Connect SQL or MongoDB, ask in plain English, read the SQL or aggregation pipeline Kakaw writes, then get the
+        answer as a chart.
       </p>
       <video
         className="w-full h-auto rounded-xl border border-border bg-surface-container"

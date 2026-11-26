@@ -44,13 +44,13 @@ export function videoObjectSchema(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@type": "VideoObject",
-    name: "Kakaw AI in 35 seconds",
+    name: "Kakaw AI in 43 seconds",
     description:
-      "Connect a database, ask a question in plain English, see the read-only query Kakaw writes, and get the answer as a table and a bar chart.",
+      "Ask PostgreSQL and MongoDB questions in plain English, see the read-only query Kakaw writes for each, and get the answer as a chart.",
     thumbnailUrl: `${SITE_URL}/video/kakaw-demo-poster.jpg`,
     contentUrl: `${SITE_URL}/video/kakaw-demo.mp4`,
-    uploadDate: "2026-11-24",
-    duration: "PT35S",
+    uploadDate: "2026-11-26",
+    duration: "PT43S",
   };
 }
 
