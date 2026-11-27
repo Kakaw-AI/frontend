@@ -16,6 +16,7 @@ export function MessageList({
   isBusy,
   onSuggestionClick,
   onRetryMessage,
+  onVisualize,
 }: {
   activeConversation: ConversationDetails | undefined;
   isLoading: boolean;
@@ -23,6 +24,7 @@ export function MessageList({
   isBusy: boolean;
   onSuggestionClick: (text: string) => void;
   onRetryMessage: (messageId: string) => void;
+  onVisualize: (text: string) => void;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -98,8 +100,10 @@ export function MessageList({
             isBusy={isBusy}
             provider={activeConversation.databaseSource.provider}
             collapsedTableIds={collapsedTables.get(message.id) ?? ""}
+            isLatestAnswer={index === lastAssistantIndex}
             onSuggestionClick={onSuggestionClick}
             onRetry={onRetryMessage}
+            onVisualize={onVisualize}
           />
         ))}
 

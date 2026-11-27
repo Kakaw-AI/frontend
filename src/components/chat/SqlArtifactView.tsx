@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChevronRight } from "lucide-react";
+import { type ReactNode, useEffect, useState } from "react";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 import { CopyButton } from "./CopyButton";
@@ -8,9 +9,12 @@ import { CopyButton } from "./CopyButton";
 export function SqlArtifactView({
   artifact,
   provider,
+  actions,
 }: {
   artifact: ConversationMessage["artifacts"][number];
   provider: DatabaseProvider;
+  /** More link buttons on the same row, such as Make visualization. */
+  actions?: ReactNode;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const payload = artifact.payload as { sql?: string };
@@ -28,14 +32,18 @@ export function SqlArtifactView({
 
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        onClick={() => setIsExpanded((current) => !current)}
-        aria-expanded={isExpanded}
-        className="rounded-[8px] border border-primary/20 px-3 py-1 font-mono text-xs font-medium text-on-surface-variant transition-colors hover:border-border hover:text-on-surface"
-      >
-        {isExpanded ? `Hide ${label}` : `Show ${label}`}
-      </button>
+      <div className="flex flex-wrap items-center gap-x-4">
+        <button
+          type="button"
+          onClick={() => setIsExpanded((current) => !current)}
+          aria-expanded={isExpanded}
+          className="kk-link"
+        >
+          <ChevronRight size={13} className="kk-link-icon rtl:-scale-x-100" aria-hidden />
+          <span className="kk-link-text">{isExpanded ? `Hide ${label}` : `Show ${label}`}</span>
+        </button>
+        {actions}
+      </div>
 
       {isExpanded ? (
         <div className="relative overflow-hidden rounded-2xl border border-border bg-surface-container">

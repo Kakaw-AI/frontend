@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { ReactNode } from "react";
 import { SqlArtifactView } from "@/components/chat/SqlArtifactView";
 import { TableArtifact } from "@/components/chat/TableArtifact";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
@@ -26,14 +27,17 @@ export function ArtifactView({
   artifact,
   provider,
   collapsed = false,
+  sqlActions,
 }: {
   artifact: ConversationMessage["artifacts"][number];
   provider: DatabaseProvider;
   /** A table that repeats an earlier answer's rows starts folded. */
   collapsed?: boolean;
+  /** Shown beside Show SQL. */
+  sqlActions?: ReactNode;
 }) {
   if (artifact.type === "SQL") {
-    return <SqlArtifactView artifact={artifact} provider={provider} />;
+    return <SqlArtifactView artifact={artifact} provider={provider} actions={sqlActions} />;
   }
 
   if (artifact.type === "TABLE") {

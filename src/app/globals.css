@@ -299,6 +299,66 @@
   }
 }
 
+/* Text-link buttons under an answer (Show SQL, Make visualization).
+   The underline draws in on hover, the label presses on click. */
+.kk-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  transition: color 150ms ease-out, opacity 200ms ease-out;
+  animation: kk-web-badge-in 320ms ease-out both;
+}
+.kk-link-text {
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+  padding-bottom: 1px;
+  transition: background-size 240ms cubic-bezier(0.22, 1, 0.36, 1), transform 120ms ease-out;
+}
+[dir="rtl"] .kk-link-text {
+  background-position: 100% 100%;
+}
+.kk-link-icon {
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.kk-link:enabled:hover,
+.kk-link[aria-expanded="true"] {
+  color: var(--color-on-surface);
+}
+.kk-link:enabled:hover .kk-link-text {
+  background-size: 100% 1px;
+}
+.kk-link:enabled:active .kk-link-text {
+  transform: translateY(1px);
+}
+.kk-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.kk-link:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+/* Chevron turns when the query opens. */
+.kk-link[aria-expanded="true"] .kk-link-icon {
+  transform: rotate(90deg);
+}
+/* The chart icon's bars rise on hover. */
+.kk-link:enabled:hover .kk-link-icon-chart {
+  transform: translateY(-1px) scale(1.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .kk-link,
+  .kk-link-text,
+  .kk-link-icon {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* Kakaw's --secondary is the error red; Fumadocs paints neutral surfaces
    (tabs, code titles, buttons) with it, so those take the muted cream. */
 :root {

@@ -456,8 +456,10 @@ export function ChatPageClient() {
     );
   }
 
-  async function handleSendMessage() {
-    const content = composerInput.trim();
+  /** Sends the composer's text, or `text` from a button (the composer's draft is then kept). */
+  async function handleSendMessage(text?: string) {
+    const fromComposer = text === undefined;
+    const content = (text ?? composerInput).trim();
     if (!content || isComposerLocked) return;
 
     // ── New chat: create the conversation, then send ───────────────────────
@@ -553,7 +555,7 @@ export function ChatPageClient() {
     const conversationId = activeConversationId;
     setComposerError(null);
     startSending(conversationId);
-    setComposerInput("");
+    if (fromComposer) setComposerInput("");
 
     queryClient.setQueryData<ConversationDetails | undefined>(
       conversationDetailsQueryKey(activeConversationId),
@@ -572,11 +574,11 @@ export function ChatPageClient() {
           (current) => applyStreamEvent(current, event),
         );
       }, useChatStore.getState().thinkingEnabled);
-      clearDraft(); // clear saved draft for this conversation after successful send
+      if (fromComposer) clearDraft(); // clear saved draft for this conversation after successful send
     } catch (error) {
       const replyId = runningReplyId(conversationId);
       if (replyId) {
-        clearDraft();
+        if (fromComposer) clearDraft();
         await followReply(conversationId, replyId);
       } else {
         const message = error instanceof Error ? error.message : "Unable to stream chat response.";
@@ -661,6 +663,7 @@ export function ChatPageClient() {
             isBusy={isComposerLocked}
             onSuggestionClick={handleSuggestionClick}
             onRetryMessage={handleRetryMessage}
+            onVisualize={(text) => void handleSendMessage(text)}
           />
 
           {/* Same padding and max width as MessageList so the edges line up */}
@@ -696,7 +699,7 @@ export function ChatPageClient() {
               hasStreamingAssistantMessage={hasStreamingAssistantMessage}
               isPendingRuntimeUpdate={isPendingRuntimeUpdate}
               onDraftChange={setDraft}
-              onSendMessage={handleSendMessage}
+              onSendMessage={() => void handleSendMessage()}
               onStop={
                 activeConversationId && streamingAssistantMessageId
                   ? () => void handleStopMessage(activeConversationId, streamingAssistantMessageId)

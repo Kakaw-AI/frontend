@@ -6,11 +6,47 @@ import {
   formatConversationTime,
   getVisibleArtifacts,
   getVisibleAssistantContent,
+  isNumericColumn,
 } from "@/components/chat/chat-formatting";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
 import type { ConversationMessage } from "@/lib/queries/conversations";
-import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
-import { memo, useMemo } from "react";
+import { AlertTriangle, ChartColumn, Globe, RefreshCw } from "lucide-react";
+import { memo, useMemo, useState } from "react";
+
+/** Short on purpose: the agent reads it as "chart the previous result". */
+const VISUALIZE_PROMPT = "Visualize that result";
+
+/** A table with at least two rows and a number column, and no chart yet. */
+function canBeCharted(message: ConversationMessage): boolean {
+  if (message.role !== "assistant" || message.status !== "COMPLETED" || message.error) return false;
+  if (message.artifacts.some((artifact) => artifact.type === "CHART")) return false;
+  return message.artifacts.some((artifact) => {
+    if (artifact.type !== "TABLE") return false;
+    const { columns = [], rows = [] } = artifact.payload as {
+      columns?: string[];
+      rows?: Array<Record<string, unknown>>;
+    };
+    return rows.length >= 2 && columns.some((column) => isNumericColumn(rows, column));
+  });
+}
+
+function VisualizeButton({ isBusy, onClick }: { isBusy: boolean; onClick: () => void }) {
+  const [requested, setRequested] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={requested || isBusy}
+      onClick={() => {
+        setRequested(true);
+        onClick();
+      }}
+      className="kk-link"
+    >
+      <ChartColumn size={13} className="kk-link-icon kk-link-icon-chart" aria-hidden />
+      <span className="kk-link-text">{requested ? "Visualization requested" : "Make visualization"}</span>
+    </button>
+  );
+}
 
 // Memoized because the answer now streams: without this, every token re-renders
 // every message in the conversation, including their charts and tables.
@@ -20,8 +56,10 @@ export const MessageCard = memo(function MessageCard({
   isBusy,
   provider,
   collapsedTableIds = "",
+  isLatestAnswer = false,
   onSuggestionClick,
   onRetry,
+  onVisualize,
 }: {
   message: ConversationMessage;
   isLastAssistantMessage: boolean;
@@ -30,8 +68,11 @@ export const MessageCard = memo(function MessageCard({
   provider: DatabaseProvider;
   /** Comma-separated ids of tables that repeat an earlier answer's rows. */
   collapsedTableIds?: string;
+  /** The newest completed answer; "Visualize that result" refers to it. */
+  isLatestAnswer?: boolean;
   onSuggestionClick: (text: string) => void;
   onRetry: (messageId: string) => void;
+  onVisualize: (text: string) => void;
 }) {
   const isUser = message.role === "user";
   const usedWebSearch = useMemo(
@@ -56,6 +97,14 @@ export const MessageCard = memo(function MessageCard({
     () => getVisibleArtifacts(message),
     [message],
   );
+  const showVisualize = useMemo(
+    () => isLatestAnswer && canBeCharted(message),
+    [isLatestAnswer, message],
+  );
+  const visualizeButton = showVisualize ? (
+    <VisualizeButton isBusy={isBusy} onClick={() => onVisualize(VISUALIZE_PROMPT)} />
+  ) : null;
+  const firstSqlId = visibleArtifacts.find((artifact) => artifact.type === "SQL")?.id;
 
   return (
     <FadeUp
@@ -114,8 +163,11 @@ export const MessageCard = memo(function MessageCard({
             artifact={artifact}
             provider={provider}
             collapsed={collapsedTableIds.split(",").includes(artifact.id)}
+            sqlActions={artifact.id === firstSqlId ? visualizeButton : null}
           />
         ))}
+        {/* No query artifact to sit beside: the button gets its own row. */}
+        {visualizeButton && !firstSqlId ? <div>{visualizeButton}</div> : null}
       </div>
 
       {!isUser &&
