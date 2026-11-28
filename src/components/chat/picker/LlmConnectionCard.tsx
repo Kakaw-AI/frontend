@@ -37,7 +37,7 @@ export function LlmConnectionCard({
         </div>
         <p className="mt-0.5 truncate text-xs text-on-surface-variant">
           {connection.defaultModel}
-          {connection.apiKeyLastFour ? ` · key ••••${connection.apiKeyLastFour}` : connection.usesLinkedAccount ? " · linked account" : ""}
+          {connection.apiKeyLastFour ? ` · key ••••${connection.apiKeyLastFour}` : ""}
           {` · checked ${formatTimestamp(connection.lastTestedAt, "recently")}`}
         </p>
         {connection.lastError ? <p className="mt-1 text-xs text-secondary">{connection.lastError}</p> : null}

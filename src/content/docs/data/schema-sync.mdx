@@ -14,7 +14,7 @@ Before the first question, Kakaw reads the structure of your database. Every ans
 - For MongoDB, which has no fixed columns: the fields of up to 100 sampled documents per collection. See [MongoDB](/docs/data/mongodb).
 - Every value of a short text column, such as category names, statuses or countries: up to 50 distinct values of 60 characters or less, in tables of up to 200,000 rows. Columns whose name suggests a secret (password, token, key and similar) are skipped.
 
-From these Kakaw builds short notes about each table and how the tables relate, which help the model pick the right tables and the exact values stored in a column. When you name a value, such as *"Home Decor"*, the model can match it to the stored value instead of guessing. It doesn't copy your tables: answers come from queries that run on your database when you ask, and their results are kept with the chat. See [Privacy and security](/docs/privacy-and-security).
+Kakaw keeps the tables, columns, keys, row counts and sample values. It reads indexes and sample rows but doesn't store them. What it keeps helps the model pick the right tables and the exact values stored in a column. When you name a value, such as *"Home Decor"*, the model can match it to the stored value instead of guessing. It doesn't copy your tables: answers come from queries that run on your database when you ask, and their results are kept with the chat. See [Privacy and security](/docs/privacy-and-security).
 
 ## Status
 
@@ -30,7 +30,7 @@ A sync that runs longer than five minutes is marked failed, so you can retry ins
 
 ## When your schema changes
 
-Kakaw works from the schema it read. After you add, rename or drop tables or columns in a PostgreSQL database, or collections and fields in a MongoDB database, open **Databases** and choose **Resync** next to it. Kakaw reads the structure again, and its chats pause until the status is back to Ready. You can resync once every 30 seconds. Questions remembered for the old structure are not reused for the new one.
+Kakaw works from the schema it read. After you add, rename or drop tables or columns in a PostgreSQL database, or collections and fields in a MongoDB database, open **Databases** and choose **Resync** next to it. Kakaw reads the structure again, and its chats pause until the status is back to Ready. You can resync once every 30 seconds. A remembered question whose query uses a table or column that no longer exists is not reused.
 
 An uploaded SQLite file doesn't change, so it has no **Resync**. Upload the new file as another database.
 

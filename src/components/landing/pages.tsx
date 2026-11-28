@@ -96,7 +96,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO kakaw_reader;`}
         heading: "What is stored and sent",
         body: (
           <p>
-            The connection URL is stored encrypted (AES-256-GCM). Kakaw keeps the schema and a few sample rows, not a
+            The connection URL is stored encrypted (AES-256-GCM). Kakaw keeps the schema and a few sample values, not a
             copy of your tables. To write the answer, your question, the schema and the result rows go to the model
             provider you chose. The full list is in{" "}
             <Link className={a} href="/docs/privacy-and-security">

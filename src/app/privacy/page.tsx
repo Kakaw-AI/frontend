@@ -22,7 +22,7 @@ const sections = [
     content: `• Account: you sign in with Google or GitHub. We store your name, email address, profile picture and the sign-in tokens they return. Kakaw has no passwords of its own.
 • Sessions: the IP address and browser of each sign-in.
 • Connections: database connection strings and model API keys, encrypted with AES-256-GCM on our servers.
-• Database structure: table or collection names, columns or fields, keys, indexes, row counts, a few sample rows, sample values, and the values of short text columns such as categories or statuses.
+• Database structure: table or collection names, columns or fields, keys, row counts, sample values, and the values of short text columns such as categories or statuses.
 • Uploaded SQLite files: stored whole, so queries can run on them.
 • Chats: your questions, the answers, the queries, up to 200 result rows per answer, charts and web sources.
 • Working records: the steps and queries of each answer, questions answered before with the query that worked, and token counts.`,

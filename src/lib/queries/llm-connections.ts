@@ -19,8 +19,6 @@ export type LlmConnectionResponse = {
   displayName: string;
   defaultModel: string;
   apiKeyLastFour: string | null;
-  usesLinkedAccount: boolean;
-  linkedProviderId: string | null;
   isActive: boolean;
   lastError: string | null;
   lastTestedAt: string | null;
@@ -35,8 +33,6 @@ export type LlmConnection = {
   defaultModel: string;
   status: LlmConnectionStatus;
   canStartChat: boolean;
-  usesLinkedAccount: boolean;
-  linkedProviderId: string | null;
   apiKeyLastFour: string | null;
   isActive: boolean;
   lastError: string | null;
@@ -132,8 +128,6 @@ export function toLlmConnection(
     defaultModel: connection.defaultModel,
     status: connection.status,
     canStartChat: connection.isActive && connection.status === "SUCCESS",
-    usesLinkedAccount: connection.usesLinkedAccount,
-    linkedProviderId: connection.linkedProviderId,
     apiKeyLastFour: connection.apiKeyLastFour,
     isActive: connection.isActive,
     lastError: connection.lastError,

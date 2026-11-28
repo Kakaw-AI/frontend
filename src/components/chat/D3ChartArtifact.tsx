@@ -49,7 +49,7 @@ const PIE_LIMIT = 8;
 
 /** "500k", "1.2M": short enough that tick labels never reach the axis title. */
 const compactNumber = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
-const formatTick = (value: d3.NumberValue) => compactNumber.format(Number(value));
+const formatTick = (value: d3Scale.NumberValue) => compactNumber.format(Number(value));
 const fullNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
 
 function asRows(value: unknown): ChartRow[] {

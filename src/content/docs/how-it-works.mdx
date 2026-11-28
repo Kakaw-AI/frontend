@@ -33,4 +33,4 @@ The model writes a short summary of the result. At the same time Kakaw plans a c
 
 ## What Kakaw remembers
 
-When an answer is completed, the question and the query that answered it are kept for that database. The next similar question starts from that query, which makes answers faster and more consistent. This memory belongs to one database of one user, and it stops applying when the database's structure changes.
+When an answer is completed, the question and the query that answered it are kept for that database. The next similar question starts from that query, which makes answers faster and more consistent. This memory belongs to one database of one user, and it stops applying to a question once its query uses a table or column the database no longer has.

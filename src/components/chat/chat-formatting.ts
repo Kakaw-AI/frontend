@@ -116,19 +116,14 @@ export function sanitizeAssistantMessageContent(content: string) {
 }
 
 export function getVisibleArtifacts(message: ConversationMessage) {
-  const artifacts = message.error
-    ? message.artifacts.filter((artifact) => artifact.type !== "ERROR")
-    : message.artifacts;
-
   const priority: Record<ConversationMessage["artifacts"][number]["type"], number> = {
     CHART: 0,
     TABLE: 1,
     SQL: 2,
     TEXT: 3,
-    ERROR: 4,
   };
 
-  return [...artifacts].sort((left, right) => {
+  return [...message.artifacts].sort((left, right) => {
     const score = priority[left.type] - priority[right.type];
     if (score !== 0) {
       return score;

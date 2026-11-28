@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { SqlArtifactView } from "@/components/chat/SqlArtifactView";
 import { TableArtifact } from "@/components/chat/TableArtifact";
 import type { DatabaseProvider } from "@/components/onboarding/DatabaseLogo";
-import { normalizeApiErrorPayload } from "@/lib/api-error";
 import type { ConversationMessage } from "@/lib/queries/conversations";
 
 // d3 and the chart renderer are only needed once a conversation actually
@@ -50,23 +49,6 @@ export function ArtifactView({
     const allRows = payload.rows ?? [];
 
     return <TableArtifact columns={columns} allRows={allRows} rowCount={payload.rowCount} startCollapsed={collapsed} />;
-  }
-
-  if (artifact.type === "ERROR") {
-    const payload = artifact.payload as {
-      error?: string;
-      errorInfo?: Record<string, unknown>;
-    };
-    const message = normalizeApiErrorPayload(
-      payload.errorInfo ?? payload.error,
-      "Unexpected runtime error.",
-    ).message;
-
-    return (
-      <div className="rounded-lg border border-secondary/30 bg-secondary-container px-3 py-2 text-sm text-on-secondary-container">
-        Error: {message}
-      </div>
-    );
   }
 
   if (artifact.type === "TEXT") {

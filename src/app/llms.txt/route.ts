@@ -13,7 +13,7 @@ const INTRO = `# Kakaw AI
 - Databases: PostgreSQL and MongoDB by connection URL, and SQLite by file upload (up to 25 MB). MySQL, BigQuery and Snowflake are not supported yet.
 - Queries are read-only and limited to 200 rows and 30 seconds.
 - API keys and connection strings are stored encrypted (AES-256-GCM) on Kakaw's servers; only the last four characters of a key are ever shown.
-- For a PostgreSQL or MongoDB database, Kakaw stores the schema plus a few sample rows and values. An uploaded SQLite file is stored whole, so queries can run on it. Query results are sent to the model provider you chose to write the answer, and saved with the chat.
+- For a PostgreSQL or MongoDB database, Kakaw stores the schema plus a few sample values per column. An uploaded SQLite file is stored whole, so queries can run on it. Query results are sent to the model provider you chose to write the answer, and saved with the chat.
 - When a question needs facts outside the database, Kakaw can search the web and cites its sources.
 
 Full docs as one file: ${SITE_URL}/llms-full.txt

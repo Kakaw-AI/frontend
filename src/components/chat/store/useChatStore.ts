@@ -31,7 +31,6 @@ interface ChatStoreState {
 interface ChatStoreActions {
   openSidebar: () => void;
   closeSidebar: () => void;
-  toggleSidebar: () => void;
 
   openAddLlmPicker: () => void;
   closePicker: () => void;
@@ -72,7 +71,6 @@ export const useChatStore = create<ChatStoreState & ChatStoreActions>((set) => (
   // Actions
   openSidebar: () => set({ isSidebarOpen: true }),
   closeSidebar: () => set({ isSidebarOpen: false }),
-  toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
 
   openAddLlmPicker: () =>
     set({
